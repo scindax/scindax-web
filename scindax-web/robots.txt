@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://scindax.com.br/sitemap.xml
