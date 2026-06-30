@@ -67,14 +67,6 @@ npx serve .
 
 Acesse `http://localhost:8000`.
 
-## Configuração da AMES
-
-O link do formulário da AMES é definido em um único ponto, na constante
-`AMES_FORM_URL` em `js/main.js`. Ao alterá-lo, os dois botões "Realizar AMES
-gratuitamente" (hero e seção final) passam a apontar para o novo endereço.
-Se a constante ficar vazia, os botões exibem um aviso temporário em vez de
-navegar.
-
 ## Como publicar na Vercel
 
 1. Faça o push do repositório para o GitHub.
