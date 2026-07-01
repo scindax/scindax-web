@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Como a Scindax construiu sua infraestrutura digital do zero — Scindax</title>
+    <meta name="description" content="Veja como a Scindax montou site, captação de leads, API e banco de dados gastando menos de R$ 50/mês, usando Cloudflare Pages, Workers, D1 e Tally.">
+    <meta name="keywords" content="infraestrutura digital, cloudflare, tecnologia para PMEs, crescimento empresarial, organização, automação, banco de dados, startup baixo custo">
+    <meta name="author" content="Scindax">
+    <meta property="og:title" content="Como a Scindax construiu sua infraestrutura digital do zero (gastando quase nada)">
+    <meta property="og:description" content="Site, formulário de captação, API e banco de dados — tudo construído com ferramentas gratuitas ou de baixíssimo custo.">
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="https://scindax.com.br/insights/infraestrutura-digital-scindax/">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="theme-color" content="#0a0a0b">
+    <link rel="icon" href="/favicon.ico" sizes="any">
+    <link rel="icon" type="image/png" href="/assets/images/favicon-64.png">
+    <link rel="canonical" href="https://scindax.com.br/insights/infraestrutura-digital-scindax/">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+
+    <nav class="navbar" id="navbar">
+        <a href="/" class="navbar-logo"><img src="/assets/images/logo-scindax.png" alt="Scindax" class="navbar-logo-img"></a>
+        <ul class="navbar-links" id="navLinks">
+            <li><a href="/#problem">O Problema</a></li>
+            <li><a href="/#journey">Jornada</a></li>
+            <li><a href="/#solutions">Soluções</a></li>
+            <li><a href="/#forwhom">Para quem</a></li>
+            <li><a href="/insights/">Insights</a></li>
+            <li><a href="#" class="navbar-cta ames-link" data-ames-link>AMES</a></li>
+        </ul>
+    </nav>
+
+    <p class="insights-breadcrumb"><a href="/insights/">Insights</a> / Infraestrutura digital Scindax</p>
+
+    <article class="article">
+        <p class="article-meta"><span>01 Jul 2026</span><span>·</span><span>Tempo de leitura: 6 minutos</span><span>·</span><span>Infraestrutura</span></p>
+        <h1 class="section-title">Como a Scindax construiu sua infraestrutura digital do zero (gastando quase nada)</h1>
+        <p class="article-audience"><strong>Público:</strong> gestores, tomadores de decisão e empreendedores que querem entender como tecnologia pode ser aliada sem custos exorbitantes.</p>
+
+        <a href="/insights/infraestrutura-digital-scindax/tecnico/" class="article-toggle">Prefere a versão técnica? →</a>
+
+        <div class="article-body">
+            <h2>O desafio: construir uma base sólida sem investimento pesado</h2>
+            <p>Quando a Scindax nasceu, tínhamos um problema claro: precisávamos de uma presença digital profissional, um sistema para captar leads e uma base de dados segura para gerenciar tudo isso.</p>
+            <p>O orçamento? Praticamente zero.</p>
+            <p>A solução? Usar o que há de melhor no mercado sem precisar pagar por licenças caras ou contratar uma equipe de infraestrutura desde o primeiro dia.</p>
+            <p>Foi assim que criamos um ecossistema digital completo usando ferramentas que escalam com o crescimento, mas que começam totalmente gratuitas.</p>
+
+            <h2>A arquitetura que criamos</h2>
+
+            <h3>1. O site institucional (Cloudflare Pages)</h3>
+            <p>Precisávamos de um site que passasse credibilidade e profissionalismo, mas que não exigisse manutenção constante nem custos de hospedagem.</p>
+            <p>Optamos pelo Cloudflare Pages por três motivos:</p>
+            <ul>
+                <li>Gratuito para começar.</li>
+                <li>Integração automática com o GitHub — cada atualização no código publica o site em segundos.</li>
+                <li>CDN global e SSL automático — o site carrega rápido em qualquer lugar do mundo, com segurança de ponta.</li>
+            </ul>
+            <p>Na prática: criamos um repositório no GitHub, conectamos ao Cloudflare Pages, e em menos de 30 minutos tínhamos o site da Scindax no ar, com HTTPS ativo e performance excelente. Hoje, qualquer atualização que fazemos no código já está disponível para o público automaticamente.</p>
+
+            <h3>2. O formulário de captura (Tally)</h3>
+            <p>A Avaliação de Maturidade Empresarial (AMES) é a porta de entrada da Scindax. Precisávamos de um formulário que fosse:</p>
+            <ul>
+                <li>Fácil de criar e manter.</li>
+                <li>Integrável com nossa infraestrutura.</li>
+                <li>Capaz de coletar dados estruturados.</li>
+            </ul>
+            <p>Usamos o Tally para isso. É uma ferramenta que nos permite criar formulários com uma experiência muito próxima de um produto SaaS, mas sem custos de desenvolvimento inicial.</p>
+            <p>O diferencial: o Tally permite webhooks — ou seja, cada resposta enviada pelo usuário pode ser automaticamente enviada para um sistema que construímos.</p>
+
+            <h3>3. A API e o banco de dados (Cloudflare Workers + D1)</h3>
+            <p>Este foi o coração da nossa arquitetura.</p>
+            <p>Precisávamos de um lugar seguro para armazenar os dados da AMES, que pudesse ser consultado pelo nosso sistema de gestão interno, mas sem expor informações sensíveis ao público.</p>
+            <p>Criamos um Worker no Cloudflare, que é basicamente um código que roda em servidores da Cloudflare e funciona como nossa API particular.</p>
+            <p>E para armazenar os dados, usamos o Cloudflare D1 — um banco de dados SQL que é:</p>
+            <ul>
+                <li>Rápido.</li>
+                <li>Escalável.</li>
+                <li>E, novamente, com custos muito baixos para começar.</li>
+            </ul>
+            <p>O fluxo ficou assim:</p>
+            <pre><code>Usuário preenche o formulário no Tally
+         ↓
+O Tally envia os dados para o Worker via webhook
+         ↓
+O Worker valida e grava no banco D1
+         ↓
+Nosso sistema de gestão consulta o banco via API
+         ↓
+Analisamos as respostas e geramos insights</code></pre>
+            <p>Resultado: os dados dos nossos leads nunca ficam expostos publicamente. Tudo é armazenado em um banco de dados que só a Scindax pode acessar.</p>
+
+            <h3>4. O sistema de gestão (nosso "Manager")</h3>
+            <p>Toda essa infraestrutura não serviria de nada se não pudéssemos enxergar e analisar os dados que estávamos coletando.</p>
+            <p>Desenvolvemos um sistema de gestão interno (chamamos carinhosamente de "Manager") que consome a API criada no Worker e exibe as avaliações em uma interface amigável.</p>
+            <p>Esse sistema permite que a equipe da Scindax:</p>
+            <ul>
+                <li>Visualize todas as respostas da AMES.</li>
+                <li>Acompanhe o fluxo de leads.</li>
+                <li>Identifique padrões e oportunidades.</li>
+                <li>Gerencie o relacionamento com os clientes.</li>
+            </ul>
+            <p>E o melhor: o Manager se conecta diretamente à nossa API, sem depender de arquivos ou planilhas intermediárias. Tudo em tempo real, seguro e organizado.</p>
+
+            <h2>O que essa arquitetura nos trouxe</h2>
+            <div class="article-table-wrap">
+                <table>
+                    <thead>
+                        <tr><th>Antes (MVP com Google Sheets)</th><th>Depois (Arquitetura atual)</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>Dados em planilha compartilhada</td><td>Banco de dados privado</td></tr>
+                        <tr><td>Risco de exposição de informações</td><td>API autenticada com chave secreta</td></tr>
+                        <tr><td>Processo manual para atualizar dados</td><td>Tudo automático em tempo real</td></tr>
+                        <tr><td>Dependência de arquivos públicos</td><td>Infraestrutura própria e controlada</td></tr>
+                        <tr><td>Dificuldade para escalar</td><td>Pronto para crescer com a Scindax</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h2>Quanto custou tudo isso?</h2>
+            <p>Essa é a parte que mais surpreende.</p>
+            <p>A infraestrutura inteira — site, API, banco de dados, integração — custou menos de <strong>R$ 50 por mês</strong> para começar.</p>
+            <p>E o melhor: enquanto o volume de leads é baixo, a maior parte dos recursos permanece no plano gratuito das plataformas que usamos.</p>
+            <p>Quando a Scindax crescer e tiver milhares de avaliações por mês, a arquitetura já está preparada para escalar — e aí sim, pagaremos proporcionalmente ao uso, sem surpresas.</p>
+
+            <h2>O que aprendemos com essa jornada</h2>
+            <p><strong>1. É possível construir infraestrutura profissional sem investimento inicial alto.</strong><br>A combinação de Cloudflare, Tally e um sistema de gestão próprio nos deu uma base sólida por menos do que o custo de uma hospedagem tradicional.</p>
+            <p><strong>2. Dados não podem ficar expostos.</strong><br>No MVP usamos Google Sheets e, mesmo com todas as proteções, sabíamos que não era ideal. Migrar para um banco de dados próprio foi uma decisão estratégica desde o início.</p>
+            <p><strong>3. Automatize tudo o que for possível.</strong><br>Desde o envio do formulário até a consulta no sistema de gestão, tudo é automático. Isso reduz erros, economiza tempo e nos permite focar no que realmente importa: ajudar empresas a crescerem.</p>
+            <p><strong>4. Escolha ferramentas que cresçam com você.</strong><br>Cloudflare Workers e D1 são plataformas que começam gratuitas, mas permitem escalar para milhões de requisições sem precisar migrar de infraestrutura. É o tipo de decisão que evita dores de cabeça no futuro.</p>
+
+            <h2>Como isso se conecta ao que a Scindax faz</h2>
+            <p>Essa jornada tecnológica é um reflexo do que acreditamos: organização e estrutura são a base para qualquer crescimento.</p>
+            <p>Se a Scindax, uma empresa que começou do zero, conseguiu construir uma infraestrutura digital sólida e escalável com recursos limitados, imagine o que sua empresa pode alcançar quando organiza seus processos, seus dados e suas decisões.</p>
+        </div>
+
+        <div class="article-cta">
+            <p>Assim como construímos nossa base digital com organização e planejamento, podemos ajudar sua empresa a fazer o mesmo.</p>
+            <p><strong>Comece com a Avaliação de Maturidade Empresarial (AMES)</strong> — gratuita, rápida e reveladora.</p>
+            <a href="#" class="cta-btn-large ames-link" data-ames-link>Realizar minha AMES gratuitamente</a>
+        </div>
+
+        <p class="article-share">Gostou desse conteúdo? Compartilhe com alguém que também está construindo sua empresa com estrutura e visão de futuro.</p>
+
+        <div class="article-tags">
+            <span class="article-tag">infraestrutura digital</span>
+            <span class="article-tag">cloudflare</span>
+            <span class="article-tag">tecnologia para PMEs</span>
+            <span class="article-tag">crescimento empresarial</span>
+            <span class="article-tag">organização</span>
+            <span class="article-tag">automação</span>
+            <span class="article-tag">banco de dados</span>
+            <span class="article-tag">startup baixo custo</span>
+            <span class="article-tag">escalabilidade</span>
+        </div>
+
+        <div class="article-footer-nav">
+            <a href="/insights/infraestrutura-digital-scindax/tecnico/" class="article-toggle">Prefere a versão técnica? →</a>
+        </div>
+    </article>
+
+    <footer class="footer">
+        <img src="/assets/images/logo-scindax.png" alt="Scindax" class="footer-brand-img">
+        <div class="footer-links">
+            <a href="/#hero">Início</a><a href="/#problem">O Problema</a><a href="/#journey">Jornada</a><a href="/#solutions">Soluções</a><a href="/#forwhom">Para quem</a><a href="/insights/">Insights</a><a href="mailto:contato@scindax.com.br">Contato</a>
+        </div>
+        <p>contato@scindax.com.br</p>
+        <p style="margin-top:0.5rem;">&copy; <span id="currentYear"></span> Scindax. Todos os direitos reservados.</p>
+    </footer>
+
+    <script src="/js/navigation.js" defer></script>
+    <script src="/js/main.js" defer></script>
+</body>
+</html>
