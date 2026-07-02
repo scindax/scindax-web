@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Push feito, site não mudou: como diagnosticamos uma falha de deploy | Scindax</title>
+    <meta name="description" content="Enviamos a atualização corretamente, mas o site não mudou. Veja o passo a passo que usamos para isolar a causa real, sem acesso ao painel de hospedagem.">
+    <meta name="keywords" content="diagnóstico de problemas, deploy de site, infraestrutura digital, Cloudflare Pages, gestão de tecnologia, tomada de decisão baseada em dados">
+    <meta name="author" content="Scindax">
+    <meta property="og:title" content="Push feito, site não mudou: como diagnosticamos uma falha de deploy">
+    <meta property="og:description" content="O código chegou certo ao repositório, mas o site continuou no ar com a versão antiga. Veja o passo a passo usado para isolar a causa.">
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="https://scindax.com.br/insights/diagnostico-deploy-travado/">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="theme-color" content="#0a0a0b">
+    <link rel="icon" href="/favicon.ico" sizes="any">
+    <link rel="icon" type="image/png" href="/assets/images/favicon-64.png">
+    <link rel="canonical" href="https://scindax.com.br/insights/diagnostico-deploy-travado/">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+
+    <nav class="navbar" id="navbar">
+        <a href="/" class="navbar-logo"><img src="/assets/images/logo-scindax.png" alt="Scindax" class="navbar-logo-img"></a>
+        <ul class="navbar-links" id="navLinks">
+            <li><a href="/#problem">O Problema</a></li>
+            <li><a href="/#journey">Jornada</a></li>
+            <li><a href="/#solutions">Soluções</a></li>
+            <li><a href="/#forwhom">Para quem</a></li>
+            <li><a href="/insights/">Insights</a></li>
+            <li><a href="#" class="navbar-cta ames-link" data-ames-link>AMES</a></li>
+        </ul>
+    </nav>
+
+    <p class="insights-breadcrumb"><a href="/insights/">Insights</a> / Diagnóstico de deploy travado</p>
+
+    <article class="article">
+        <p class="article-meta"><span>02 Jul 2026</span><span>·</span><span>Tempo de leitura: 6 minutos</span><span>·</span><span>Diagnóstico</span></p>
+        <h1 class="section-title">Push feito, site não mudou: como diagnosticamos uma falha de deploy</h1>
+        <p class="article-audience"><strong>Público:</strong> gestores, empreendedores e tomadores de decisão que dependem de um site ou sistema atualizado com frequência e querem entender o que "está no ar" realmente significa.</p>
+
+        <a href="/insights/diagnostico-deploy-travado/tecnico/" class="article-toggle">Prefere a versão técnica? →</a>
+
+        <div class="article-body">
+            <p>Publicamos uma atualização no site da Scindax. O código foi enviado corretamente ao repositório. Minutos depois, a página continuava exibindo a versão antiga, no computador, no celular, até em uma aba anônima, para eliminar qualquer dúvida de que fosse só um problema local.</p>
+            <p>Não tínhamos acesso direto ao painel de hospedagem para investigar por dentro. A única coisa disponível era o que o site respondia de fora: os endereços, os cabeçalhos, o conteúdo real da página.</p>
+            <p>Este post mostra o caminho de verificação que usamos para isolar exatamente em qual etapa a atualização travou, sem depender de "tentar de novo e torcer".</p>
+
+            <h2>O caminho de verificação</h2>
+
+            <h3>1. O repositório como fonte da verdade, não o computador local</h3>
+            <p><strong>O que foi escolhido e por quê:</strong> antes de suspeitar de qualquer coisa, confirmamos, diretamente na plataforma que guarda o código, e não no computador de quem fez o envio, que a atualização realmente havia chegado ao lugar certo. Três motivos: (1) elimina a hipótese de o envio não ter sido concluído; (2) uma fonte externa não depende de configuração local nem de cache; (3) revela o horário exato em que a atualização chegou.</p>
+            <p><strong>Como funciona na prática:</strong> consultamos o histórico de alterações diretamente na plataforma onde o código fica hospedado e confirmamos, de forma independente, que a versão mais recente estava lá, na área correta.</p>
+
+            <h3>2. O que a página realmente carrega, não só o que deveria carregar</h3>
+            <p><strong>O que foi escolhido e por quê:</strong> em vez de confiar só na aparência da tela, olhamos os detalhes técnicos da resposta do site a cada pedido de página. Três motivos: (1) diferencia "a página não existe" de "a página existe, mas está guardada em uma versão antiga"; (2) revela se o servidor está processando aquele endereço; (3) não depende do navegador nem do dispositivo de quem está olhando.</p>
+            <p><strong>Como funciona na prática:</strong> um endereço novo devolvia um aviso de "página não encontrada" genuíno, não um problema de visualização, mas a confirmação de que aquela página nunca havia chegado ao servidor. Já o endereço antigo devolvia uma marcação indicando que o conteúdo vinha de uma cópia guardada, não da versão mais recente.</p>
+
+            <h3>3. A tela real, não só o código por trás dela</h3>
+            <p><strong>O que foi escolhido e por quê:</strong> carregamos a página em um navegador de verdade, do mesmo jeito que um visitante veria, em vez de examinar apenas o texto por trás da página. Três motivos: (1) elimina a dúvida entre "o dado está certo mas não aparece" e "o dado realmente não chegou"; (2) reproduz a experiência real de quem visita o site; (3) evita conclusões erradas quando parte do conteúdo só aparece depois de carregado.</p>
+            <p><strong>Como funciona na prática:</strong> a captura da tela mostrou exatamente o que os detalhes técnicos já indicavam, a versão antiga, sem as novidades. Duas fontes diferentes confirmando o mesmo problema.</p>
+
+            <h3>4. Um checklist de conexão antes de suspeitar do próprio trabalho</h3>
+            <p><strong>O que foi escolhido e por quê:</strong> verificamos, nesta ordem, se o repositório estava conectado à hospedagem, se a área de publicação apontava para o lugar certo, e se a autorização de acesso ainda era válida. Três motivos: (1) essas três causas respondem pela maioria das falhas silenciosas de publicação; (2) são checagens rápidas, antes de investigar hipóteses mais raras; (3) eliminam a hospedagem como suspeita quando confirmadas.</p>
+            <p><strong>Como funciona na prática:</strong> as três checagens vieram normais, o que reduziu as possibilidades e apontou para a etapa seguinte, mais específica.</p>
+
+            <h3>5. Uma nova tentativa como teste de diagnóstico, não como solução</h3>
+            <p><strong>O que foi escolhido e por quê:</strong> disparamos manualmente uma nova publicação, tratando o resultado como uma informação, não como a correção do problema. Três motivos: (1) se funcionar, confirma que o gatilho automático era a falha; (2) se travar do mesmo jeito, aponta para a etapa de processamento; (3) é a checagem mais simples antes de escalar o problema para um nível mais profundo.</p>
+            <p><strong>Como funciona na prática:</strong> a nova tentativa ficou parada em "na fila de espera", sem nunca chegar a processar, isolando o problema na etapa de execução, não na conexão entre as partes.</p>
+
+            <h2>O que cada checagem revelou</h2>
+            <div class="article-table-wrap">
+                <table>
+                    <thead>
+                        <tr><th>Camada verificada</th><th>Método usado</th><th>Resultado</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>Código enviado ao repositório</td><td>Consulta direta ao histórico, fora do computador local</td><td>Confirmado, presente na área correta</td></tr>
+                        <tr><td>O que o navegador realmente exibe</td><td>Carregamento real da página, não só o código-fonte</td><td>Versão antiga, sem as novidades</td></tr>
+                        <tr><td>Cache do site</td><td>Análise dos detalhes técnicos da resposta do servidor</td><td>Servindo uma cópia antiga guardada</td></tr>
+                        <tr><td>Conexão entre repositório e hospedagem</td><td>Configuração de integração no painel</td><td>Normal, conectada ao lugar certo</td></tr>
+                        <tr><td>Permissão de acesso ao repositório</td><td>Verificação da autorização</td><td>Normal, acesso válido</td></tr>
+                        <tr><td>Fila de publicação</td><td>Status de cada tentativa de publicação</td><td>Travada, presa "na fila", sem nunca processar</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h2>Impacto</h2>
+            <p>O envio do código levou menos de um minuto para chegar ao repositório. A publicação da mudança, por outro lado, ficou <strong>mais de 40 minutos</strong> parada na fila de processamento, sem nenhum erro, sem nenhuma mensagem, sem nenhum motivo visível.</p>
+
+            <h2>Lições aprendidas</h2>
+            <p><strong>1. "Estar no ar" não é um estado único, é uma cadeia de etapas.</strong><br>Entre escrever uma atualização e o visitante final ver a mudança existem várias etapas (repositório, processamento, publicação, cache). Qualquer uma pode travar sem avisar as outras.</p>
+            <p><strong>2. Cache mascara problemas reais.</strong><br>Um site que "está no ar" pode simplesmente estar servindo uma versão antiga guardada. Quem só olha a tela pode concluir, errado, que nada mudou porque nada foi enviado.</p>
+            <p><strong>3. Isole a causa de fora para dentro.</strong><br>Verificar primeiro a camada mais simples, se o trabalho chegou ao lugar certo, antes de investigar hipóteses mais específicas, evita perder tempo no caminho errado.</p>
+            <p><strong>4. Nem toda falha deixa um aviso de erro.</strong><br>Às vezes a evidência mais confiável não é uma mensagem explicando o que deu errado, mas um estado que simplesmente não muda, como uma fila que não anda. Isso também é um dado, e vale tanto quanto um log de erro.</p>
+
+            <h2>Como isso se conecta ao que a Scindax faz</h2>
+            <p>Isso não é diferente de qualquer outro processo dentro de uma empresa: quando algo para de funcionar sem aviso, a tentação é reiniciar tudo e esperar que resolva sozinho. Mas isolar em qual etapa exata o processo travou, antes de tentar consertar, é o que evita repetir o mesmo erro depois.</p>
+            <p>Se esse nível de diagnóstico faz sentido para a publicação de um site, ele faz ainda mais sentido para os processos que sustentam a operação de uma empresa inteira.</p>
+        </div>
+
+        <div class="article-cta">
+            <p>Quer saber em qual etapa da sua operação as coisas travam sem ninguém perceber?</p>
+            <p><strong>Comece com a Avaliação de Maturidade Empresarial (AMES)</strong>, gratuita e rápida.</p>
+            <a href="#" class="cta-btn-large ames-link" data-ames-link>Realizar avaliação gratuita</a>
+        </div>
+
+        <p class="article-share">Conhece alguém que também já teve um "está tudo certo, mas não está no ar"? Compartilhe este post.</p>
+
+        <div class="article-share-bar">
+            <span class="article-share-label">Compartilhar:</span>
+            <button type="button" class="share-btn share-btn-copy" data-share="copy" aria-label="Copiar link do artigo">
+                <svg viewBox="0 0 24 24" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"></path></svg>
+                <span class="share-btn-text">Copiar link</span>
+            </button>
+            <a href="#" class="share-btn share-btn-whatsapp" data-share="whatsapp" target="_blank" rel="noopener noreferrer" aria-label="Compartilhar no WhatsApp">
+                <svg viewBox="0 0 24 24" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"></path></svg>
+            </a>
+            <a href="#" class="share-btn share-btn-linkedin" data-share="linkedin" target="_blank" rel="noopener noreferrer" aria-label="Compartilhar no LinkedIn">in</a>
+            <a href="#" class="share-btn share-btn-facebook" data-share="facebook" target="_blank" rel="noopener noreferrer" aria-label="Compartilhar no Facebook">f</a>
+        </div>
+
+        <div class="article-tags">
+            <span class="article-tag">diagnóstico de problemas</span>
+            <span class="article-tag">deploy de site</span>
+            <span class="article-tag">infraestrutura digital</span>
+            <span class="article-tag">Cloudflare Pages</span>
+            <span class="article-tag">gestão de tecnologia</span>
+            <span class="article-tag">tomada de decisão baseada em dados</span>
+        </div>
+
+        <div class="article-footer-nav">
+            <a href="/insights/diagnostico-deploy-travado/tecnico/" class="article-toggle">Prefere a versão técnica? →</a>
+        </div>
+    </article>
+
+    <footer class="footer">
+        <img src="/assets/images/logo-scindax.png" alt="Scindax" class="footer-brand-img">
+        <div class="footer-links">
+            <a href="/#hero">Início</a><a href="/#problem">O Problema</a><a href="/#journey">Jornada</a><a href="/#solutions">Soluções</a><a href="/#forwhom">Para quem</a><a href="/insights/">Insights</a><a href="mailto:contato@scindax.com.br">Contato</a>
+        </div>
+        <p>contato@scindax.com.br</p>
+        <p style="margin-top:0.5rem;">&copy; <span id="currentYear"></span> Scindax. Todos os direitos reservados.</p>
+    </footer>
+
+    <script src="/js/navigation.js" defer></script>
+    <script src="/js/main.js" defer></script>
+    <script src="/js/share.js" defer></script>
+</body>
+</html>

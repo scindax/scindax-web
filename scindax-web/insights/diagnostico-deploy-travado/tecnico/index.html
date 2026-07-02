@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Build travado em "Queued" no Cloudflare Pages: checklist de diagnóstico técnico | Scindax</title>
+    <meta name="description" content="Um passo a passo técnico para isolar falhas de deploy em pipelines Git-based: API do GitHub, cabeçalhos HTTP, cache de CDN e filas de build travadas.">
+    <meta name="keywords" content="Cloudflare Pages, CI/CD, deploy automation, GitHub API, cache HTTP, troubleshooting, DevOps, infraestrutura">
+    <meta name="author" content="Scindax">
+    <meta property="og:title" content="Build travado em &quot;Queued&quot; no Cloudflare Pages: checklist de diagnóstico técnico">
+    <meta property="og:description" content="Como isolar, camada por camada, uma falha de deploy silenciosa em um pipeline Git-based, sem depender do dashboard.">
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="https://scindax.com.br/insights/diagnostico-deploy-travado/tecnico/">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="theme-color" content="#0a0a0b">
+    <link rel="icon" href="/favicon.ico" sizes="any">
+    <link rel="icon" type="image/png" href="/assets/images/favicon-64.png">
+    <link rel="canonical" href="https://scindax.com.br/insights/diagnostico-deploy-travado/tecnico/">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body class="tech-page">
+
+    <nav class="navbar" id="navbar">
+        <a href="/" class="navbar-logo"><img src="/assets/images/logo-scindax.png" alt="Scindax" class="navbar-logo-img"></a>
+        <ul class="navbar-links" id="navLinks">
+            <li><a href="/#problem">O Problema</a></li>
+            <li><a href="/#journey">Jornada</a></li>
+            <li><a href="/#solutions">Soluções</a></li>
+            <li><a href="/#forwhom">Para quem</a></li>
+            <li><a href="/insights/">Insights</a></li>
+            <li><a href="#" class="navbar-cta ames-link" data-ames-link>AMES</a></li>
+        </ul>
+    </nav>
+
+    <p class="insights-breadcrumb"><a href="/insights/">Insights</a> / Diagnóstico de deploy travado / Técnico</p>
+
+    <article class="article">
+        <p class="article-meta"><span>02 Jul 2026</span><span>·</span><span>Tempo de leitura: 7 minutos</span><span>·</span><span>Diagnóstico</span></p>
+        <h1 class="section-title">Build travado em "Queued" no Cloudflare Pages: checklist de diagnóstico técnico</h1>
+        <p class="article-audience"><strong>Público:</strong> desenvolvedores, analistas de infraestrutura e profissionais técnicos que mantêm pipelines de deploy contínuo baseados em Git.</p>
+
+        <a href="/insights/diagnostico-deploy-travado/" class="article-toggle">← Versão para gestores</a>
+
+        <div class="article-body">
+            <p>Um push para <code>main</code> foi confirmado no repositório. Minutos depois, a página em produção continuava servindo a versão anterior, reproduzido em múltiplos dispositivos e em aba anônima, eliminando cache de navegador como causa.</p>
+            <p>Sem acesso ao dashboard da hospedagem no momento da investigação, o diagnóstico precisou ser feito inteiramente a partir de fora: API pública do Git host, cabeçalhos HTTP e renderização real da página.</p>
+            <p>Este post documenta o checklist usado para isolar a falha camada por camada, até identificar que o problema estava na fila de execução de build do Cloudflare Pages, não no código, não na integração, não no cache.</p>
+
+            <h2>Checklist de diagnóstico</h2>
+
+            <h3>1. API do Git host como fonte de verdade</h3>
+            <p><strong>Decisão:</strong> validar o estado do repositório remoto via API pública, independente do estado do Git local.</p>
+            <p><strong>Motivos:</strong> o <code>git status</code> local e o <code>git log</code> só confirmam o que a máquina local enxerga, não garantem que o remoto reflete o mesmo estado nem informam o timestamp real do push. A API pública do GitHub responde isso sem depender de sessão autenticada nem de cache local.</p>
+            <p><strong>Como funciona na prática:</strong></p>
+            <pre><code>curl -s https://api.github.com/repos/{owner}/{repo}/commits/{branch} \
+  | grep -E '"sha"|"date"'</code></pre>
+            <p>O retorno confirmou o SHA do commit mais recente na branch de produção e o timestamp exato do push, eliminando a hipótese de falha no envio.</p>
+
+            <h3>2. Cabeçalhos HTTP para separar cache de ausência real</h3>
+            <p><strong>Decisão:</strong> inspecionar <code>status code</code> e <code>Cache-Control</code> / <code>CF-Cache-Status</code> em vez de inferir o estado a partir da renderização.</p>
+            <p><strong>Motivos:</strong> um <code>404</code> genuíno e um <code>200</code> servido do cache de edge têm sintomas visuais parecidos (conteúdo "errado"), mas causas completamente diferentes. A resposta HTTP distingue os dois imediatamente.</p>
+            <pre><code>curl -sI https://dominio.com/rota-nova/
+# HTTP/1.1 404 Not Found  → rota nunca chegou ao servidor
+
+curl -sI https://dominio.com/rota-existente/
+# HTTP/1.1 200 OK
+# CF-Cache-Status: HIT    → servido do edge, possivelmente desatualizado</code></pre>
+            <p>A rota nova retornou 404 real (a build nunca publicou aquele arquivo). A rota existente retornou 200 com <code>CF-Cache-Status: HIT</code>, mesmo com <code>Cache-Control: public, max-age=0, must-revalidate</code>, indicando que o conteúdo servido não era o mais recente disponível na origem.</p>
+
+            <h3>3. Renderização real via headless browser</h3>
+            <p><strong>Decisão:</strong> carregar a página em um navegador headless e capturar o DOM pós-JavaScript, em vez de inspecionar apenas o HTML bruto retornado pelo <code>curl</code>.</p>
+            <p><strong>Motivos:</strong> páginas com conteúdo injetado via JS podem divergir do HTML inicial; uma captura visual real elimina falsos positivos e reproduz exatamente o que o usuário final vê.</p>
+            <pre><code>chrome --headless=new --disable-gpu --no-sandbox \
+  --window-size=1400,1200 \
+  --screenshot=out.png \
+  https://dominio.com/rota/</code></pre>
+            <p>O screenshot confirmou visualmente o que os cabeçalhos já indicavam: a versão publicada em produção não incluía as mudanças do commit mais recente.</p>
+
+            <h3>4. Checklist de integração Git → hospedagem</h3>
+            <p><strong>Decisão:</strong> validar, nesta ordem, (1) status da conexão do repositório, (2) branch de produção configurada, (3) escopo de acesso do GitHub App ao repositório.</p>
+            <p><strong>Motivos:</strong> essas três causas cobrem a maioria das falhas silenciosas de CI/CD baseado em Git App (em vez de webhook clássico) e são verificáveis diretamente no painel, sem precisar de acesso a logs de build.</p>
+            <p><strong>Como funciona na prática:</strong> as três checagens retornaram normais, repositório conectado, branch de produção correta (<code>main</code>), e o GitHub App com acesso válido ao repositório. Isso eliminou a camada de integração como causa.</p>
+
+            <h3>5. Deploy manual como teste controlado</h3>
+            <p><strong>Decisão:</strong> disparar manualmente um novo deployment (via "Retry deployment" / "Create deployment") e tratar o resultado como dado de diagnóstico, não como correção.</p>
+            <p><strong>Motivos:</strong> se o deploy manual completar, isola a falha no gatilho automático (webhook). Se travar do mesmo jeito, isola a falha na etapa de execução do build, descartando a hipótese de webhook quebrado.</p>
+            <p><strong>Como funciona na prática:</strong> o deploy manual permaneceu em status <code>Queued</code> indefinidamente, sem transicionar para <code>Building</code> e sem gerar log de erro, apontando para a fila de execução, não para o gatilho.</p>
+
+            <h2>Fluxo da pipeline e onde travou</h2>
+            <pre><code>git push origin main
+        ↓
+GitHub registra o commit (confirmado via API)
+        ↓
+Webhook/GitHub App notifica o Cloudflare Pages
+        ↓
+Deployment criado com status Queued
+        ↓
+        ✕  [trava aqui, nunca transiciona para Building]
+        ↓
+Build executa
+        ↓
+Deploy publicado
+        ↓
+Cache do edge invalidado</code></pre>
+
+            <h2>Impacto</h2>
+            <p>Tempo entre push e confirmação na API do GitHub: menos de 1 minuto. Tempo em <code>Queued</code> sem transicionar para <code>Building</code>: <strong>mais de 40 minutos</strong>, sem log de erro, sem timeout, sem notificação de falha.</p>
+
+            <h2>Lições aprendidas</h2>
+            <p><strong>1. Trate a pipeline como uma cadeia de estados observáveis.</strong><br>Cada etapa, como push, webhook, fila, build, deploy ou invalidação de cache, deveria ser inspecionável isoladamente. Quando não é, o diagnóstico vira adivinhação.</p>
+            <p><strong>2. Cache de CDN é um estado esperado, não um bug.</strong><br><code>CF-Cache-Status: HIT</code> com conteúdo desatualizado é o comportamento normal de servir do edge. O diagnóstico da causa raiz precisa vir de outra camada, não do cache em si.</p>
+            <p><strong>3. Prefira fontes autoritativas ao estado local.</strong><br>Comparar o Git local com a API pública do host remoto elimina hipóteses de sincronização antes de suspeitar da hospedagem.</p>
+            <p><strong>4. Ausência de erro também é um sinal.</strong><br>Um status que não transiciona (<code>Queued</code> parado) é, por si, um dado de diagnóstico. Aponta para bloqueio na camada de execução (ex: concorrência de build no plano, build anterior preso), não na de configuração.</p>
+
+            <h2>Notas técnicas adicionais</h2>
+            <ul>
+                <li>No plano gratuito do Cloudflare Pages, builds rodam com concorrência limitada. Um build anterior preso em execução pode bloquear a fila para os seguintes.</li>
+                <li>Antes de reconectar a integração Git do zero, verifique se há deployments anteriores presos em <code>Building</code> e cancele-os. Isso libera a fila sem precisar reautorizar o GitHub App.</li>
+                <li><code>CF-Cache-Status: HIT</code> não invalida a hipótese de deploy ausente. Sempre cruze com o status HTTP de uma rota nova, que não pode estar em cache por definição.</li>
+                <li>Para builds que ficam em <code>Queued</code> sem causa aparente na configuração, vale checar o status da plataforma antes de reautorizar integrações.</li>
+            </ul>
+            <ul class="article-resources">
+                <li><a href="https://developers.cloudflare.com/pages/configuration/git-integration/" target="_blank" rel="noopener noreferrer">Cloudflare Pages, Git integration</a></li>
+                <li><a href="https://developers.cloudflare.com/pages/platform/known-issues/" target="_blank" rel="noopener noreferrer">Cloudflare Pages, Known issues</a></li>
+                <li><a href="https://docs.github.com/en/rest/commits/commits" target="_blank" rel="noopener noreferrer">GitHub REST API, Commits</a></li>
+                <li><a href="https://www.cloudflarestatus.com/" target="_blank" rel="noopener noreferrer">Cloudflare Status</a></li>
+            </ul>
+        </div>
+
+        <div class="article-share-bar">
+            <span class="article-share-label">Compartilhar:</span>
+            <button type="button" class="share-btn share-btn-copy" data-share="copy" aria-label="Copiar link do artigo">
+                <svg viewBox="0 0 24 24" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"></path></svg>
+                <span class="share-btn-text">Copiar link</span>
+            </button>
+            <a href="#" class="share-btn share-btn-whatsapp" data-share="whatsapp" target="_blank" rel="noopener noreferrer" aria-label="Compartilhar no WhatsApp">
+                <svg viewBox="0 0 24 24" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"></path></svg>
+            </a>
+            <a href="#" class="share-btn share-btn-linkedin" data-share="linkedin" target="_blank" rel="noopener noreferrer" aria-label="Compartilhar no LinkedIn">in</a>
+            <a href="#" class="share-btn share-btn-facebook" data-share="facebook" target="_blank" rel="noopener noreferrer" aria-label="Compartilhar no Facebook">f</a>
+        </div>
+
+        <div class="article-tags">
+            <span class="article-tag">Cloudflare Pages</span>
+            <span class="article-tag">CI/CD</span>
+            <span class="article-tag">deploy automation</span>
+            <span class="article-tag">GitHub API</span>
+            <span class="article-tag">cache HTTP</span>
+            <span class="article-tag">troubleshooting</span>
+            <span class="article-tag">DevOps</span>
+            <span class="article-tag">infraestrutura</span>
+        </div>
+
+        <div class="article-footer-nav">
+            <a href="/insights/diagnostico-deploy-travado/" class="article-toggle">← Versão para gestores</a>
+        </div>
+    </article>
+
+    <footer class="footer">
+        <img src="/assets/images/logo-scindax.png" alt="Scindax" class="footer-brand-img">
+        <div class="footer-links">
+            <a href="/#hero">Início</a><a href="/#problem">O Problema</a><a href="/#journey">Jornada</a><a href="/#solutions">Soluções</a><a href="/#forwhom">Para quem</a><a href="/insights/">Insights</a><a href="mailto:contato@scindax.com.br">Contato</a>
+        </div>
+        <p>contato@scindax.com.br</p>
+        <p style="margin-top:0.5rem;">&copy; <span id="currentYear"></span> Scindax. Todos os direitos reservados.</p>
+    </footer>
+
+    <script src="/js/navigation.js" defer></script>
+    <script src="/js/main.js" defer></script>
+    <script src="/js/share.js" defer></script>
+</body>
+</html>
