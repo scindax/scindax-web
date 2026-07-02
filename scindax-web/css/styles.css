@@ -1109,3 +1109,64 @@ body {
     margin: 0 auto;
     line-height: 1.7;
 }
+
+/* ============================================================
+   Insights — variante Tech (tons mais azulados)
+   ============================================================ */
+body.tech-page {
+    background:
+        radial-gradient(ellipse 900px 500px at 50% 0%, rgba(58, 82, 240, 0.1), transparent 70%),
+        var(--bg-primary);
+}
+
+body.tech-page .insights-breadcrumb a {
+    color: var(--accent-glow);
+}
+
+body.tech-page .article-meta {
+    color: #8b98f5;
+}
+
+body.tech-page .article-toggle {
+    border-color: var(--accent-glow);
+    background: rgba(58, 82, 240, 0.14);
+}
+
+body.tech-page .article-toggle:hover {
+    background: rgba(58, 82, 240, 0.24);
+}
+
+body.tech-page .article-body h2,
+body.tech-page .article-body h3 {
+    color: #eef1ff;
+}
+
+body.tech-page .article-body pre {
+    background: #0c1230;
+    border-color: rgba(91, 111, 245, 0.35);
+}
+
+body.tech-page .article-body p code {
+    background: rgba(58, 82, 240, 0.14);
+    border-color: rgba(91, 111, 245, 0.32);
+    color: #c7d0ff;
+}
+
+body.tech-page .article-tag {
+    border-color: rgba(91, 111, 245, 0.35);
+    color: #b9c4ff;
+    background: rgba(58, 82, 240, 0.08);
+}
+
+body.tech-page .article-cta {
+    border-color: rgba(91, 111, 245, 0.35);
+    box-shadow: 0 0 50px rgba(58, 82, 240, 0.1);
+}
+
+body.tech-page .article-resources a {
+    color: #7c8ae0;
+}
+
+body.tech-page .article-resources a:hover {
+    color: #b9c4ff;
+}
