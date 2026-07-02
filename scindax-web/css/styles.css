@@ -1061,6 +1061,25 @@ body {
     }
 }
 
+.article-resources {
+    font-size: 0.85rem;
+    color: var(--text-tertiary);
+    margin-bottom: 1.75rem;
+}
+
+.article-resources li {
+    margin-bottom: 0.3rem;
+}
+
+.article-resources a {
+    color: var(--text-tertiary);
+    text-decoration-color: rgba(107, 107, 117, 0.5);
+}
+
+.article-resources a:hover {
+    color: var(--text-secondary);
+}
+
 /* Tech placeholder notice */
 .article-placeholder {
     text-align: center;

@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Como a Scindax construiu sua infraestrutura digital do zero — Versão Técnica | Scindax</title>
-    <meta name="description" content="Detalhes técnicos da infraestrutura da Scindax: Cloudflare Pages, Workers, D1, webhooks e arquitetura de API. Conteúdo em elaboração.">
-    <meta name="keywords" content="infraestrutura digital, cloudflare workers, cloudflare d1, webhooks, arquitetura de api, tecnologia para PMEs">
+    <title>Construindo uma infraestrutura serverless com Cloudflare: a arquitetura da Scindax</title>
+    <meta name="description" content="Como construímos site, API, banco de dados e sistema de gestão usando Cloudflare Workers, D1 e Pages — com custo próximo de zero e arquitetura escalável.">
+    <meta name="keywords" content="cloudflare workers, serverless, edge computing, cloudflare d1, api gateway, webhooks, tally, react, sqlite, infraestrutura, devops, arquitetura serverless">
     <meta name="author" content="Scindax">
-    <meta property="og:title" content="Como a Scindax construiu sua infraestrutura digital do zero — Versão Técnica">
-    <meta property="og:description" content="Detalhes técnicos da arquitetura da Scindax: Cloudflare Pages, Workers, D1 e webhooks. Conteúdo em elaboração.">
+    <meta property="og:title" content="Construindo uma infraestrutura serverless com Cloudflare: a arquitetura da Scindax">
+    <meta property="og:description" content="Como construímos site, API, banco de dados e sistema de gestão usando Cloudflare Workers, D1 e Pages — com custo próximo de zero e arquitetura escalável.">
     <meta property="og:type" content="article">
     <meta property="og:url" content="https://scindax.com.br/insights/infraestrutura-digital-scindax/tecnico/">
     <meta name="twitter:card" content="summary_large_image">
@@ -38,22 +38,232 @@
     <p class="insights-breadcrumb"><a href="/insights/">Insights</a> / Infraestrutura digital Scindax / Técnico</p>
 
     <article class="article">
-        <p class="article-meta"><span>Em elaboração</span><span>·</span><span>Infraestrutura</span></p>
-        <h1 class="section-title">Como a Scindax construiu sua infraestrutura digital do zero (versão técnica)</h1>
-        <p class="article-audience"><strong>Público:</strong> desenvolvedores e profissionais de infraestrutura que querem entender as decisões de arquitetura por trás da stack da Scindax.</p>
+        <p class="article-meta"><span>01 Jul 2026</span><span>·</span><span>Tempo de leitura: 8 minutos</span><span>·</span><span>Infraestrutura</span></p>
+        <h1 class="section-title">Construindo uma infraestrutura serverless com Cloudflare: a arquitetura da Scindax</h1>
+        <p class="article-audience"><strong>Público:</strong> desenvolvedores, arquitetos de software, CTOs e profissionais técnicos que querem entender como construir uma stack serverless completa com baixo custo.</p>
 
         <a href="/insights/infraestrutura-digital-scindax/" class="article-toggle">← Versão para gestores</a>
 
         <div class="article-body">
-            <div class="article-placeholder">
-                <div class="card-icon">
-                    <svg viewBox="0 0 24 24" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v4M12 17v4M5 12H1M23 12h-4M5.6 5.6l2.8 2.8M15.6 15.6l2.8 2.8M18.4 5.6l-2.8 2.8M8.4 15.6l-2.8 2.8"></path></svg>
-                </div>
-                <h2>Conteúdo técnico em elaboração</h2>
-                <p>Estamos preparando o detalhamento técnico desta arquitetura — stack, schema do D1, contrato da API, tratamento de webhooks e decisões de escala. Volte em breve.</p>
-            </div>
+            <p>O desafio era construir uma infraestrutura completa: site institucional, captura de leads via formulário, API própria, banco de dados relacional e um sistema de gestão interno — tudo com orçamento inicial zero e preparado para escalar.</p>
+            <p>A abordagem tradicional (contratar servidores, configurar VPS, gerenciar bancos de dados, lidar com SSL e CDN) demandaria investimento e manutenção constantes.</p>
+            <p>Optamos por uma arquitetura <strong>serverless-first</strong>, baseada em serviços com planos gratuitos generosos e escalabilidade horizontal. Este post detalha cada escolha técnica.</p>
 
-            <p>Enquanto isso, a <a href="/insights/infraestrutura-digital-scindax/">versão para gestores</a> já está disponível e cobre a visão geral da arquitetura, o fluxo de dados e os custos envolvidos.</p>
+            <h2>Decisões técnicas</h2>
+
+            <h3>1. Frontend: Cloudflare Pages + GitHub</h3>
+            <p><strong>Decisão:</strong> Cloudflare Pages para hospedagem, integrado ao GitHub para deploy contínuo.</p>
+            <p><strong>Motivos:</strong></p>
+            <ul>
+                <li>Deploy automático em cada push para <code>main</code>.</li>
+                <li>HTTPS gerenciado automaticamente.</li>
+                <li>CDN global sem configuração adicional.</li>
+            </ul>
+            <p>Exemplo de estrutura:</p>
+            <pre><code>scindax-web/
+├── index.html
+├── css/
+│   └── styles.css
+├── js/
+│   ├── particles.js
+│   ├── navigation.js
+│   └── main.js
+├── assets/
+├── robots.txt
+└── sitemap.xml</code></pre>
+
+            <h3>2. Formulário: Tally + Webhook</h3>
+            <p><strong>Decisão:</strong> Tally para criação do formulário, integração via webhook para nossa API.</p>
+            <p><strong>Motivos:</strong></p>
+            <ul>
+                <li>Criação rápida de formulários complexos.</li>
+                <li>Webhooks nativos disparam requisições HTTP para nosso Worker.</li>
+                <li>Exportação de PDF integrada.</li>
+            </ul>
+            <p>Payload recebido no Worker:</p>
+            <pre><code>{
+  "eventType": "FORM_RESPONSE",
+  "data": {
+    "submissionId": "OQYqDGp",
+    "fields": [
+      {
+        "label": "Nome completo",
+        "type": "INPUT_TEXT",
+        "value": "João Silva"
+      },
+      {
+        "label": "E-mail",
+        "type": "INPUT_EMAIL",
+        "value": "joao@empresa.com"
+      }
+    ]
+  }
+}</code></pre>
+
+            <h3>3. API Gateway: Cloudflare Worker</h3>
+            <p><strong>Decisão:</strong> Cloudflare Worker para construir a API REST, rodando no edge.</p>
+            <p><strong>Motivos:</strong></p>
+            <ul>
+                <li>Execução no edge: baixa latência.</li>
+                <li>Integração nativa com D1.</li>
+                <li>100.000 requisições/dia gratuitas.</li>
+            </ul>
+            <p>Estrutura do Worker (resumida):</p>
+            <pre><code>export default {
+  async fetch(request, env) {
+    const url = new URL(request.url);
+
+    const corsHeaders = {
+      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Headers": "Content-Type, x-api-key",
+      "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+    };
+
+    // Preflight
+    if (request.method === "OPTIONS") {
+      return new Response(null, { headers: corsHeaders });
+    }
+
+    // Webhook do Tally
+    if (request.method === "POST" && url.pathname === "/webhook/tally") {
+      const payload = await request.json();
+      const id = crypto.randomUUID();
+
+      await env.DB.prepare(`
+        INSERT INTO assessments (id, created_at, company_name, respondent_name, email, answers_json, tally_submission_id)
+        VALUES (?, ?, ?, ?, ?, ?, ?)
+      `).bind(
+        id,
+        payload.data.createdAt,
+        payload.data.fields.find(f => f.label === "Nome da empresa")?.value ?? null,
+        payload.data.fields.find(f => f.label === "Nome completo")?.value ?? null,
+        payload.data.fields.find(f => f.type === "INPUT_EMAIL")?.value ?? null,
+        JSON.stringify(payload),
+        payload.data.submissionId
+      ).run();
+
+      return Response.json({ success: true, id }, { headers: corsHeaders });
+    }
+
+    // Listagem protegida por API Key
+    if (request.method === "GET" && url.pathname === "/api/assessments") {
+      const apiKey = request.headers.get("x-api-key");
+      if (apiKey !== env.API_KEY) {
+        return new Response("Unauthorized", { status: 401, headers: corsHeaders });
+      }
+
+      const { results } = await env.DB.prepare(`
+        SELECT * FROM assessments ORDER BY created_at DESC
+      `).all();
+
+      return Response.json(results, { headers: corsHeaders });
+    }
+
+    return new Response("Not Found", { status: 404, headers: corsHeaders });
+  },
+};</code></pre>
+            <p><strong>Autenticação:</strong> API Key armazenada como Secret na Cloudflare, acessada via <code>env.API_KEY</code>.</p>
+
+            <h3>4. Banco de Dados: Cloudflare D1</h3>
+            <p><strong>Decisão:</strong> Cloudflare D1 (SQLite distribuído).</p>
+            <p><strong>Motivos:</strong></p>
+            <ul>
+                <li>Integração nativa com Workers (bindings diretos).</li>
+                <li>SQL completo com índices e transações.</li>
+                <li>Plano gratuito: 5 GB de armazenamento, 5 milhões de leituras/mês.</li>
+            </ul>
+            <p>Schema:</p>
+            <pre><code>CREATE TABLE assessments (
+    id TEXT PRIMARY KEY,
+    created_at TEXT NOT NULL,
+    company_name TEXT,
+    respondent_name TEXT,
+    email TEXT,
+    phone TEXT,
+    tally_submission_id TEXT,
+    answers_json TEXT NOT NULL,
+    status TEXT DEFAULT 'pending',
+    source TEXT DEFAULT 'tally',
+    metadata_json TEXT
+);
+
+CREATE INDEX idx_assessments_created_at ON assessments(created_at DESC);</code></pre>
+            <p>Binding no <code>wrangler.toml</code>:</p>
+            <pre><code>[[d1_databases]]
+binding = "DB"
+database_name = "scindax-ames"
+database_id = "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"</code></pre>
+
+            <h3>5. Sistema de Gestão</h3>
+            <p><strong>Decisão:</strong> desenvolvemos um dashboard interno em React.</p>
+            <p>Integração com a API:</p>
+            <pre><code>const API_BASE = process.env.AMES_API_URL;
+const API_KEY = process.env.AMES_API_KEY;
+
+export const amesApi = {
+  async getAssessments() {
+    const response = await fetch(`${API_BASE}/api/assessments`, {
+      headers: { 'x-api-key': API_KEY },
+    });
+    if (!response.ok) throw new Error(`Erro: ${response.status}`);
+    return response.json();
+  },
+};</code></pre>
+            <p><strong>Tratamento de erros:</strong> 401, 404, 500 e timeout são tratados com mensagens amigáveis.</p>
+
+            <h2>Fluxo arquitetural completo</h2>
+            <pre><code>[Usuário] → [Tally] → [Webhook] → [Worker API] → [D1 Database]
+                                           ↓
+[Manager] → [GET /api/assessments] → [Worker API] ← [D1 Database]</code></pre>
+
+            <h2>Impacto</h2>
+            <p>Custo mensal da infraestrutura nos primeiros meses: menos de <strong>R$ 50</strong>.</p>
+            <p>Os recursos permanecem majoritariamente no plano gratuito. O custo só aumenta quando a demanda cresce — e a arquitetura escala horizontalmente sem migrações.</p>
+
+            <h2>Lições aprendidas</h2>
+            <p><strong>1. Serverless-first reduz custo e complexidade inicial.</strong><br>Elimina a necessidade de gerenciar servidores, escalabilidade e disponibilidade. A plataforma cuida disso.</p>
+            <p><strong>2. Integração nativa entre serviços agiliza o desenvolvimento.</strong><br>Workers + D1 eliminam camadas de conexão. Não precisamos de ORMs nem drivers adicionais.</p>
+            <p><strong>3. Segurança deve ser nativa, não um complemento.</strong><br>API Key + CORS configurados corretamente já resolvem a maior parte dos riscos de exposição.</p>
+            <p><strong>4. Tenha um plano de migração desde o início.</strong><br>Usamos Google Sheets no MVP, mas a estrutura do banco já estava desenhada para substituí-lo. A migração foi planejada e executada sem perda de dados.</p>
+
+            <h2>Notas técnicas adicionais</h2>
+            <ul>
+                <li><strong>Versionamento de código:</strong> o Worker está versionado no Cloudflare, permitindo rollback.</li>
+                <li><strong>Ambientes:</strong> podemos ter versões de desenvolvimento e produção.</li>
+                <li><strong>Monitoramento:</strong> logs disponíveis no painel de Observabilidade do Cloudflare.</li>
+                <li><strong>Performance:</strong> cada requisição ao Worker é processada em &lt; 50ms.</li>
+            </ul>
+
+            <h2>Recursos complementares</h2>
+            <ul class="article-resources">
+                <li><a href="https://developers.cloudflare.com/workers/" target="_blank" rel="noopener noreferrer">Cloudflare Workers Docs</a></li>
+                <li><a href="https://developers.cloudflare.com/d1/" target="_blank" rel="noopener noreferrer">Cloudflare D1 Docs</a></li>
+                <li><a href="https://developers.cloudflare.com/pages/" target="_blank" rel="noopener noreferrer">Cloudflare Pages Docs</a></li>
+                <li><a href="https://tally.so/help/webhooks" target="_blank" rel="noopener noreferrer">Tally Webhooks Help</a></li>
+            </ul>
+        </div>
+
+        <div class="article-cta">
+            <p>Essa mesma lógica de organização e planejamento — aplicada aqui à nossa própria stack — é o que levamos para os processos, dados e decisões dos nossos clientes.</p>
+            <p><strong>Comece com a Avaliação de Maturidade Empresarial (AMES)</strong> — gratuita, rápida e reveladora.</p>
+            <a href="#" class="cta-btn-large ames-link" data-ames-link>Realizar minha AMES gratuitamente</a>
+        </div>
+
+        <p class="article-share">Gostou dessa arquitetura? Compartilhe com alguém do seu time de engenharia.</p>
+
+        <div class="article-tags">
+            <span class="article-tag">cloudflare workers</span>
+            <span class="article-tag">serverless</span>
+            <span class="article-tag">edge computing</span>
+            <span class="article-tag">cloudflare d1</span>
+            <span class="article-tag">api gateway</span>
+            <span class="article-tag">webhooks</span>
+            <span class="article-tag">tally</span>
+            <span class="article-tag">react</span>
+            <span class="article-tag">sqlite</span>
+            <span class="article-tag">infraestrutura</span>
+            <span class="article-tag">devops</span>
+            <span class="article-tag">arquitetura serverless</span>
         </div>
 
         <div class="article-footer-nav">
