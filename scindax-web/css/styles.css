@@ -759,14 +759,42 @@ body {
     }
 }
 
-/* Listing grid */
-.insights-list {
-    max-width: 800px;
-    margin: 0 auto;
-    padding: 1rem 2rem 6rem;
+/* Listing carousel */
+.insights-carousel {
+    max-width: 1200px;
+    margin: 1rem auto 6rem;
+    padding: 0 2rem;
+    overflow: hidden;
+    position: relative;
+    z-index: 1;
+    -webkit-mask-image: linear-gradient(90deg, transparent, black 4%, black 96%, transparent);
+    mask-image: linear-gradient(90deg, transparent, black 4%, black 96%, transparent);
+}
+
+.insights-carousel-track {
     display: flex;
-    flex-direction: column;
     gap: 1.5rem;
+    width: max-content;
+    animation: insights-scroll 38s linear infinite;
+}
+
+.insights-carousel:hover .insights-carousel-track {
+    animation-play-state: paused;
+}
+
+@keyframes insights-scroll {
+    from {
+        transform: translateX(0);
+    }
+    to {
+        transform: translateX(-50%);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .insights-carousel-track {
+        animation: none;
+    }
 }
 
 .insight-card {
@@ -775,6 +803,8 @@ body {
     border-radius: 12px;
     padding: 2rem;
     transition: all 0.4s var(--transition-smooth);
+    flex: 0 0 380px;
+    width: 380px;
 }
 
 .insight-card:hover {
@@ -839,12 +869,45 @@ body {
     border-color: rgba(91, 111, 245, 0.22);
 }
 
+/* Card de posts "Dicas" — fundo claro, igual ao da própria página */
+.insight-card.is-tips {
+    background: #f6f6f4;
+    border-color: #e2e1da;
+}
+
+.insight-card.is-tips .insight-card-meta {
+    color: #8f8f86;
+}
+
+.insight-card.is-tips .insight-card-title {
+    color: #171713;
+}
+
+.insight-card.is-tips .insight-card-excerpt {
+    color: #4a4a42;
+}
+
+.insight-card.is-tips .insight-version-link {
+    border-color: #dcdcd2;
+    color: #4a4a42;
+    background: #eeede8;
+}
+
+.insight-card.is-tips .insight-version-link:hover {
+    border-color: var(--accent-blue);
+    background: rgba(58, 82, 240, 0.1);
+    color: #171713;
+}
+
 @media (max-width: 768px) {
-    .insights-list {
-        padding: 1rem 1.25rem 4rem;
+    .insights-carousel {
+        padding: 0 1.25rem;
+        margin-bottom: 4rem;
     }
     .insight-card {
         padding: 1.5rem;
+        flex-basis: 82vw;
+        width: 82vw;
     }
 }
 
@@ -1044,6 +1107,123 @@ body {
     color: var(--text-tertiary);
     font-weight: 300;
     margin-bottom: 2.5rem;
+}
+
+/* Barra de compartilhamento */
+.article-share-bar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 0.85rem;
+    margin-bottom: 2.5rem;
+}
+
+.article-share-label {
+    font-size: 0.85rem;
+    color: var(--text-tertiary);
+    font-weight: 400;
+    margin-right: 0.15rem;
+}
+
+.share-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    border: 1px solid var(--border-subtle);
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.3s var(--transition-smooth);
+    position: relative;
+}
+
+.share-btn svg {
+    width: 16px;
+    height: 16px;
+    stroke: currentColor;
+    fill: none;
+}
+
+.share-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+}
+
+.share-btn-copy {
+    width: auto;
+    padding: 0 1.1rem;
+    border-radius: 20px;
+    gap: 0.45rem;
+    color: var(--accent-blue);
+    font-family: var(--font-inter);
+    font-size: 0.85rem;
+    font-weight: 500;
+}
+
+.share-btn-copy:hover {
+    border-color: var(--accent-glow);
+    background: rgba(58, 82, 240, 0.1);
+}
+
+.share-btn-copy.is-copied {
+    border-color: #35c46a;
+    color: #35c46a;
+}
+
+.share-btn-whatsapp {
+    background: #25d366;
+    border-color: #25d366;
+    color: #fff;
+}
+
+.share-btn-linkedin {
+    background: #0a66c2;
+    border-color: #0a66c2;
+    color: #fff;
+    font-weight: 700;
+    font-size: 0.82rem;
+    letter-spacing: -0.02em;
+}
+
+.share-btn-facebook {
+    background: #1877f2;
+    border-color: #1877f2;
+    color: #fff;
+    font-weight: 700;
+    font-size: 1rem;
+    font-family: Georgia, 'Times New Roman', serif;
+}
+
+.share-btn-whatsapp:hover,
+.share-btn-linkedin:hover,
+.share-btn-facebook:hover {
+    filter: brightness(1.12);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.35);
+}
+
+body.tech-page .share-btn-copy {
+    color: var(--accent-glow);
+}
+
+body.tips-page .article-share-label {
+    color: #8f8f86;
+}
+
+body.tips-page .share-btn-copy {
+    background: #eeede8;
+    border-color: #dcdcd2;
+    color: var(--accent-blue);
+}
+
+body.tips-page .share-btn {
+    background: #eeede8;
+    border-color: #dcdcd2;
+    color: #171713;
 }
 
 .article-footer-nav {
@@ -1264,8 +1444,12 @@ body.tips-page .article-cta {
     border-color: #e2e1da;
 }
 
-body.tips-page .article-cta p:first-child {
+body.tips-page .article-cta p {
     color: #4a4a42;
+}
+
+body.tips-page .article-cta strong {
+    color: #171713;
 }
 
 body.tips-page .cta-btn-large {
@@ -1295,4 +1479,26 @@ body.tips-page .article-resources a:hover {
 
 body.tips-page .article-footer-nav {
     border-top-color: #e2e1da;
+}
+
+/* ============================================================
+   Insights — fundo animado (rede de "neurônios")
+   ============================================================ */
+.insights-network {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+}
+
+.insights-network canvas {
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+
+.insights-page-header,
+.insights-carousel {
+    position: relative;
+    z-index: 1;
 }

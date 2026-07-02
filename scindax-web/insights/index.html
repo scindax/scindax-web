@@ -23,6 +23,8 @@
 </head>
 <body>
 
+    <div class="insights-network" id="insightsNetwork" aria-hidden="true"></div>
+
     <nav class="navbar" id="navbar">
         <a href="/" class="navbar-logo"><img src="/assets/images/logo-scindax.png" alt="Scindax" class="navbar-logo-img"></a>
         <ul class="navbar-links" id="navLinks">
@@ -41,33 +43,35 @@
         <p class="section-text">Conteúdos sobre como a Scindax constrói sua própria infraestrutura, processos e decisões — sempre em duas versões: uma para gestores, outra para quem coloca a mão na massa.</p>
     </header>
 
-    <main class="insights-list">
-        <article class="insight-card">
-            <p class="insight-card-meta"><span>02 Jul 2026</span><span>·</span><span>Dicas</span></p>
-            <h2 class="insight-card-title">10 ferramentas de IA que resolvem problemas reais na gestão de PMEs (e como usar cada uma)</h2>
-            <p class="insight-card-excerpt">Sem time de TI e sem orçamento de gigante: veja em qual tarefa do dia a dia cada ferramenta resolve um gargalo concreto, com exemplos práticos de uso.</p>
-            <div class="insight-card-versions">
-                <a href="/insights/10-ferramentas-ia-gestao-pmes/" class="insight-version-link">Ler artigo →</a>
-            </div>
-        </article>
-        <article class="insight-card">
-            <p class="insight-card-meta"><span>02 Jul 2026</span><span>·</span><span>Metodologia &amp; IA</span></p>
-            <h2 class="insight-card-title">Por que metodologia e IA não podem caminhar separadas em projetos complexos</h2>
-            <p class="insight-card-excerpt">Sem um processo claro, a IA generativa pode gerar mais desordem do que resolver. Veja a metodologia — e a esteira de governança — que a Scindax construiu para usar IA com segurança.</p>
-            <div class="insight-card-versions">
-                <a href="/insights/metodologia-ia-projetos-complexos/" class="insight-version-link">Versão para gestores →</a>
-                <a href="/insights/metodologia-ia-projetos-complexos/tecnico/" class="insight-version-link is-tech">Versão técnica →</a>
-            </div>
-        </article>
-        <article class="insight-card">
-            <p class="insight-card-meta"><span>01 Jul 2026</span><span>·</span><span>Infraestrutura</span></p>
-            <h2 class="insight-card-title">Como a Scindax construiu sua infraestrutura digital do zero (gastando quase nada)</h2>
-            <p class="insight-card-excerpt">Site, formulário de captação, API e banco de dados — tudo construído com ferramentas gratuitas ou de baixíssimo custo. Veja a arquitetura completa e o que aprendemos no caminho.</p>
-            <div class="insight-card-versions">
-                <a href="/insights/infraestrutura-digital-scindax/" class="insight-version-link">Versão para gestores →</a>
-                <a href="/insights/infraestrutura-digital-scindax/tecnico/" class="insight-version-link is-tech">Versão técnica →</a>
-            </div>
-        </article>
+    <main class="insights-carousel" id="insightsCarousel">
+        <div class="insights-carousel-track" id="insightsTrack">
+            <article class="insight-card is-tips">
+                <p class="insight-card-meta"><span>02 Jul 2026</span><span>·</span><span>Dicas</span></p>
+                <h2 class="insight-card-title">10 ferramentas de IA que resolvem problemas reais na gestão de PMEs (e como usar cada uma)</h2>
+                <p class="insight-card-excerpt">Sem time de TI e sem orçamento de gigante: veja em qual tarefa do dia a dia cada ferramenta resolve um gargalo concreto, com exemplos práticos de uso.</p>
+                <div class="insight-card-versions">
+                    <a href="/insights/10-ferramentas-ia-gestao-pmes/" class="insight-version-link">Ler artigo →</a>
+                </div>
+            </article>
+            <article class="insight-card">
+                <p class="insight-card-meta"><span>02 Jul 2026</span><span>·</span><span>Metodologia &amp; IA</span></p>
+                <h2 class="insight-card-title">Por que metodologia e IA não podem caminhar separadas em projetos complexos</h2>
+                <p class="insight-card-excerpt">Sem um processo claro, a IA generativa pode gerar mais desordem do que resolver. Veja a metodologia — e a esteira de governança — que a Scindax construiu para usar IA com segurança.</p>
+                <div class="insight-card-versions">
+                    <a href="/insights/metodologia-ia-projetos-complexos/" class="insight-version-link">Versão para gestores →</a>
+                    <a href="/insights/metodologia-ia-projetos-complexos/tecnico/" class="insight-version-link is-tech">Versão técnica →</a>
+                </div>
+            </article>
+            <article class="insight-card">
+                <p class="insight-card-meta"><span>01 Jul 2026</span><span>·</span><span>Infraestrutura</span></p>
+                <h2 class="insight-card-title">Como a Scindax construiu sua infraestrutura digital do zero (gastando quase nada)</h2>
+                <p class="insight-card-excerpt">Site, formulário de captação, API e banco de dados — tudo construído com ferramentas gratuitas ou de baixíssimo custo. Veja a arquitetura completa e o que aprendemos no caminho.</p>
+                <div class="insight-card-versions">
+                    <a href="/insights/infraestrutura-digital-scindax/" class="insight-version-link">Versão para gestores →</a>
+                    <a href="/insights/infraestrutura-digital-scindax/tecnico/" class="insight-version-link is-tech">Versão técnica →</a>
+                </div>
+            </article>
+        </div>
     </main>
 
     <footer class="footer">
@@ -81,5 +85,7 @@
 
     <script src="/js/navigation.js" defer></script>
     <script src="/js/main.js" defer></script>
+    <script src="/js/insights-carousel.js" defer></script>
+    <script src="/js/insights-network.js" defer></script>
 </body>
 </html>
