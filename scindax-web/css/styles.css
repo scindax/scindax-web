@@ -1921,6 +1921,15 @@ body.tutorial-page .article-resources a:hover { color: #b9c4ff; }
     max-width: 420px;
 }
 
+.tutorial-badge-alt-link {
+    color: var(--text-tertiary);
+    text-decoration-color: rgba(107, 107, 117, 0.4);
+}
+
+.tutorial-badge-alt-link:hover {
+    color: #b9c4ff;
+}
+
 @media (max-width: 768px) {
     .tutorial-progress-wrap { padding: 0.75rem 1.25rem; top: 56px; }
     .tutorial-badge-form { flex-direction: column; }

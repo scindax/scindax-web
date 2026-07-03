@@ -4,14 +4,19 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SCX Na Prática: implante um PDF Tool serverless com IA de borda, do zero — Scindax</title>
-    <meta name="description" content="Checklist interativo: crie um widget de validação, um namespace KV e um Worker com os bindings corretos, e publique uma stack serverless com IA de borda sem gastar em servidor. Conclua e ganhe o Selo SCX Builder.">
+    <meta name="description" content="Ative o modo builder: siga o checklist, publique sua própria stack serverless com IA de borda e ganhe o Selo SCX Builder para exibir no seu perfil. Aprender construindo, sem gastar nada.">
     <meta name="keywords" content="cloudflare workers, workers ai, wrangler cli, pdf.js, pdf-lib, edge computing, key-value store, deploy checklist, scx na prática">
     <meta name="author" content="Scindax">
     <meta property="og:title" content="SCX Na Prática: implante um PDF Tool serverless com IA de borda, do zero">
-    <meta property="og:description" content="Checklist interativo com comandos, wrangler.toml e verificação passo a passo. Conclua e ganhe o Selo SCX Builder.">
+    <meta property="og:description" content="Ative o modo builder 🛠️ Siga o checklist, publique sua própria stack serverless com IA e ganhe o Selo SCX Builder para exibir no seu perfil. Aprender construindo, sem gastar nada.">
     <meta property="og:type" content="article">
     <meta property="og:url" content="https://scindax.com.br/insights/scx-pdf-tool-custo-zero/tecnico/">
+    <meta property="og:image" content="https://scindax.com.br/assets/images/og-scx-na-pratica.png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:alt" content="SCX Na Prática — Implante um PDF Tool serverless com IA de borda">
     <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:image" content="https://scindax.com.br/assets/images/og-scx-na-pratica.png">
     <meta name="theme-color" content="#0a0a0b">
     <link rel="icon" href="/favicon.ico" sizes="any">
     <link rel="icon" type="image/png" href="/assets/images/favicon-64.png">
@@ -203,7 +208,7 @@ Blob gerado → download via elemento &lt;a download&gt;</code></pre>
             <p style="font-size:0.85rem; color:var(--text-tertiary); font-style:italic;">Este guia descreve arquitetura, configuração e deploy — não reproduz o código-fonte de negócio de nenhuma aplicação específica.</p>
         </div>
 
-        <div class="tutorial-badge-section is-locked" id="tutorialBadgeSection" data-badge-title="Selo SCX Builder" data-badge-achievement="Implantou uma stack serverless com IA de borda — widget de validação, key-value store e Worker publicados do zero, sem gastar um real.">
+        <div class="tutorial-badge-section is-locked" id="tutorialBadgeSection" data-badge-title="Selo SCX Builder" data-badge-achievement="Implantou uma stack serverless com IA de borda — widget de validação, key-value store e Worker publicados do zero, sem gastar um real." data-badge-caption="🛠️ Acabei de construir e publicar minha própria stack serverless com IA de borda, do zero, sem gastar nada em servidor. Segui o checklist do SCX Na Prática (Scindax Lab) e desbloqueei meu Selo SCX Builder. Quem mais topa o desafio? #SCXNaPrática #Serverless #CloudflareWorkers">
             <svg class="tutorial-badge-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="6"></circle><path d="M9 13.5 6 22l6-3 6 3-3-8.5"></path></svg>
             <h2>Selo SCX Builder</h2>
             <p id="tutorialLockedMsg" class="tutorial-locked-msg">Complete os 7 passos acima para desbloquear o seu selo.</p>
@@ -217,9 +222,10 @@ Blob gerado → download via elemento &lt;a download&gt;</code></pre>
                 <canvas id="badgeCanvas" width="1200" height="630"></canvas>
                 <div class="tutorial-badge-actions">
                     <button type="button" class="tutorial-badge-download-btn" id="badgeDownloadBtn">Baixar selo (PNG)</button>
-                    <button type="button" class="tutorial-badge-share-btn" id="badgeShareBtn">Compartilhar no LinkedIn</button>
+                    <button type="button" class="tutorial-badge-share-btn" id="badgeCaptionBtn">Copiar legenda para o LinkedIn</button>
                 </div>
-                <p class="tutorial-badge-hint">O LinkedIn não permite anexar imagem automaticamente por um link. Baixe o selo e anexe manualmente na hora de publicar — o botão acima só abre a tela de compartilhamento com o link deste tutorial.</p>
+                <p class="tutorial-badge-hint">Poste como <strong>foto</strong> no LinkedIn (não como link): 1. baixe o selo acima → 2. clique em "Iniciar publicação" e anexe a imagem → 3. cole a legenda copiada. Assim seu nome aparece em destaque — o card de link sozinho não mostra sua imagem personalizada.</p>
+                <p class="tutorial-badge-hint"><a href="#" class="tutorial-badge-alt-link" id="badgeShareBtn">ou compartilhar apenas o link do tutorial →</a></p>
             </div>
         </div>
 

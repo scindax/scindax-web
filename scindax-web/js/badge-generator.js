@@ -117,6 +117,28 @@
         return Promise.resolve();
     }
 
+    function copyToClipboard(text) {
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+            return navigator.clipboard.writeText(text);
+        }
+        return new Promise(function (resolve, reject) {
+            const temp = document.createElement('textarea');
+            temp.value = text;
+            temp.style.position = 'fixed';
+            temp.style.opacity = '0';
+            document.body.appendChild(temp);
+            temp.select();
+            try {
+                document.execCommand('copy');
+                resolve();
+            } catch (err) {
+                reject(err);
+            } finally {
+                document.body.removeChild(temp);
+            }
+        });
+    }
+
     function initBadge() {
         const section = document.getElementById('tutorialBadgeSection');
         const form = document.getElementById('tutorialBadgeForm');
@@ -127,11 +149,13 @@
         const preview = document.getElementById('badgePreview');
         const canvas = document.getElementById('badgeCanvas');
         const downloadBtn = document.getElementById('badgeDownloadBtn');
+        const captionBtn = document.getElementById('badgeCaptionBtn');
         const shareBtn = document.getElementById('badgeShareBtn');
         if (!nameInput || !generateBtn || !canvas) return;
 
         const badgeTitle = section.getAttribute('data-badge-title') || 'Selo SCX Builder';
         const achievement = section.getAttribute('data-badge-achievement') || '';
+        const caption = section.getAttribute('data-badge-caption') || '';
 
         function toggleGenerateEnabled() {
             generateBtn.disabled = nameInput.value.trim().length === 0;
@@ -169,8 +193,20 @@
             });
         }
 
+        if (captionBtn) {
+            captionBtn.addEventListener('click', function () {
+                const text = caption + '\n\n' + window.location.href;
+                const original = captionBtn.textContent;
+                copyToClipboard(text).then(function () {
+                    captionBtn.textContent = 'Legenda copiada!';
+                    setTimeout(function () { captionBtn.textContent = original; }, 2500);
+                });
+            });
+        }
+
         if (shareBtn) {
-            shareBtn.addEventListener('click', function () {
+            shareBtn.addEventListener('click', function (e) {
+                e.preventDefault();
                 const url = encodeURIComponent(window.location.href);
                 window.open(
                     'https://www.linkedin.com/sharing/share-offsite/?url=' + url,
