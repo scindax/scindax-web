@@ -2448,14 +2448,17 @@ body.tutorial-page .article-resources a:hover { color: #b9c4ff; }
     transform: translateY(0);
 }
 
-/* Botão para alternar o painel lateral (sempre visível em telas largas) */
+/* Botão para alternar o painel lateral (sempre visível em telas largas).
+   z-index acima do widget de gamificação (96) de propósito: os dois vivem
+   na borda direita e, se o painel de gamificação estiver aberto bem no meio
+   da tela, o alternador do glossário não pode ficar inacessível por baixo. */
 .glossary-toggle {
     display: none;
     position: fixed;
     right: 1.5rem;
     top: 50%;
     transform: translateY(-50%);
-    z-index: 91;
+    z-index: 97;
     width: 42px;
     height: 42px;
     border-radius: 50%;
@@ -2474,7 +2477,7 @@ body.tutorial-page .article-resources a:hover { color: #b9c4ff; }
     top: 50%;
     right: 4.5rem;
     transform: translateY(-50%) translateX(12px);
-    z-index: 90;
+    z-index: 98;
     width: 260px;
     max-height: 70vh;
     overflow-y: auto;

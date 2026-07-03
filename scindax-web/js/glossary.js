@@ -50,6 +50,19 @@
         alternador.addEventListener('click', function () {
             const aberto = painel.classList.toggle('glossary-panel--open');
             alternador.setAttribute('aria-expanded', String(aberto));
+
+            // Fecha o painel do widget de gamificação, se estiver aberto: os
+            // dois vivem na borda direita e não cabem confortavelmente juntos.
+            if (aberto) {
+                document.dispatchEvent(new CustomEvent('scxPainelAberto', { detail: { origem: 'glossary' } }));
+            }
+        });
+
+        document.addEventListener('scxPainelAberto', function (evento) {
+            if (evento.detail.origem !== 'glossary') {
+                painel.classList.remove('glossary-panel--open');
+                alternador.setAttribute('aria-expanded', 'false');
+            }
         });
     }
 

@@ -44,7 +44,7 @@
 
     <article class="article">
         <span class="insight-card-series-tag">🛠 SCX Na Prática</span>
-        <p class="article-meta"><span>03 Jul 2026</span><span>·</span><span>Tempo de leitura: 14 minutos</span><span>·</span><span>Tutorial interativo</span></p>
+        <p class="article-meta"><span>03 Jul 2026</span><span>·</span><span>Tempo de leitura: 17 minutos</span><span>·</span><span>Tutorial interativo</span></p>
         <h1 class="section-title">Implante um PDF Tool serverless com IA de borda, do zero, sem gastar um real</h1>
         <p class="article-audience"><strong>Público:</strong> desenvolvedores, arquitetos de software e profissionais técnicos que querem montar e publicar essa stack com as próprias mãos.</p>
 
@@ -95,13 +95,13 @@ pdf-lib monta o PDF final a partir do buffer original
 Blob gerado → download via elemento &lt;a download&gt;</code></pre>
 
             <h2>O número que resume a decisão</h2>
-            <p>A cota gratuita de inferência do modelo primário viabiliza, na ordem de milhares de chamadas por dia antes de qualquer custo aparecer — suficiente para cobrir o tráfego de uma ferramenta em fase de validação sem revisar orçamento.</p>
+            <p>A cota gratuita de inferência do modelo primário viabiliza, na ordem de milhares de chamadas por dia, antes de qualquer custo aparecer: suficiente para cobrir o tráfego de uma ferramenta em fase de validação sem revisar orçamento.</p>
         </div>
 
         <div class="tutorial-progress-wrap" id="tutorialProgressWrap">
             <div class="tutorial-progress-inner">
                 <div class="tutorial-progress-label">
-                    <span id="tutorialProgressLabel">0 de 7 passos concluídos (0%)</span>
+                    <span id="tutorialProgressLabel">0 de 10 passos concluídos (0%)</span>
                     <span>Selo SCX Builder ao final →</span>
                 </div>
                 <div class="tutorial-progress-track">
@@ -112,7 +112,7 @@ Blob gerado → download via elemento &lt;a download&gt;</code></pre>
 
         <div class="article-body">
             <h2>Checklist interativa: configure sua própria stack</h2>
-            <p>Abaixo está o passo a passo completo de deploy, do zero até o Worker publicado. Todos os valores reais foram substituídos por placeholders no padrão <code>XXX-seudominio</code>. Marque cada passo conforme for executando — o progresso não fica salvo, então vale fazer tudo em uma sentada.</p>
+            <p>Abaixo está o passo a passo completo de deploy, do zero até o Worker publicado, seguido de 3 problemas reais encontrados durante essa mesma implantação. Todos os valores reais foram substituídos por placeholders no padrão <code>XXX-seudominio</code>. Marque cada passo conforme for executando: o progresso não fica salvo, então vale fazer tudo em uma sentada.</p>
         </div>
 
         <ul class="tutorial-checklist" id="tutorialChecklist">
@@ -132,7 +132,7 @@ Blob gerado → download via elemento &lt;a download&gt;</code></pre>
                     <span class="tutorial-checkbox" aria-hidden="true"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg></span>
                     <span class="tutorial-step-body">
                         <span class="tutorial-step-title">2. Criar o namespace de key-value store (KV)</span>
-                        <span class="tutorial-step-desc">Pelo painel ou via CLI: <code>wrangler kv:namespace create "CACHE_KV"</code>. Guarde o <code>id</code> retornado — ele vai para o <code>wrangler.toml</code>. Esse KV guarda o contador de uso diário por IP e o cache de sugestões da IA.</span>
+                        <span class="tutorial-step-desc">Pelo painel ou via CLI: <code>wrangler kv:namespace create "CACHE_KV"</code>. Guarde o <code>id</code> retornado, ele vai para o <code>wrangler.toml</code>. Esse KV guarda o contador de uso diário por IP e o cache de sugestões da IA.</span>
                     </span>
                 </label>
             </li>
@@ -162,7 +162,7 @@ Blob gerado → download via elemento &lt;a download&gt;</code></pre>
                     <span class="tutorial-checkbox" aria-hidden="true"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg></span>
                     <span class="tutorial-step-body">
                         <span class="tutorial-step-title">5. Vincular o namespace KV ao Worker</span>
-                        <span class="tutorial-step-desc">Ainda em Settings → Bindings, adicione um binding do tipo <strong>KV Namespace</strong> e aponte o nome da variável (ex: <code>CACHE_KV</code>) para o namespace criado no passo 2. O nome precisa bater exatamente com o usado no código.</span>
+                        <span class="tutorial-step-desc">Ainda em Settings → Bindings, adicione um <span class="glossary-term" data-term="binding">binding</span> do tipo <strong>KV Namespace</strong> e aponte o nome da variável (ex: <code>CACHE_KV</code>) para o namespace criado no passo 2. O nome precisa bater exatamente com o usado no código.</span>
                     </span>
                 </label>
             </li>
@@ -172,7 +172,7 @@ Blob gerado → download via elemento &lt;a download&gt;</code></pre>
                     <span class="tutorial-checkbox" aria-hidden="true"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg></span>
                     <span class="tutorial-step-body">
                         <span class="tutorial-step-title">6. Vincular o binding de inferência de IA</span>
-                        <span class="tutorial-step-desc">Adicione outro binding — mas cuidado, o painel costuma mostrar três opções parecidas.</span>
+                        <span class="tutorial-step-desc">Adicione outro binding, mas cuidado: o painel costuma mostrar três opções parecidas.</span>
                         <span class="tutorial-step-note"><strong>Worker AI</strong> é o correto: permite chamar modelos direto do código (<code>env.AI.run()</code>). <strong>AI Search</strong> e <strong>AI Search Namespace</strong> são de outro produto, voltado a mecanismos de busca sobre dados próprios (RAG), e não servem para este caso.</span>
                     </span>
                 </label>
@@ -187,15 +187,48 @@ Blob gerado → download via elemento &lt;a download&gt;</code></pre>
                     </span>
                 </label>
             </li>
+            <li>
+                <label class="tutorial-step">
+                    <input type="checkbox">
+                    <span class="tutorial-checkbox" aria-hidden="true"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg></span>
+                    <span class="tutorial-step-body">
+                        <span class="tutorial-step-title">8. Resolver: dependência de CDN presa numa versão que não existe</span>
+                        <span class="tutorial-step-desc"><strong>Problema:</strong> uma URL de biblioteca apontando para uma versão específica que nunca foi publicada retorna <code>404</code>. Se essa biblioteca for essencial para o app iniciar (aqui, o PDF.js), o erro interrompe a inicialização inteira, silenciosamente, sem nenhum aviso visível na tela.<br><strong>Como resolver:</strong> antes de fixar uma versão, confirme que ela existe de fato no CDN (um <code>curl -I</code> na URL já basta) em vez de confiar de memória em um número de versão. Prefira sempre a versão estável mais recente publicada pelo próprio fornecedor.</span>
+                    </span>
+                </label>
+            </li>
+            <li>
+                <label class="tutorial-step">
+                    <input type="checkbox">
+                    <span class="tutorial-checkbox" aria-hidden="true"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg></span>
+                    <span class="tutorial-step-body">
+                        <span class="tutorial-step-title">9. Resolver: CSS sobrescrevendo o atributo <code>hidden</code></span>
+                        <span class="tutorial-step-desc"><strong>Problema:</strong> um componente com <code>display: flex</code> na sua classe continua visível mesmo com o atributo HTML <code>hidden</code> aplicado. A causa: uma regra de autor com a mesma especificidade da regra padrão do navegador para <code>[hidden]</code> sempre vence, então qualquer <code>display</code> definido depois na cascata reaparece o elemento.<br><strong>Como resolver:</strong> adicione uma regra global só uma vez: <code>[hidden] { display: none !important; }</code>. Resolve para qualquer componente do projeto, de uma vez.</span>
+                    </span>
+                </label>
+            </li>
+            <li>
+                <label class="tutorial-step">
+                    <input type="checkbox">
+                    <span class="tutorial-checkbox" aria-hidden="true"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg></span>
+                    <span class="tutorial-step-body">
+                        <span class="tutorial-step-title">10. Resolver: verificação externa bloqueando o que é 100% local</span>
+                        <span class="tutorial-step-desc"><strong>Problema:</strong> se o widget de validação humana ou a chamada ao Worker falhar (rede lenta, <span class="glossary-term" data-term="cors">CORS</span> bloqueando a origem, o próprio Worker fora do ar), e o código trata qualquer falha como bloqueio total, uma funcionalidade que não depende de rede nenhuma para de funcionar por causa de uma verificação que depende.<br><strong>Como resolver:</strong> só bloqueie quando o serviço responder explicitamente "não permitido" (aqui, um <code>429</code> real do Worker). Qualquer outra falha (rede, timeout, serviço indisponível) deve degradar graciosamente: seguir com um valor padrão local e avisar o usuário, nunca travar uma operação que não precisava da rede para existir.</span>
+                    </span>
+                </label>
+            </li>
         </ul>
 
         <div class="article-body">
             <h2>Lições técnicas</h2>
-            <p><strong>1. Prompt determinístico reduz custo de parsing.</strong> Forçar o modelo a responder em JSON fixo elimina heurísticas de extração de texto — menos código, menos casos de borda.</p>
+            <p><strong>1. Prompt determinístico reduz custo de parsing.</strong> Forçar o modelo a responder em JSON fixo elimina heurísticas de extração de texto, com menos código e menos casos de borda.</p>
             <p><strong>2. Hash como chave de cache é mais barato do que parece.</strong> Uma função de hash simples sobre o texto de entrada já resolve boa parte da repetição de chamadas.</p>
             <p><strong>3. Fallback em cadeia é mais barato do que redundância de infraestrutura.</strong> Um segundo modelo, mais um valor padrão gerado localmente, cobrem quase todos os cenários de falha sem exigir um segundo provedor.</p>
             <p><strong>4. Bindings com nomes parecidos escondem produtos diferentes.</strong> "AI", "AI Search" e "AI Search Namespace" não são a mesma coisa. Confira sempre a documentação do tipo exato de binding antes de assumir que está tudo certo.</p>
             <p><strong>5. Placeholder sem checklist de substituição vira bug de produção.</strong> Documentar exatamente onde cada valor sensível entra, e validar antes do deploy, evita o erro mais comum desse tipo de stack: publicar com uma secret ou uma URL ainda apontando para um valor de exemplo.</p>
+            <p><strong>6. Uma dependência externa quebrada pode travar o app inteiro, não só a funcionalidade dela.</strong> Se a inicialização depende de uma biblioteca que falhou ao carregar, o erro se propaga para tudo o que vem depois no mesmo fluxo, mesmo partes sem relação nenhuma com aquela biblioteca.</p>
+            <p><strong>7. Nem toda regra de CSS que parece inofensiva é inofensiva.</strong> Um <code>display</code> definido numa classe pode silenciosamente cancelar o comportamento padrão de um atributo HTML como <code>hidden</code>, e o bug só aparece bem depois, em produção.</p>
+            <p><strong>8. Cota e verificação de segurança nunca deveriam bloquear o que não depende delas.</strong> Trate falha de rede e falha de "não permitido" como dois eventos diferentes: só o segundo é motivo real para interromper um fluxo.</p>
 
             <h2>Notas técnicas adicionais / Documentação</h2>
             <ul class="article-resources">
@@ -203,15 +236,15 @@ Blob gerado → download via elemento &lt;a download&gt;</code></pre>
                 <li>Montagem e edição de PDF: documentação do pdf-lib.</li>
                 <li>Reordenação por arrastar-e-soltar: documentação do SortableJS.</li>
                 <li>Edge functions, key-value store e inferência de IA: documentação oficial da Cloudflare (Workers, Workers KV, Workers AI, Wrangler CLI).</li>
-                <li>Validação de bot invisível: documentação do Cloudflare Turnstile.</li>
+                <li>Validação de bot invisível: documentação do Cloudflare <span class="glossary-term" data-term="turnstile">Turnstile</span>.</li>
             </ul>
-            <p style="font-size:0.85rem; color:var(--text-tertiary); font-style:italic;">Este guia descreve arquitetura, configuração e deploy — não reproduz o código-fonte de negócio de nenhuma aplicação específica.</p>
+            <p style="font-size:0.85rem; color:var(--text-tertiary); font-style:italic;">Este guia descreve arquitetura, configuração e deploy, e não reproduz o código-fonte de negócio de nenhuma aplicação específica.</p>
         </div>
 
-        <div class="tutorial-badge-section is-locked" id="tutorialBadgeSection" data-badge-title="Selo SCX Builder" data-badge-achievement="Implantou uma stack serverless com IA de borda — widget de validação, key-value store e Worker publicados do zero, sem gastar um real." data-badge-caption="🛠️ Acabei de construir e publicar minha própria stack serverless com IA de borda, do zero, sem gastar nada em servidor. Segui o checklist do SCX Na Prática (Scindax Lab) e desbloqueei meu Selo SCX Builder. Quem mais topa o desafio? #SCXNaPrática #Serverless #CloudflareWorkers">
+        <div class="tutorial-badge-section is-locked" id="tutorialBadgeSection" data-badge-title="Selo SCX Builder" data-badge-achievement="Implantou uma stack serverless com IA de borda, do zero, sem gastar um real, e resolveu 3 falhas reais de produção no caminho." data-badge-caption="🛠️ Acabei de construir e publicar minha própria stack serverless com IA de borda, do zero, sem gastar nada em servidor, e ainda resolvi 3 falhas reais de produção no caminho. Segui o checklist do SCX Na Prática (Scindax Lab) e desbloqueei meu Selo SCX Builder. Quem mais topa o desafio? #SCXNaPrática #Serverless #CloudflareWorkers">
             <svg class="tutorial-badge-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="6"></circle><path d="M9 13.5 6 22l6-3 6 3-3-8.5"></path></svg>
             <h2>Selo SCX Builder</h2>
-            <p id="tutorialLockedMsg" class="tutorial-locked-msg">Complete os 7 passos acima para desbloquear o seu selo.</p>
+            <p id="tutorialLockedMsg" class="tutorial-locked-msg">Complete os 10 passos acima para desbloquear o seu selo.</p>
 
             <form class="tutorial-badge-form" id="tutorialBadgeForm" style="display:none;" onsubmit="return false;">
                 <input type="text" id="badgeNameInput" placeholder="Seu nome" maxlength="40" autocomplete="off">
@@ -224,7 +257,7 @@ Blob gerado → download via elemento &lt;a download&gt;</code></pre>
                     <button type="button" class="tutorial-badge-download-btn" id="badgeDownloadBtn">Baixar selo (PNG)</button>
                     <button type="button" class="tutorial-badge-share-btn" id="badgeCaptionBtn">Copiar legenda para o LinkedIn</button>
                 </div>
-                <p class="tutorial-badge-hint">Poste como <strong>foto</strong> no LinkedIn (não como link): 1. baixe o selo acima → 2. clique em "Iniciar publicação" e anexe a imagem → 3. cole a legenda copiada. Assim seu nome aparece em destaque — o card de link sozinho não mostra sua imagem personalizada.</p>
+                <p class="tutorial-badge-hint">Poste como <strong>foto</strong> no LinkedIn (não como link): 1. baixe o selo acima → 2. clique em "Iniciar publicação" e anexe a imagem → 3. cole a legenda copiada. Assim seu nome aparece em destaque, já que o card de link sozinho não mostra sua imagem personalizada.</p>
                 <p class="tutorial-badge-hint"><a href="#" class="tutorial-badge-alt-link" id="badgeShareBtn">ou compartilhar apenas o link do tutorial →</a></p>
             </div>
         </div>
@@ -253,6 +286,7 @@ Blob gerado → download via elemento &lt;a download&gt;</code></pre>
             <span class="article-tag">edge computing</span>
             <span class="article-tag">key-value store</span>
             <span class="article-tag">deploy checklist</span>
+            <span class="article-tag">troubleshooting</span>
             <span class="article-tag">scx na prática</span>
         </div>
 
@@ -275,5 +309,7 @@ Blob gerado → download via elemento &lt;a download&gt;</code></pre>
     <script src="/js/share.js" defer></script>
     <script src="/js/tutorial-checklist.js" defer></script>
     <script src="/js/badge-generator.js" defer></script>
+    <script src="/js/gamify-widget.js" defer></script>
+    <script src="/js/glossary.js" defer></script>
 </body>
 </html>

@@ -118,7 +118,12 @@
 
     function ligarAberturaDoPainel(cardInline, botaoFlutuante, painel) {
         const fechar = painel.querySelector('#gamifyPanelClose');
-        const abrir = function () { painel.classList.add('gamify-widget-panel--open'); };
+        const abrir = function () {
+            // Fecha o painel do glossário, se estiver aberto: os dois vivem na
+            // borda direita e não cabem confortavelmente abertos ao mesmo tempo.
+            document.dispatchEvent(new CustomEvent('scxPainelAberto', { detail: { origem: 'gamify' } }));
+            painel.classList.add('gamify-widget-panel--open');
+        };
         const esconder = function () { painel.classList.remove('gamify-widget-panel--open'); };
 
         cardInline.querySelector('#gamifyInlineBtn').addEventListener('click', abrir);
@@ -127,6 +132,10 @@
 
         document.addEventListener('keydown', function (evento) {
             if (evento.key === 'Escape') esconder();
+        });
+
+        document.addEventListener('scxPainelAberto', function (evento) {
+            if (evento.detail.origem !== 'gamify') esconder();
         });
     }
 
