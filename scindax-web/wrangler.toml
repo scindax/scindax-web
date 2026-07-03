@@ -20,7 +20,7 @@ binding = "AI"
 # criado com: wrangler kv:namespace create "SCX_KV"
 [[kv_namespaces]]
 binding = "SCX_KV"
-id = "SEU_KV_NAMESPACE_ID_AQUI"
+id = "4fddaf38cdca497592718242b110ed95"
 
 # A chave secreta do Turnstile NÃO deve ficar neste arquivo.
 # Configure-a com:
