@@ -1,1 +1,11 @@
+{
+  "proj": "SXW",
+  "modulos": {
+    "SITE01": "Site institucional Scindax",
+    "PDF01": "SCX PDF Tool — juntar PDF",
+    "PDF02": "SCX PDF Tool — dividir PDF",
+    "SEO01": "SEO on-page do site",
+    "SEC01": "Anti-abuso / rate-limit da ferramenta"
+  }
+}
 
