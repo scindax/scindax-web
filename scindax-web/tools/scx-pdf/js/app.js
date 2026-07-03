@@ -13,7 +13,7 @@ import { UploadManager } from './upload-manager.js';
 import { PageGrid } from './page-grid.js';
 import { UndoManager } from './undo-manager.js';
 import { construirPdf, extrairAmostraDeTexto } from './pdf-processor.js';
-import { checkLimit, getSuggestion, enviarFeedbackDeTreinamento, ErroAiClient } from './ai-client.js';
+import { checkLimit, getSuggestion, enviarFeedbackDeTreinamento } from './ai-client.js';
 import { baixarPdf, mostrarToast, sanitizarNomeArquivo, gerarNomeGenerico, gerarId } from './utils.js';
 
 const CHAVE_LOCALSTORAGE_BOAS_VINDAS = 'scxPdfWelcomeSeen';
@@ -303,28 +303,32 @@ async function aoClicarProcessarOuBaixar() {
 }
 
 /**
- * Executa o pipeline completo de processamento descrito em
- * SCX-SPEC-ARC-001, seção 3.2: verificação Turnstile, checagem de
- * limite diário, sugestão de nome via IA e construção do PDF.
+ * Executa o pipeline completo de processamento: tenta verificar a cota
+ * diária via Turnstile/Worker e, se conseguir, pede a sugestão de nome
+ * à IA — mas a montagem do PDF em si NUNCA é bloqueada por falha nessa
+ * verificação externa. Só o limite diário CONFIRMADO pelo Worker (HTTP
+ * 429) impede o processamento (SCX-SPEC-IMP-001, seção 13: "Caso o
+ * Worker esteja indisponível: Permitir geração do PDF").
  * @param {Array<any>} paginas lista ordenada de páginas a incluir no PDF
- * @returns {Promise<{ bytes: Uint8Array, sugestaoNome: string, amostraDeTexto: string } | null>} null se o fluxo foi interrompido
+ * @returns {Promise<{ bytes: Uint8Array, sugestaoNome: string, amostraDeTexto: string } | null>} null se o limite diário foi atingido
  */
 async function executarPipelineDeProcessamento(paginas) {
     mostrarProgresso('Verificando segurança...');
 
+    const { token, limiteExcedido } = await verificarCotaComTolerancia();
+
+    if (limiteExcedido) {
+        esconderProgresso();
+        mostrarToast('Limite diário atingido. Volte amanhã para usar novamente.', 'warning');
+        return null;
+    }
+
     try {
-        const token = await obterTokenTurnstile();
-        const limite = await checkLimit(token);
-
-        if (!limite.allowed) {
-            esconderProgresso();
-            mostrarToast(limite.message || 'Limite diário atingido. Volte amanhã para usar novamente.', 'warning');
-            return null;
-        }
-
         atualizarEtapaDeProgresso('Gerando sugestão de nome...');
         const amostraDeTexto = await extrairAmostraDeTexto(paginas, estadoApp.registroArquivos);
-        const sugestaoNome = await obterSugestaoDeNomeComFallback(amostraDeTexto, token);
+        const sugestaoNome = token
+            ? await obterSugestaoDeNomeComFallback(amostraDeTexto, token)
+            : gerarNomeGenerico();
 
         atualizarEtapaDeProgresso('Montando seu PDF...');
         const bytes = await construirPdf(paginas, estadoApp.registroArquivos);
@@ -333,8 +337,31 @@ async function executarPipelineDeProcessamento(paginas) {
         return { bytes, sugestaoNome, amostraDeTexto };
     } catch (erro) {
         esconderProgresso();
-        tratarErroDoPipeline(erro);
+        console.error('Falha ao montar o PDF:', erro);
+        mostrarToast('Não foi possível montar o PDF. Verifique se os arquivos ainda estão válidos e tente novamente.', 'error');
         return null;
+    }
+}
+
+/**
+ * Tenta obter um token do Turnstile e checar a cota diária no Worker.
+ * Qualquer falha nessa etapa (Turnstile bloqueado, Worker fora do ar,
+ * CORS, rede) É TOLERADA: o processamento local continua normalmente,
+ * apenas sem sugestão de nome por IA. Somente uma resposta explícita
+ * do Worker dizendo "não permitido" (HTTP 429) é tratada como bloqueio
+ * real.
+ * @param {Array<any>} paginas
+ * @returns {Promise<{ token: string|null, limiteExcedido: boolean }>}
+ */
+async function verificarCotaComTolerancia() {
+    try {
+        const token = await obterTokenTurnstile();
+        const limite = await checkLimit(token);
+        return { token, limiteExcedido: !limite.allowed };
+    } catch (erro) {
+        console.warn('Verificação de cota indisponível; seguindo com processamento local:', erro);
+        mostrarToast('Não foi possível verificar a cota diária agora — seu PDF será gerado normalmente, com um nome genérico.', 'warning');
+        return { token: null, limiteExcedido: false };
     }
 }
 
@@ -359,22 +386,6 @@ async function obterSugestaoDeNomeComFallback(amostraDeTexto, token) {
         mostrarToast('A sugestão de nome não pôde ser carregada, mas seu PDF está pronto com um nome genérico.', 'warning');
         return gerarNomeGenerico();
     }
-}
-
-/**
- * Traduz erros do pipeline (majoritariamente do ai-client) em toasts
- * compreensíveis, seguindo a tabela de fallbacks de SCX-SPEC-AI-001,
- * seção 7. Falhas na verificação Turnstile interrompem o fluxo; as
- * demais são absorvidas antes de chegar aqui.
- * @param {Error} erro
- */
-function tratarErroDoPipeline(erro) {
-    if (erro instanceof ErroTurnstileLocal || (erro instanceof ErroAiClient && erro.codigo === 'turnstile_invalido')) {
-        mostrarToast('Falha na verificação humana. Tente novamente.', 'error');
-        return;
-    }
-
-    mostrarToast('Não foi possível verificar o limite diário no momento. Tente novamente em instantes.', 'error');
 }
 
 /**
