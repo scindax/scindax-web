@@ -1,0 +1,854 @@
+:Tela de Gamificação do Tutorial:index.html
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Desafio Scindax SCX: PDF Tool Serverless</title>
+    <!-- Tailwind CSS para agilidade visual -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons para interface profissional de Dev -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&family=Plus+Jakarta+Sans:wght@300;400;600;700;800&display=swap');
+        
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #0b0f19;
+            color: #f3f4f6;
+        }
+        
+        .code-font {
+            font-family: 'Fira Code', monospace;
+        }
+
+        /* Animação de Float de XP */
+        @keyframes xpFloat {
+            0% {
+                transform: translateY(0) scale(0.8);
+                opacity: 0;
+            }
+            15% {
+                transform: translateY(-15px) scale(1.2);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-50px) scale(1);
+                opacity: 0;
+            }
+        }
+        .xp-particle {
+            position: absolute;
+            animation: xpFloat 1.2s cubic-bezier(0.18, 0.89, 0.32, 1.28) forwards;
+            pointer-events: none;
+            z-index: 100;
+        }
+
+        /* Glow dinâmico de Level Up */
+        @keyframes levelUpGlow {
+            0%, 100% { box-shadow: 0 0 5px rgba(59, 130, 246, 0.5); }
+            50% { box-shadow: 0 0 25px rgba(59, 130, 246, 0.9), 0 0 40px rgba(147, 51, 234, 0.6); }
+        }
+        .levelup-active {
+            animation: levelUpGlow 2s infinite ease-in-out;
+        }
+
+        /* Confetes CSS para o Certificado */
+        @keyframes confettiFall {
+            0% { transform: translateY(-10px) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+        }
+        .confetti {
+            position: fixed;
+            width: 10px;
+            height: 10px;
+            background-color: #3b82f6;
+            animation: confettiFall 3s linear forwards;
+            pointer-events: none;
+            z-index: 999;
+        }
+
+        /* Linha guia de progresso na barra lateral */
+        .step-line-active {
+            background: linear-gradient(to bottom, #3b82f6, #8b5cf6);
+            transition: height 0.5s ease-in-out;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0f172a;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #1e293b;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #334155;
+        }
+    </style>
+</head>
+<body class="overflow-x-hidden antialiased">
+
+    <!-- HUD SUPERIOR (Painel de Status Fixo) -->
+    <header class="fixed top-0 left-0 right-0 h-16 bg-[#0f172a]/95 border-b border-slate-800 backdrop-blur-md z-50 flex items-center justify-between px-4 lg:px-8 shadow-lg">
+        <!-- Logo e Status -->
+        <div class="flex items-center gap-3">
+            <div class="bg-blue-600/20 text-blue-400 p-2 rounded-lg border border-blue-500/30">
+                <i data-lucide="terminal" class="w-5 h-5"></i>
+            </div>
+            <div>
+                <div class="flex items-center gap-2">
+                    <span class="text-xs font-semibold tracking-wider text-slate-400 uppercase">Operação</span>
+                    <span class="text-xs bg-indigo-500/20 text-indigo-300 px-2 py-0.5 rounded-full border border-indigo-500/20 font-mono">SCX-PDF-TOOL</span>
+                </div>
+                <h2 class="text-sm font-bold text-white leading-tight">Serverless IA de Borda</h2>
+            </div>
+        </div>
+
+        <!-- Barra de Progresso Centralizada (Foca o Efeito Zeigarnik) -->
+        <div class="hidden md:flex flex-col items-center flex-1 max-w-md mx-8">
+            <div class="flex justify-between w-full text-xs mb-1">
+                <span class="text-slate-400 font-medium">Progresso da Implantação</span>
+                <span class="text-blue-400 font-bold font-mono" id="hud-percentage">0%</span>
+            </div>
+            <div class="w-full bg-slate-800 h-2 rounded-full overflow-hidden border border-slate-700">
+                <div id="hud-progress-bar" class="w-0 h-full bg-gradient-to-r from-blue-500 to-indigo-500 rounded-full transition-all duration-500"></div>
+            </div>
+        </div>
+
+        <!-- Indicador de Rank e XP (Visual Dopamina) -->
+        <div class="flex items-center gap-4">
+            <div class="text-right">
+                <div class="text-[10px] text-slate-400 uppercase tracking-widest font-bold">Nível Atual</div>
+                <div class="text-sm font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-300" id="hud-rank">Dev Júnior</div>
+            </div>
+            
+            <div class="relative bg-slate-900 border border-slate-800 rounded-xl p-2 px-3 flex items-center gap-2" id="xp-container">
+                <span class="text-amber-400 font-extrabold text-sm font-mono" id="hud-xp-display">0</span>
+                <span class="text-[10px] text-slate-500 font-bold font-mono">/300 XP</span>
+                <div class="absolute -bottom-1 -right-1 bg-blue-600 text-[9px] px-1.5 py-0.2 rounded-md font-bold text-white shadow-md border border-blue-400" id="badge-lvl">LVL 1</div>
+            </div>
+        </div>
+    </header>
+
+    <!-- CONTAINER PRINCIPAL -->
+    <div class="max-w-7xl mx-auto px-4 lg:px-8 pt-24 pb-20 grid grid-cols-1 lg:grid-cols-4 gap-8">
+        
+        <!-- SIDEBAR DE NAVEGAÇÃO DOS PASSOS (Barra Lateral Interativa) -->
+        <aside class="lg:col-span-1 lg:sticky lg:top-24 h-fit bg-[#0f172a] border border-slate-800 rounded-2xl p-6 shadow-xl order-2 lg:order-1">
+            <h3 class="text-sm font-bold text-slate-300 uppercase tracking-wider mb-4 flex items-center gap-2">
+                <i data-lucide="map" class="w-4 h-4 text-indigo-400"></i> Mapa de Missões
+            </h3>
+            
+            <div class="relative pl-4 space-y-8 before:absolute before:left-2 before:top-2 before:bottom-2 before:w-0.5 before:bg-slate-800" id="steps-navigation">
+                <!-- Linha ativa dinâmica -->
+                <div id="step-active-line" class="absolute left-2 top-2 w-0.5 bg-gradient-to-b from-blue-500 to-indigo-500 transition-all duration-300" style="height: 0px;"></div>
+
+                <!-- Passo 1 -->
+                <div class="relative flex items-start gap-3 group cursor-pointer" onclick="scrollToElement('secao-passo-1')">
+                    <div id="marker-passo-1" class="absolute -left-[21px] w-4.5 h-4.5 rounded-full border-2 border-slate-700 bg-slate-950 flex items-center justify-center transition-all duration-300 text-[10px] text-slate-500 font-bold z-10">1</div>
+                    <div>
+                        <h4 class="text-sm font-semibold text-slate-400 group-hover:text-blue-400 transition-colors" id="nav-title-passo-1">Setup do Ambiente</h4>
+                        <p class="text-xs text-slate-500 font-mono">+100 XP • Iniciar</p>
+                    </div>
+                </div>
+
+                <!-- Passo 2 -->
+                <div class="relative flex items-start gap-3 group cursor-pointer" onclick="scrollToElement('secao-passo-2')">
+                    <div id="marker-passo-2" class="absolute -left-[21px] w-4.5 h-4.5 rounded-full border-2 border-slate-700 bg-slate-950 flex items-center justify-center transition-all duration-300 text-[10px] text-slate-500 font-bold z-10">2</div>
+                    <div>
+                        <h4 class="text-sm font-semibold text-slate-400 group-hover:text-blue-400 transition-colors" id="nav-title-passo-2">IA de Borda (Edge)</h4>
+                        <p class="text-xs text-slate-500 font-mono">+100 XP • Playroom</p>
+                    </div>
+                </div>
+
+                <!-- Passo 3 -->
+                <div class="relative flex items-start gap-3 group cursor-pointer" onclick="scrollToElement('secao-passo-3')">
+                    <div id="marker-passo-3" class="absolute -left-[21px] w-4.5 h-4.5 rounded-full border-2 border-slate-700 bg-slate-950 flex items-center justify-center transition-all duration-300 text-[10px] text-slate-500 font-bold z-10">3</div>
+                    <div>
+                        <h4 class="text-sm font-semibold text-slate-400 group-hover:text-blue-400 transition-colors" id="nav-title-passo-3">Deploy Serverless</h4>
+                        <p class="text-xs text-slate-500 font-mono">+100 XP • Produção</p>
+                    </div>
+                </div>
+
+                <!-- Certificação -->
+                <div class="relative flex items-start gap-3 group cursor-pointer" onclick="scrollToElement('secao-certificacao')">
+                    <div id="marker-certificacao" class="absolute -left-[21px] w-4.5 h-4.5 rounded-full border-2 border-slate-700 bg-slate-950 flex items-center justify-center transition-all duration-300 text-[10px] text-slate-500 font-bold z-10">🏆</div>
+                    <div>
+                        <h4 class="text-sm font-semibold text-slate-400 group-hover:text-amber-400 transition-colors" id="nav-title-certificacao">Selo Scindax</h4>
+                        <p class="text-xs text-slate-500 font-mono">Recompensa Final</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Mini Painel de Estatísticas -->
+            <div class="mt-8 pt-6 border-t border-slate-800 space-y-3">
+                <div class="flex justify-between items-center text-xs text-slate-400">
+                    <span>Missões Completas:</span>
+                    <span class="font-bold text-white font-mono" id="stats-missions">0 / 3</span>
+                </div>
+                <div class="flex justify-between items-center text-xs text-slate-400">
+                    <span>Dificuldade:</span>
+                    <span class="font-bold text-amber-400">Intermediário</span>
+                </div>
+                <div class="flex justify-between items-center text-xs text-slate-400">
+                    <span>Recompensa:</span>
+                    <span class="font-bold text-emerald-400 flex items-center gap-1">
+                        <i data-lucide="award" class="w-3.5 h-3.5"></i> Certificado Dev-AI
+                    </span>
+                </div>
+            </div>
+        </aside>
+
+        <!-- ARTIGO PRINCIPAL (SEO FRIENDLY + CAMADA DE GAMIFICAÇÃO) -->
+        <main class="lg:col-span-3 space-y-12 order-1 lg:order-2">
+            
+            <!-- Cabeçalho do Artigo -->
+            <div class="bg-gradient-to-br from-slate-900 to-[#1e293b]/30 border border-slate-800/80 rounded-3xl p-6 lg:p-10 shadow-2xl relative overflow-hidden">
+                <div class="absolute top-0 right-0 w-96 h-96 bg-blue-600/10 rounded-full blur-3xl pointer-events-none"></div>
+                <div class="absolute bottom-0 left-0 w-64 h-64 bg-indigo-600/5 rounded-full blur-2xl pointer-events-none"></div>
+
+                <div class="flex items-center gap-3 mb-4">
+                    <span class="text-xs font-bold px-3 py-1 bg-blue-500/10 border border-blue-500/20 text-blue-400 rounded-full uppercase tracking-wider">Custo Zero</span>
+                    <span class="text-xs font-bold px-3 py-1 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 rounded-full uppercase tracking-wider">Prático</span>
+                </div>
+                
+                <h1 class="text-3xl lg:text-4xl font-extrabold text-white tracking-tight leading-tight mb-4">
+                    SCX Na Prática: Implante um <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-indigo-400 to-purple-400">PDF Tool Serverless</span> com IA de Borda do Zero
+                </h1>
+                
+                <p class="text-slate-300 text-base lg:text-lg font-light leading-relaxed mb-6">
+                    Aprenda a subir uma ferramenta inteligente de extração e manipulação de PDFs que roda diretamente no navegador do usuário (Client-Side), tirando a carga pesada do seu servidor e reduzindo o custo operacional a <strong class="text-emerald-400">absolutamente zero</strong>.
+                </p>
+
+                <div class="flex flex-wrap items-center gap-6 text-sm text-slate-400 border-t border-slate-800 pt-6">
+                    <div class="flex items-center gap-2">
+                        <div class="w-8 h-8 rounded-full bg-indigo-600 flex items-center justify-center font-bold text-white text-xs">SX</div>
+                        <span>Por <strong>Time Técnico Scindax</strong></span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <i data-lucide="clock" class="w-4 h-4"></i>
+                        <span>12 min de leitura técnica</span>
+                    </div>
+                    <div class="flex items-center gap-2 text-indigo-400">
+                        <i data-lucide="sparkles" class="w-4 h-4"></i>
+                        <span>Camada interativa ativa</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PASSO 1 -->
+            <section id="secao-passo-1" class="bg-slate-900/60 border border-slate-800 rounded-2xl p-6 lg:p-8 space-y-6 transition-all duration-300">
+                <div class="flex items-start justify-between gap-4">
+                    <div class="space-y-1">
+                        <span class="text-xs font-bold text-blue-400 uppercase tracking-widest font-mono">Módulo 01 / 03</span>
+                        <h2 class="text-2xl font-bold text-white flex items-center gap-2">
+                            <span class="w-7 h-7 rounded-lg bg-blue-500/20 text-blue-400 flex items-center justify-center text-sm font-bold border border-blue-500/20">1</span>
+                            Preparação do Ambiente de Borda
+                        </h2>
+                    </div>
+                    <div class="hidden sm:block bg-slate-950 border border-slate-800 px-3 py-1.5 rounded-xl text-center">
+                        <span class="block text-[10px] text-slate-500 font-bold uppercase">Recompensa</span>
+                        <span class="text-xs font-mono text-emerald-400 font-bold">+100 XP</span>
+                    </div>
+                </div>
+
+                <p class="text-slate-300 leading-relaxed text-sm lg:text-base">
+                    Para começarmos com o pé direito, precisamos inicializar nosso SDK da Scindax e preparar a CDN de borda que trará os modelos leves de IA direto para o ecossistema do navegador. Copie o script de bootstrapping abaixo e adicione na tag <code class="code-font text-pink-400 bg-slate-950 px-1.5 py-0.5 rounded border border-slate-800 text-xs">&lt;head&gt;</code> do seu arquivo HTML.
+                </p>
+
+                <!-- Bloco de Código com Botão de Ação -->
+                <div class="relative bg-slate-950 border border-slate-800 rounded-xl overflow-hidden shadow-inner group">
+                    <div class="absolute right-3 top-3 z-10 flex items-center gap-2">
+                        <!-- Botão Dinâmico de Copiar com recompensa de XP -->
+                        <button id="btn-copy-passo-1" onclick="executarCopia('npm install @scindax/pdf-core @edge-ai/onnx-runtime', 'passo-1', 100)" class="btn-action bg-slate-900 hover:bg-slate-800 border border-slate-700/80 hover:border-blue-500 text-slate-300 hover:text-blue-400 font-medium px-3.5 py-2 rounded-lg text-xs flex items-center gap-2 transition-all shadow-md">
+                            <i data-lucide="copy" class="w-4 h-4"></i>
+                            <span id="txt-copy-passo-1">Copiar Dependências</span>
+                        </button>
+                    </div>
+                    <div class="flex items-center justify-between px-4 py-2 border-b border-slate-800 bg-slate-900/50">
+                        <div class="flex items-center gap-1.5">
+                            <span class="w-2.5 h-2.5 rounded-full bg-red-500"></span>
+                            <span class="w-2.5 h-2.5 rounded-full bg-yellow-500"></span>
+                            <span class="w-2.5 h-2.5 rounded-full bg-green-500"></span>
+                        </div>
+                        <span class="text-xs text-slate-500 font-mono">Terminal Bash</span>
+                    </div>
+                    <div class="p-5 overflow-x-auto text-sm code-font text-slate-300">
+                        <span class="text-slate-500">$</span> npm install @scindax/pdf-core @edge-ai/onnx-runtime
+                    </div>
+                </div>
+
+                <div class="p-4 bg-blue-950/20 border border-blue-900/30 rounded-xl flex items-start gap-3">
+                    <i data-lucide="info" class="w-5 h-5 text-blue-400 shrink-0 mt-0.5"></i>
+                    <p class="text-xs text-slate-400 leading-relaxed">
+                        Ao baixar essas dependências, você garante que o fatiador de PDFs e os binários em WebAssembly (Wasm) estejam prontos para realizar inferências locais no hardware do cliente.
+                    </p>
+                </div>
+            </section>
+
+            <!-- PASSO 2 (O PLAYGROUND DE VALOR IMEDIATO - "DOPAMINE BOOSTER") -->
+            <section id="secao-passo-2" class="bg-slate-900/60 border border-slate-800 rounded-2xl p-6 lg:p-8 space-y-6 transition-all duration-300">
+                <div class="flex items-start justify-between gap-4">
+                    <div class="space-y-1">
+                        <span class="text-xs font-bold text-indigo-400 uppercase tracking-widest font-mono">Módulo 02 / 03</span>
+                        <h2 class="text-2xl font-bold text-white flex items-center gap-2">
+                            <span class="w-7 h-7 rounded-lg bg-indigo-500/20 text-indigo-400 flex items-center justify-center text-sm font-bold border border-indigo-500/20">2</span>
+                            Playground Interativo: Executando a IA de Borda
+                        </h2>
+                    </div>
+                    <div class="hidden sm:block bg-slate-950 border border-slate-800 px-3 py-1.5 rounded-xl text-center">
+                        <span class="block text-[10px] text-slate-500 font-bold uppercase">Recompensa</span>
+                        <span class="text-xs font-mono text-emerald-400 font-bold">+100 XP</span>
+                    </div>
+                </div>
+
+                <p class="text-slate-300 leading-relaxed text-sm lg:text-base">
+                    Para entender o poder do WebAssembly trabalhando em conjunto com os modelos locais, vamos simular a compilação do seu script de IA diretamente abaixo. Teste o nosso <strong class="text-indigo-400">Sandbox Scindax</strong> para extrair as chaves estruturadas de metadados de um PDF mock.
+                </p>
+
+                <!-- Sandbox Interativo da IA de Borda -->
+                <div class="bg-slate-950 border border-slate-800 rounded-xl overflow-hidden shadow-lg">
+                    <div class="flex items-center justify-between px-4 py-3 border-b border-slate-800 bg-slate-900">
+                        <div class="flex items-center gap-2">
+                            <i data-lucide="cpu" class="w-4 h-4 text-indigo-400"></i>
+                            <span class="text-xs font-bold text-slate-300 font-mono">Scindax-Sandbox-Runtime.js</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                            <span class="text-[10px] text-emerald-400 font-bold font-mono">WASM PRONTO</span>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 divide-y md:divide-y-0 md:divide-x divide-slate-800">
+                        <!-- Coluna de Entrada / Ação -->
+                        <div class="p-5 space-y-4">
+                            <div class="space-y-2">
+                                <label class="text-xs font-semibold text-slate-400 block">Escolha o arquivo PDF para analisar localmente:</label>
+                                <div class="border border-dashed border-slate-800 hover:border-slate-700 rounded-lg p-4 bg-slate-900/40 text-center cursor-pointer transition-colors" id="pdf-upload-simulator" onclick="simularUpload()">
+                                    <i data-lucide="file-text" class="w-8 h-8 text-slate-500 mx-auto mb-2" id="pdf-icon"></i>
+                                    <span class="text-xs font-bold text-slate-400 block" id="pdf-name">contrato-scindax-parceiros.pdf</span>
+                                    <span class="text-[10px] text-slate-600 block mt-1">Clique para mudar de arquivo</span>
+                                </div>
+                            </div>
+
+                            <button id="btn-run-sandbox" onclick="rodarSandbox('passo-2', 100)" class="w-full bg-indigo-600 hover:bg-indigo-500 active:scale-[0.98] text-white font-bold py-2.5 px-4 rounded-lg text-xs flex items-center justify-center gap-2 transition-all shadow-md">
+                                <i data-lucide="play" class="w-4 h-4"></i>
+                                Rodar IA no Navegador (Local)
+                            </button>
+                        </div>
+
+                        <!-- Coluna de Console/Saída -->
+                        <div class="p-5 bg-slate-950 font-mono text-xs flex flex-col justify-between min-h-[180px]">
+                            <div class="space-y-1.5 text-slate-400 overflow-y-auto max-h-[140px]" id="sandbox-output">
+                                <span class="text-slate-600">// Saída do compilador de borda...</span>
+                                <span class="block text-slate-600">// Pressione "Rodar IA" para inicializar o pipeline do modelo.</span>
+                            </div>
+                            <div class="pt-2 border-t border-slate-900 flex justify-between items-center text-[10px] text-slate-500">
+                                <span>Latência: <strong class="text-emerald-400" id="latency-val">-- ms</strong></span>
+                                <span>Consumo Cloud: <strong class="text-emerald-400">R$ 0,00</strong></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <p class="text-slate-400 text-xs italic">
+                    *Nota: A IA de borda economiza custos de servidor pois aproveita a CPU/GPU do cliente de forma totalmente assíncrona.
+                </p>
+            </section>
+
+            <!-- PASSO 3 -->
+            <section id="secao-passo-3" class="bg-slate-900/60 border border-slate-800 rounded-2xl p-6 lg:p-8 space-y-6 transition-all duration-300">
+                <div class="flex items-start justify-between gap-4">
+                    <div class="space-y-1">
+                        <span class="text-xs font-bold text-purple-400 uppercase tracking-widest font-mono">Módulo 03 / 03</span>
+                        <h2 class="text-2xl font-bold text-white flex items-center gap-2">
+                            <span class="w-7 h-7 rounded-lg bg-purple-500/20 text-purple-400 flex items-center justify-center text-sm font-bold border border-purple-500/20">3</span>
+                            Deploy de Produção Serverless
+                        </h2>
+                    </div>
+                    <div class="hidden sm:block bg-slate-950 border border-slate-800 px-3 py-1.5 rounded-xl text-center">
+                        <span class="block text-[10px] text-slate-500 font-bold uppercase">Recompensa</span>
+                        <span class="text-xs font-mono text-emerald-400 font-bold">+100 XP</span>
+                    </div>
+                </div>
+
+                <p class="text-slate-300 leading-relaxed text-sm lg:text-base">
+                    O último passo é disparar nossa função estruturada para os servidores de borda globais usando nossa CLI de implantação. Este comando consolida os módulos do WASM e cria uma camada de controle de cache estático persistente.
+                </p>
+
+                <!-- Bloco de Deploy Interativo -->
+                <div class="bg-slate-950 border border-slate-800 rounded-xl overflow-hidden shadow-inner">
+                    <div class="flex items-center justify-between px-4 py-2 border-b border-slate-800 bg-slate-900/50">
+                        <div class="flex items-center gap-2">
+                            <div class="w-2.5 h-2.5 rounded-full bg-purple-500"></div>
+                            <span class="text-xs text-slate-400 font-mono">Deployment Console</span>
+                        </div>
+                    </div>
+                    <div class="p-5 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+                        <div class="space-y-1">
+                            <div class="code-font text-sm text-slate-300">
+                                <span class="text-slate-500">$</span> scx deploy --prod --edge-runtime="v8"
+                            </div>
+                            <p class="text-xs text-slate-500">Isso fará o deploy global na nossa malha de borda CDN.</p>
+                        </div>
+                        <button id="btn-deploy" onclick="executarDeploy('passo-3', 100)" class="btn-action bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-bold px-4 py-2.5 rounded-lg text-xs flex items-center gap-2 transition-all shadow-md active:scale-[0.98]">
+                            <i data-lucide="cloud-lightning" class="w-4 h-4"></i>
+                            <span>Disparar Deploy</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Painel de Logs Simulado pós Deploy -->
+                <div class="hidden p-4 bg-slate-950 border border-slate-800 rounded-xl space-y-2 font-mono text-xs text-slate-400" id="deploy-logs">
+                    <div class="flex items-center gap-2 text-emerald-400 font-semibold">
+                        <span class="relative flex h-2 w-2">
+                            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                            <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                        </span>
+                        <span>DEPLOY SUCESSO • PRODUÇÃO ATIVA</span>
+                    </div>
+                    <div class="space-y-1 pl-4 text-slate-500">
+                        <p>&gt; Empacotando build/index.wasm... [Concluído]</p>
+                        <p>&gt; Propagando rotas para 275 nós edge... [100% Concluído]</p>
+                        <p>&gt; Ativando monitoramento com IA integrada... [Iniciado]</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TELA DE RECOMPENSA FINAL & SEÇÃO DE CERTIFICAÇÃO (MÁXIMA DOPAMINA) -->
+            <section id="secao-certificacao" class="bg-gradient-to-br from-slate-900 to-[#1e1b4b]/40 border border-slate-800 rounded-3xl p-6 lg:p-10 shadow-2xl relative overflow-hidden transition-all duration-500">
+                <div class="absolute -right-16 -top-16 w-48 h-48 bg-amber-500/10 rounded-full blur-2xl"></div>
+
+                <!-- ESTADO BLOQUEADO (Efeito Zeigarnik / Aversão à perda) -->
+                <div id="certificacao-bloqueada" class="text-center py-8 space-y-4">
+                    <div class="w-16 h-16 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center mx-auto text-slate-500">
+                        <i data-lucide="lock" class="w-8 h-8"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-bold text-white">Seu Certificado Técnico está Bloqueado</h3>
+                        <p class="text-slate-400 text-sm max-w-md mx-auto mt-1">
+                            Complete todas as 3 missões técnicas de configuração do artigo acima para destravar seu diploma de implantação Scindax.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- ESTADO DESBLOQUEADO (Fluxo de Sucesso e Geração do Certificado) -->
+                <div id="certificacao-desbloqueada" class="hidden space-y-8 animate-fade-in">
+                    <div class="text-center space-y-2">
+                        <div class="inline-flex p-3 bg-amber-500/10 border border-amber-500/20 text-amber-400 rounded-full mb-2 animate-bounce">
+                            <i data-lucide="award" class="w-8 h-8"></i>
+                        </div>
+                        <h3 class="text-2xl lg:text-3xl font-extrabold text-white">Parabéns! Você alcançou o Nível Máximo</h3>
+                        <p class="text-slate-300 text-sm max-w-lg mx-auto">
+                            Toda a arquitetura serverless de IA de borda está consolidada. Assine o seu nome abaixo para registrar seu selo profissional de implantação.
+                        </p>
+                    </div>
+
+                    <!-- Input do Nome e Formulário -->
+                    <div class="max-w-md mx-auto bg-slate-950 p-6 rounded-2xl border border-slate-800 space-y-4">
+                        <div class="space-y-1.5">
+                            <label for="student-name" class="text-xs font-bold text-slate-400 uppercase tracking-wide">Nome Completo do Arquiteto</label>
+                            <input type="text" id="student-name" placeholder="Digite seu nome para o certificado" class="w-full bg-slate-900 border border-slate-800 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 rounded-xl px-4 py-2.5 text-sm text-white font-medium outline-none transition-all">
+                        </div>
+                        <button onclick="gerarCertificado()" class="w-full bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 font-extrabold py-3 px-4 rounded-xl text-xs uppercase tracking-wider transition-all shadow-lg shadow-amber-500/10 active:scale-[0.98] flex items-center justify-center gap-2">
+                            <i data-lucide="shield-check" class="w-4 h-4"></i>
+                            Emitir Certificado com Selo Scindax
+                        </button>
+                    </div>
+
+                    <!-- EXIBIÇÃO DO CERTIFICADO GERADO DINAMICAMENTE -->
+                    <div id="certificado-area" class="hidden max-w-xl mx-auto bg-gradient-to-tr from-[#111827] to-[#1f2937] p-8 rounded-2xl border-4 border-amber-500/60 shadow-2xl relative overflow-hidden">
+                        <div class="absolute -right-16 -bottom-16 w-48 h-48 bg-amber-500/5 rounded-full blur-3xl pointer-events-none"></div>
+                        <div class="absolute -left-16 -top-16 w-48 h-48 bg-blue-500/5 rounded-full blur-3xl pointer-events-none"></div>
+                        
+                        <div class="flex justify-between items-start mb-6">
+                            <div>
+                                <h4 class="text-amber-400 font-extrabold text-lg tracking-widest uppercase">SCINDAX</h4>
+                                <span class="text-[9px] text-slate-500 font-mono tracking-widest block">DEVELOPER EXPERIENCE INSIGHTS</span>
+                            </div>
+                            <div class="bg-amber-500/10 text-amber-400 px-2 py-1 rounded border border-amber-500/20 text-[9px] font-mono font-bold uppercase tracking-wider">
+                                Selo: Certificado Ativo
+                            </div>
+                        </div>
+
+                        <div class="space-y-4 text-center my-6">
+                            <span class="text-xs text-slate-400 font-mono italic block">Certificamos de forma ágil que</span>
+                            <h2 class="text-2xl font-extrabold text-white tracking-tight border-b border-slate-800 pb-3" id="cert-name-output">[Nome do Desenvolvedor]</h2>
+                            <p class="text-xs text-slate-300 leading-relaxed max-w-sm mx-auto">
+                                Implantou com absoluto sucesso e maestria a arquitetura de <strong class="text-blue-400">PDF Tool Serverless com IA de Borda a custo zero</strong>.
+                            </p>
+                        </div>
+
+                        <div class="flex justify-between items-end pt-4 border-t border-slate-800 text-left">
+                            <div>
+                                <span class="block text-[8px] text-slate-500 font-mono">AUTENTICAÇÃO BLOCKCHAIN</span>
+                                <span class="text-[10px] text-slate-400 font-mono font-bold" id="cert-hash">SCX-99a18d2...</span>
+                            </div>
+                            <div class="text-right">
+                                <span class="block text-[8px] text-slate-500 font-mono">VALIDADOR TÉCNICO</span>
+                                <span class="text-[10px] text-amber-400 font-mono font-bold">Scindax Core Engine</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- GANCHO DO LOOP ABERTO PARA A PARTE 2 DO ARTIGO (Efeito de Curiosidade / Cliffhanger) -->
+                    <div id="cliffhanger-section" class="hidden mt-8 p-6 bg-slate-950 border border-slate-800 rounded-2xl relative overflow-hidden">
+                        <!-- Selo de Bloqueado que representa a Parte 2 -->
+                        <div class="absolute right-4 top-4 bg-purple-500/10 text-purple-400 border border-purple-500/20 text-[9px] font-mono font-bold px-2.5 py-0.5 rounded-full flex items-center gap-1.5 uppercase tracking-wider">
+                            <span class="relative flex h-1.5 w-1.5">
+                                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-purple-400 opacity-75"></span>
+                                <span class="relative inline-flex rounded-full h-1.5 w-1.5 bg-purple-500"></span>
+                            </span>
+                            Expansão Bloqueada
+                        </div>
+                        
+                        <div class="flex items-start gap-4 max-w-xl">
+                            <div class="p-3 bg-purple-500/10 border border-purple-500/20 text-purple-400 rounded-xl shrink-0">
+                                <i data-lucide="shield-alert" class="w-6 h-6"></i>
+                            </div>
+                            <div class="space-y-2">
+                                <h4 class="font-bold text-white text-base">Alerta do Compilador: Instabilidades Identificadas na Borda</h4>
+                                <p class="text-xs text-slate-400 leading-relaxed">
+                                    Seu certificado foi emitido, mas os logs em tempo real apontam erros silenciosos na serialização de streams de arquivos binários pesados. Para tornar esta ferramenta de PDF verdadeiramente indestrutível e à prova de falhas:
+                                </p>
+                                <div class="pt-2">
+                                    <a href="#" class="inline-flex items-center gap-1 text-xs text-purple-400 hover:text-purple-300 font-bold hover:underline">
+                                        Explorar Guia Especial de Tratamento de Erros e Bugs (Parte 2) <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <!-- POPUPS DE SUCESSO DO JOGO (MICRO-MODAL IN-APP) -->
+    <div id="modal-levelup" class="fixed inset-0 bg-[#070a13]/80 backdrop-blur-sm z-[1100] hidden items-center justify-center p-4">
+        <div class="bg-gradient-to-br from-slate-900 to-[#1e1b4b] border-2 border-indigo-500 max-w-md w-full rounded-3xl p-6 text-center space-y-6 shadow-2xl animate-scale-up">
+            <div class="w-20 h-20 rounded-full bg-gradient-to-tr from-blue-500 to-indigo-500 flex items-center justify-center mx-auto text-white text-4xl shadow-lg levelup-active">
+                ✨
+            </div>
+            <div class="space-y-2">
+                <h3 class="text-2xl font-extrabold text-white tracking-tight">Evolução de Perfil!</h3>
+                <p class="text-indigo-200 text-sm">
+                    Você subiu de classe profissional na arquitetura Scindax.
+                </p>
+                <div class="text-3xl font-black text-amber-400 mt-2 tracking-wide uppercase font-mono" id="modal-new-rank">Arquiteto Serverless</div>
+            </div>
+            <button onclick="fecharModalLevelUp()" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-extrabold py-3 px-4 rounded-xl text-xs uppercase tracking-wider transition-all">
+                Continuar Implantação
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // ESTADO GLOBAL DO GAMEPLAY
+        const gameState = {
+            xp: 0,
+            xpMax: 300,
+            completados: {
+                'passo-1': false,
+                'passo-2': false,
+                'passo-3': false
+            },
+            niveis: {
+                0: "Dev Júnior",
+                100: "Analista Serverless",
+                200: "Engenheiro Cloud Edge",
+                300: "Arquiteto Serverless"
+            }
+        };
+
+        // ROLAGEM SUAVE
+        function scrollToElement(id) {
+            const element = document.getElementById(id);
+            if (element) {
+                element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+        }
+
+        // COPIAR CÓDIGO COM RECOMPENSA DE XP
+        function executarCopia(texto, passoId, xpGanhado) {
+            // Se já foi concluído antes, apenas copia o texto sem dar XP duplicado
+            if (gameState.completados[passoId]) {
+                document.getElementById(`txt-copy-${passoId}`).innerText = "Copiado!";
+                setTimeout(() => {
+                    document.getElementById(`txt-copy-${passoId}`).innerText = "Copiar Dependências";
+                }, 1500);
+                return;
+            }
+
+            // Executa a cópia
+            const aux = document.createElement("input");
+            aux.setAttribute("value", texto);
+            document.body.appendChild(aux);
+            aux.select();
+            document.execCommand("copy");
+            document.body.removeChild(aux);
+
+            // Marca passo como completo e ganha XP
+            marcarPassoConcluido(passoId, xpGanhado);
+            
+            // Troca visual do botão de cópia
+            const btn = document.getElementById(`btn-copy-${passoId}`);
+            btn.classList.add('bg-emerald-600/20', 'border-emerald-500', 'text-emerald-400');
+            document.getElementById(`txt-copy-${passoId}`).innerText = "✓ Pronto e Copiado";
+        }
+
+        // RODAR O SIMULADOR DO CONSOLE (WASM INTERATIVO)
+        function rodarSandbox(passoId, xpGanhado) {
+            if (gameState.completados[passoId]) return;
+
+            const btn = document.getElementById('btn-run-sandbox');
+            const output = document.getElementById('sandbox-output');
+            const latencyDisp = document.getElementById('latency-val');
+            
+            btn.disabled = true;
+            btn.innerHTML = '<i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i> Processando IA de Borda...';
+            lucide.createIcons();
+
+            // Simula log de compilação assíncrono para aumentar sensação de sistema "real"
+            output.innerHTML = `<span class="block text-indigo-400">&gt; Inicializando WebAssembly em sandbox local...</span>`;
+            
+            setTimeout(() => {
+                output.innerHTML += `<span class="block text-slate-500">&gt; Carregando pesos do mini-modelo onnx (3.2 MB)...</span>`;
+                
+                setTimeout(() => {
+                    output.innerHTML += `<span class="block text-slate-300">&gt; Processando metadados do documento local...</span>`;
+                    
+                    setTimeout(() => {
+                        output.innerHTML += `
+                            <span class="block text-emerald-400 font-bold">&gt; Processamento Completo via V8 Engine local!</span>
+                            <span class="block text-emerald-300/90 font-mono">{ "id": "SCX-402", "empresa": "Scindax Partners", "status": "Ativo" }</span>
+                        `;
+                        latencyDisp.innerText = '14 ms';
+                        
+                        btn.disabled = false;
+                        btn.className = "w-full bg-emerald-600 text-white font-bold py-2.5 px-4 rounded-lg text-xs flex items-center justify-center gap-2 transition-all cursor-default";
+                        btn.innerHTML = '✓ IA Processou com Sucesso!';
+                        
+                        marcarPassoConcluido(passoId, xpGanhado);
+                    }, 800);
+                }, 600);
+            }, 600);
+        }
+
+        // MUDAR SIMULAÇÃO DE PDF
+        function simularUpload() {
+            const pdfName = document.getElementById('pdf-name');
+            const nomes = [
+                'faturamento_scindax_q3.pdf',
+                'politicas_privacidade_borda.pdf',
+                'setup_infra_aws_v8.pdf'
+            ];
+            const aleatorio = nomes[Math.floor(Math.random() * nomes.length)];
+            pdfName.innerText = aleatorio;
+            
+            // Feedback de upload rápido
+            const icon = document.getElementById('pdf-icon');
+            icon.classList.add('scale-125', 'text-indigo-400');
+            setTimeout(() => icon.classList.remove('scale-125', 'text-indigo-400'), 300);
+        }
+
+        // EXECUTAR DISPARO DE DEPLOY
+        function executarDeploy(passoId, xpGanhado) {
+            if (gameState.completados[passoId]) return;
+
+            const btn = document.getElementById('btn-deploy');
+            const logs = document.getElementById('deploy-logs');
+            
+            btn.disabled = true;
+            btn.innerHTML = '<i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i> Implantando na nuvem...';
+            lucide.createIcons();
+
+            setTimeout(() => {
+                btn.className = "hidden";
+                logs.classList.remove('hidden');
+                
+                marcarPassoConcluido(passoId, xpGanhado);
+            }, 1500);
+        }
+
+        // LÓGICA DE ATUALIZAÇÃO DO JOGO
+        function marcarPassoConcluido(passoId, xpGanhado) {
+            if (gameState.completados[passoId]) return;
+            gameState.completados[passoId] = true;
+
+            // Trigger visual de partículas de XP (Feedback Dopamina)
+            criarParticulasXP(xpGanhado);
+
+            // Incremento do XP
+            gameState.xp += xpGanhado;
+            if (gameState.xp > gameState.xpMax) gameState.xp = gameState.xpMax;
+
+            // Atualização de Estatísticas e UI
+            atualizarUI();
+
+            // Verifica Level Up / Desbloqueio de Certificado
+            verificarProgressoFim();
+        }
+
+        // ATUALIZAR COMPONENTES DA INTERFACE
+        function atualizarUI() {
+            const pct = (gameState.xp / gameState.xpMax) * 100;
+            
+            // Barra do HUD
+            document.getElementById('hud-progress-bar').style.width = `${pct}%`;
+            document.getElementById('hud-percentage').innerText = `${Math.round(pct)}%`;
+            document.getElementById('hud-xp-display').innerText = gameState.xp;
+
+            // Altera o Rank correspondente ao progresso
+            let rankAtual = gameState.niveis[0];
+            Object.keys(gameState.niveis).forEach(limiar => {
+                if (gameState.xp >= parseInt(limiar)) {
+                    rankAtual = gameState.niveis[limiar];
+                }
+            });
+            document.getElementById('hud-rank').innerText = rankAtual;
+
+            // Atualiza os marcadores de missão no mapa lateral
+            let missaoCount = 0;
+            Object.keys(gameState.completados).forEach((key, index) => {
+                const marker = document.getElementById(`marker-${key}`);
+                const title = document.getElementById(`nav-title-${key}`);
+                
+                if (gameState.completados[key]) {
+                    marker.innerText = "✓";
+                    marker.className = "absolute -left-[21px] w-4.5 h-4.5 rounded-full border-2 border-emerald-500 bg-emerald-950 flex items-center justify-center text-[10px] text-emerald-400 font-extrabold z-10 scale-110";
+                    title.classList.add('text-emerald-400', 'line-through');
+                    missaoCount++;
+                }
+            });
+
+            // Atualiza barra vertical na navegação lateral
+            const stepLine = document.getElementById('step-active-line');
+            if (missaoCount === 1) stepLine.style.height = "55px";
+            else if (missaoCount === 2) stepLine.style.height = "115px";
+            else if (missaoCount === 3) stepLine.style.height = "180px";
+
+            document.getElementById('stats-missions').innerText = `${missaoCount} / 3`;
+        }
+
+        // CRIAÇÃO DE ANIMAÇÕES DE XP NO CLIQUE
+        function criarParticulasXP(quantia) {
+            const mouseX = window.innerWidth / 2;
+            const mouseY = 50; // Próximo ao HUD de XP
+            
+            for (let i = 0; i < 5; i++) {
+                const part = document.createElement('div');
+                part.className = 'xp-particle font-mono text-sm font-black text-amber-400';
+                part.innerText = `+${Math.round(quantia / 5)} XP`;
+                
+                // Distribuição randômica ao redor do ponto de colisão visual
+                const offsetX = (Math.random() - 0.5) * 100;
+                const offsetY = (Math.random() - 0.5) * 50;
+                
+                part.style.left = `${mouseX + offsetX}px`;
+                part.style.top = `${mouseY + offsetY}px`;
+                
+                document.body.appendChild(part);
+                
+                setTimeout(() => {
+                    part.remove();
+                }, 1200);
+            }
+        }
+
+        // VERIFICA SE COMPLETOU TUDO
+        function verificarProgressoFim() {
+            const completouTudo = Object.values(gameState.completados).every(status => status === true);
+            
+            if (completouTudo) {
+                // Ativa Modal de Level Up Máximo
+                setTimeout(() => {
+                    document.getElementById('modal-new-rank').innerText = gameState.niveis[300];
+                    document.getElementById('modal-levelup').classList.remove('hidden');
+                    document.getElementById('modal-levelup').classList.add('flex');
+                    
+                    // Modifica badge superior
+                    document.getElementById('badge-lvl').innerText = 'MAX';
+                    document.getElementById('badge-lvl').className = "absolute -bottom-1 -right-1 bg-amber-500 text-[9px] px-1.5 py-0.2 rounded-md font-bold text-slate-950 shadow-md border border-amber-300";
+                    
+                    // Altera a área do Certificado finalizado para modo ativo (Zeigarnik completo)
+                    document.getElementById('certificacao-bloqueada').className = "hidden";
+                    document.getElementById('certificacao-desbloqueada').classList.remove('hidden');
+                }, 800);
+            }
+        }
+
+        // CONTROLES DE JANELAS E EMISSÃO DO CERTIFICADO
+        function fecharModalLevelUp() {
+            document.getElementById('modal-levelup').classList.add('hidden');
+            document.getElementById('modal-levelup').classList.remove('flex');
+            
+            // Scrola suavemente para a área de resgate do selo
+            scrollToElement('secao-certificacao');
+        }
+
+        // GERAR DOCUMENTO E RECOMPENSA FINAL
+        function gerarCertificado() {
+            const inputNome = document.getElementById('student-name').value.trim();
+            if (inputNome === "") {
+                document.getElementById('student-name').focus();
+                document.getElementById('student-name').classList.add('border-red-500');
+                return;
+            }
+
+            document.getElementById('student-name').classList.remove('border-red-500');
+            document.getElementById('cert-name-output').innerText = inputNome;
+            
+            // Gera um hash "Blockchain" simulado baseado no nome e data atual
+            const randomHash = "SCX-" + btoa(inputNome + new Date().getTime()).substring(0, 10).toUpperCase();
+            document.getElementById('cert-hash').innerText = randomHash;
+
+            // Exibe Certificado estruturado
+            document.getElementById('certificado-area').classList.remove('hidden');
+            document.getElementById('certificado-area').classList.add('animate-scale-up');
+
+            // Exibe o cliffhanger do artigo parte 2
+            document.getElementById('cliffhanger-section').classList.remove('hidden');
+
+            // Dispara efeito de confetes na tela
+            dispararConfetes();
+        }
+
+        // ANIMAÇÃO DE CONFETES NO FINAL
+        function dispararConfetes() {
+            const cores = ['#3b82f6', '#8b5cf6', '#f59e0b', '#10b981', '#ec4899'];
+            for (let i = 0; i < 70; i++) {
+                const conf = document.createElement('div');
+                conf.className = 'confetti';
+                conf.style.backgroundColor = cores[Math.floor(Math.random() * cores.length)];
+                conf.style.left = `${Math.random() * 100}vw`;
+                conf.style.animationDelay = `${Math.random() * 2}s`;
+                conf.style.transform = `scale(${Math.random() * 1.5})`;
+                document.body.appendChild(conf);
+                
+                setTimeout(() => conf.remove(), 4000);
+            }
+        }
+
+        // INICIALIZAÇÃO DE ÍCONES DO CONTEXTO DE DESENVOLVEDOR
+        window.onload = function() {
+            lucide.createIcons();
+        }
+    </script>
+</body>
+</html>
+
+
+---
+
+### Por que esta estrutura de gamificação foi desenhada desse jeito?
+
+1. **Aversão à Perda e Progresso Visível:** O usuário começa o artigo no nível "Dev Júnior". À medida que ele interage copiando códigos e rodando simulações, ele vê a barra de progresso encher dinamicamente. Ele sente que seu esforço já o levou a "70%", aumentando drasticamente a chance de ele ir até o fim e se cadastrar para obter o selo de certificação da Scindax.
+2. **O Sandbox de Valor Rápido (Módulo 2):** Ao simular a compilação local da IA de borda com retorno imediato de latência e consumo simulado de nuvem, o usuário "sente" o benefício tecnológico do artigo antes mesmo de finalizar a infraestrutura de produção. Isso gera dopamina imediata sem barreiras de atrito de hardware.
+3. **Loop Aberto de Curiosidade (Cliffhanger da Parte 2):** Assim que ele preenche seu nome e obtém a satisfação do certificado com design técnico moderno (que ele pode compartilhar nas redes), a seção final o alerta sobre as "falhas ocultas em streams de arquivos". Isso ativa uma curiosidade imediata para o próximo passo da sua série de insights técnicos.

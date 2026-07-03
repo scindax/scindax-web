@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SCX Na Prática: implante um PDF Tool serverless com IA de borda, do zero — Scindax</title>
+    <title>SCX Na Prática: implante um PDF Tool serverless com IA de borda, do zero, na Scindax</title>
     <meta name="description" content="Ative o modo builder: siga o checklist, publique sua própria stack serverless com IA de borda e ganhe o Selo SCX Builder para exibir no seu perfil. Aprender construindo, sem gastar nada.">
     <meta name="keywords" content="cloudflare workers, workers ai, wrangler cli, pdf.js, pdf-lib, edge computing, key-value store, deploy checklist, scx na prática">
     <meta name="author" content="Scindax">
@@ -14,7 +14,7 @@
     <meta property="og:image" content="https://scindax.com.br/assets/images/og-scx-na-pratica.png">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
-    <meta property="og:image:alt" content="SCX Na Prática — Implante um PDF Tool serverless com IA de borda">
+    <meta property="og:image:alt" content="SCX Na Prática: implante um PDF Tool serverless com IA de borda">
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:image" content="https://scindax.com.br/assets/images/og-scx-na-pratica.png">
     <meta name="theme-color" content="#0a0a0b">
@@ -45,7 +45,7 @@
     <article class="article">
         <span class="insight-card-series-tag">🛠 SCX Na Prática</span>
         <p class="article-meta"><span>03 Jul 2026</span><span>·</span><span>Tempo de leitura: 14 minutos</span><span>·</span><span>Tutorial interativo</span></p>
-        <h1 class="section-title">Implante um PDF Tool serverless com IA de borda — do zero, sem gastar um real</h1>
+        <h1 class="section-title">Implante um PDF Tool serverless com IA de borda, do zero, sem gastar um real</h1>
         <p class="article-audience"><strong>Público:</strong> desenvolvedores, arquitetos de software e profissionais técnicos que querem montar e publicar essa stack com as próprias mãos.</p>
 
         <a href="/insights/scx-pdf-tool-custo-zero/" class="article-toggle">← Versão para gestores</a>
@@ -58,20 +58,20 @@
             <h2>Decisões de arquitetura</h2>
 
             <h3>1. Processamento client-side com PDF.js + pdf-lib</h3>
-            <p><strong>Decisão:</strong> renderizar miniaturas com PDF.js e montar/editar o PDF final com pdf-lib, tudo no navegador. Cada arquivo é lido como <code>ArrayBuffer</code>; o PDF.js desenha a primeira página em um <code>&lt;canvas&gt;</code> para a miniatura, e o pdf-lib copia as páginas selecionadas para um novo documento, retornando um <code>Uint8Array</code> convertido em <code>Blob</code> para download.</p>
-            <p>Isso evita envio de binário para qualquer servidor e mantém a performance previsível — sem fila de processamento remoto.</p>
+            <p><strong>Decisão:</strong> renderizar miniaturas com PDF.js e montar/editar o PDF final com pdf-lib, tudo no navegador. Cada arquivo é lido como <code class="glossary-term" data-term="arraybuffer">ArrayBuffer</code>; o PDF.js desenha a primeira página em um <code>&lt;canvas&gt;</code> para a miniatura, e o pdf-lib copia as páginas selecionadas para um novo documento, retornando um <code>Uint8Array</code> convertido em <code>Blob</code> para download.</p>
+            <p>Isso evita envio de binário para qualquer servidor e mantém a performance previsível, sem fila de processamento remoto.</p>
 
-            <h3>2. API mínima em função de borda</h3>
-            <p><strong>Decisão:</strong> expor só duas rotas em um Worker: uma para checar cota de uso, outra para pedir sugestão de nome. <code>GET /check-limit</code> lê um contador no KV, indexado por IP e data. <code>POST /suggest-name</code> recebe até 500 caracteres de texto (nunca o arquivo) e retorna um JSON com o nome sugerido.</p>
+            <h3>2. API mínima em função de <span class="glossary-term" data-term="edge">borda</span></h3>
+            <p><strong>Decisão:</strong> expor só duas rotas em um <span class="glossary-term" data-term="worker">Worker</span>: uma para checar cota de uso, outra para pedir sugestão de nome. <code>GET /check-limit</code> lê um contador no <span class="glossary-term" data-term="kv">KV</span>, indexado por IP e data. <code>POST /suggest-name</code> recebe até 500 caracteres de texto (nunca o arquivo) e retorna um JSON com o nome sugerido.</p>
 
-            <h3>3. Modelo de IA com fallback em cadeia</h3>
-            <p><strong>Decisão:</strong> um modelo leve como opção primária e, se falhar, um modelo mais robusto como segunda tentativa; se os dois falharem, um nome genérico gerado no próprio Worker. O prompt de sistema é fixo e força resposta em JSON puro, que passa por sanitização (minúsculas, sem acento, <code>snake_case</code>, limite de 50 caracteres) antes de voltar ao cliente.</p>
+            <h3>3. Modelo de IA com <span class="glossary-term" data-term="fallback">fallback</span> em cadeia</h3>
+            <p><strong>Decisão:</strong> um modelo leve como opção primária e, se falhar, um modelo mais robusto como segunda tentativa; se os dois falharem, um nome genérico gerado no próprio Worker. O prompt de sistema é fixo e força resposta em JSON puro, que passa por <span class="glossary-term" data-term="sanitização">sanitização</span> (minúsculas, sem acento, <code>snake_case</code>, limite de 50 caracteres) antes de voltar ao cliente.</p>
 
-            <h3>4. Cache por hash</h3>
-            <p><strong>Decisão:</strong> antes de chamar a IA, calcular um hash do texto recebido e checar o KV. Chave no formato <code>suggestion:{hash}</code>, TTL de alguns dias. Um cache hit custa uma leitura de KV, não uma inferência.</p>
+            <h3>4. Cache por <span class="glossary-term" data-term="hash">hash</span></h3>
+            <p><strong>Decisão:</strong> antes de chamar a IA, calcular um hash do texto recebido e checar o KV. Chave no formato <code>suggestion:{hash}</code>, <span class="glossary-term" data-term="ttl">TTL</span> de alguns dias. Um <span class="glossary-term" data-term="cache">cache</span> hit custa uma leitura de KV, não uma inferência.</p>
 
             <h3>5. Validação humana sem atrito visível</h3>
-            <p><strong>Decisão:</strong> um widget de bot-protection invisível antes de aceitar qualquer chamada às rotas da API. Um token é gerado em background e enviado como header (<code>X-Turnstile-Token</code>) em cada requisição; falha na validação retorna <code>403</code> sem expor detalhes internos.</p>
+            <p><strong>Decisão:</strong> um widget de bot-protection invisível antes de aceitar qualquer chamada às rotas da API. Um token é gerado em background e enviado como header (<code>X-Turnstile-Token</code>) em cada requisição, e uma falha na validação retorna <code>403</code> sem expor detalhes internos.</p>
 
             <h2>Como as partes se conectam</h2>
             <pre><code>Arquivo lido como ArrayBuffer no navegador

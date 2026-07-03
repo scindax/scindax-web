@@ -1,0 +1,649 @@
+:Template de Gamificação Reutilizável:template_gamificacao.html
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Título do seu Artigo Técnico - Gamificado</title>
+    <!-- Tailwind CSS para Estilização Rápida -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons para Componentes de Interface de Dev -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&family=Plus+Jakarta+Sans:wght@300;400;600;700;800&display=swap');
+        
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #0b0f19;
+            color: #f3f4f6;
+        }
+        
+        .code-font {
+            font-family: 'Fira Code', monospace;
+        }
+
+        /* Animação de Float de XP */
+        @keyframes xpFloat {
+            0% { transform: translateY(0) scale(0.8); opacity: 0; }
+            15% { transform: translateY(-15px) scale(1.2); opacity: 1; }
+            100% { transform: translateY(-50px) scale(1); opacity: 0; }
+        }
+        .xp-particle {
+            position: absolute;
+            animation: xpFloat 1.2s cubic-bezier(0.18, 0.89, 0.32, 1.28) forwards;
+            pointer-events: none;
+            z-index: 100;
+        }
+
+        /* Glow de Level Up */
+        @keyframes levelUpGlow {
+            0%, 100% { box-shadow: 0 0 5px rgba(59, 130, 246, 0.5); }
+            50% { box-shadow: 0 0 25px rgba(59, 130, 246, 0.9), 0 0 40px rgba(147, 51, 234, 0.6); }
+        }
+        .levelup-active {
+            animation: levelUpGlow 2s infinite ease-in-out;
+        }
+
+        /* Animação de queda de confetes */
+        @keyframes confettiFall {
+            0% { transform: translateY(-10px) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+        }
+        .confetti {
+            position: fixed;
+            width: 10px;
+            height: 10px;
+            background-color: #3b82f6;
+            animation: confettiFall 3s linear forwards;
+            pointer-events: none;
+            z-index: 999;
+        }
+    </style>
+</head>
+<body class="overflow-x-hidden antialiased pt-24 pb-20">
+
+    <!-- HUD SUPERIOR AUTOMÁTICO (Monitora o progresso global do artigo) -->
+    <header class="fixed top-0 left-0 right-0 h-16 bg-[#0f172a]/95 border-b border-slate-800 backdrop-blur-md z-50 flex items-center justify-between px-4 lg:px-8 shadow-lg">
+        <!-- Logo do seu site / Tema do Artigo -->
+        <div class="flex items-center gap-3">
+            <div class="bg-blue-600/20 text-blue-400 p-2 rounded-lg border border-blue-500/30">
+                <i data-lucide="terminal" class="w-5 h-5"></i>
+            </div>
+            <div>
+                <span class="text-[10px] font-bold tracking-wider text-slate-500 uppercase block">ARTIGO TÉCNICO</span>
+                <h2 class="text-sm font-bold text-white leading-tight" id="hud-article-title">Carregando...</h2>
+            </div>
+        </div>
+
+        <!-- Barra de Progresso Geral -->
+        <div class="hidden md:flex flex-col items-center flex-1 max-w-md mx-8">
+            <div class="flex justify-between w-full text-xs mb-1">
+                <span class="text-slate-400 font-medium">Progresso da Leitura</span>
+                <span class="text-blue-400 font-bold font-mono" id="hud-percentage">0%</span>
+            </div>
+            <div class="w-full bg-slate-800 h-2 rounded-full overflow-hidden border border-slate-700">
+                <div id="hud-progress-bar" class="w-0 h-full bg-gradient-to-r from-blue-500 to-indigo-500 rounded-full transition-all duration-500"></div>
+            </div>
+        </div>
+
+        <!-- Estatísticas do Jogador/Leitor -->
+        <div class="flex items-center gap-4">
+            <div class="text-right">
+                <div class="text-[9px] text-slate-500 uppercase tracking-widest font-bold">Nível Atual</div>
+                <div class="text-xs font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-300" id="hud-rank">Dev Iniciante</div>
+            </div>
+            
+            <div class="relative bg-slate-900 border border-slate-800 rounded-xl p-2 px-3 flex items-center gap-2" id="xp-container">
+                <span class="text-amber-400 font-extrabold text-sm font-mono" id="hud-xp-display">0</span>
+                <span class="text-[10px] text-slate-500 font-bold font-mono" id="hud-total-xp">/0 XP</span>
+                <div class="absolute -bottom-1 -right-1 bg-blue-600 text-[9px] px-1.5 py-0.2 rounded-md font-bold text-white shadow-md border border-blue-400" id="badge-lvl">LVL 1</div>
+            </div>
+        </div>
+    </header>
+
+    <!-- ÁREA DE CONTEÚDO -->
+    <div class="max-w-7xl mx-auto px-4 lg:px-8 grid grid-cols-1 lg:grid-cols-4 gap-8">
+        
+        <!-- SIDEBAR DINÂMICA (Montada dinamicamente via JS com base nos passos que você criar no HTML) -->
+        <aside class="lg:col-span-1 lg:sticky lg:top-24 h-fit bg-[#0f172a] border border-slate-800 rounded-2xl p-6 shadow-xl order-2 lg:order-1">
+            <h3 class="text-sm font-bold text-slate-300 uppercase tracking-wider mb-4 flex items-center gap-2">
+                <i data-lucide="map" class="w-4 h-4 text-indigo-400"></i> Mapa de Missões
+            </h3>
+            
+            <!-- O JS vai injetar os itens aqui dentro -->
+            <div class="relative pl-4 space-y-8 before:absolute before:left-2 before:top-2 before:bottom-2 before:w-0.5 before:bg-slate-800" id="steps-navigation">
+                <!-- Linha ativa de progresso visual -->
+                <div id="step-active-line" class="absolute left-2 top-2 w-0.5 bg-gradient-to-b from-blue-500 to-indigo-500 transition-all duration-300" style="height: 0px;"></div>
+                <div id="dynamic-steps-list" class="space-y-6"></div>
+            </div>
+
+            <!-- Resumo Técnico de Metas -->
+            <div class="mt-8 pt-6 border-t border-slate-800 space-y-3">
+                <div class="flex justify-between items-center text-xs text-slate-400">
+                    <span>Módulos Concluídos:</span>
+                    <span class="font-bold text-white font-mono" id="stats-missions">0 / 0</span>
+                </div>
+                <div class="flex justify-between items-center text-xs text-slate-400">
+                    <span>Recompensa de Conclusão:</span>
+                    <span class="font-bold text-emerald-400 flex items-center gap-1">
+                        <i data-lucide="award" class="w-3.5 h-3.5"></i> Certificado de Elite
+                    </span>
+                </div>
+            </div>
+        </aside>
+
+        <!-- ARTIGO PRINCIPAL (Adicione ou remova seções aqui) -->
+        <main class="lg:col-span-3 space-y-12 order-1 lg:order-2">
+            
+            <!-- CAPA DO ARTIGO (Customizável) -->
+            <div class="bg-gradient-to-br from-slate-900 to-[#1e293b]/30 border border-slate-800/80 rounded-3xl p-6 lg:p-10 shadow-2xl relative overflow-hidden">
+                <div class="absolute top-0 right-0 w-96 h-96 bg-blue-600/5 rounded-full blur-3xl pointer-events-none"></div>
+
+                <div class="flex items-center gap-3 mb-4">
+                    <span class="text-xs font-bold px-3 py-1 bg-blue-500/10 border border-blue-500/20 text-blue-400 rounded-full uppercase tracking-wider">MÉTODO REPLICÁVEL</span>
+                </div>
+                
+                <h1 class="text-3xl lg:text-4xl font-extrabold text-white tracking-tight leading-tight mb-4" id="article-main-title">
+                    Escreva Aqui o Título Principal do Seu Artigo
+                </h1>
+                
+                <p class="text-slate-300 text-base lg:text-lg font-light leading-relaxed">
+                    Aqui você insere a introdução do seu artigo. Explique o problema, o valor agregado para o usuário e prepare o espírito dele para os desafios práticos abaixo. O Google vai ler todo o texto corrido normalmente.
+                </p>
+            </div>
+
+            <!-- ========================================== -->
+            <!-- PASSO 1 (COMO ESTRUTURAR UMA ETAPA NO HTML) -->
+            <!-- ========================================== -->
+            <!-- Importante: Adicione [data-gamify-step="ID-UNICO"] [data-title="Nome no Mapa"] [data-xp="Valor"] -->
+            <section data-gamify-step="passo-exemplo-1" data-title="Primeiro Passo" data-xp="100" class="bg-slate-900/60 border border-slate-800 rounded-2xl p-6 lg:p-8 space-y-6 transition-all duration-300">
+                <div class="flex items-start justify-between gap-4">
+                    <div class="space-y-1">
+                        <span class="text-xs font-bold text-blue-400 uppercase tracking-widest font-mono">Missão 01</span>
+                        <h2 class="text-2xl font-bold text-white flex items-center gap-2">
+                            Copie o Código de Configuração
+                        </h2>
+                    </div>
+                </div>
+
+                <p class="text-slate-300 leading-relaxed text-sm">
+                    Este é um exemplo de bloco com gatilho de cópia de código. Você pode colocar qualquer texto técnico explicativo aqui. Ao clicar no botão abaixo, o leitor ganha os pontos de XP definidos no cabeçalho da seção.
+                </p>
+
+                <!-- Exemplo de Bloco de Código com Copiar integrado -->
+                <div class="relative bg-slate-950 border border-slate-800 rounded-xl overflow-hidden shadow-inner group">
+                    <div class="absolute right-3 top-3 z-10">
+                        <!-- Use "data-gamify-action='copy'" e defina o ID do elemento de texto que deve ser copiado -->
+                        <button data-gamify-action="copy" data-target="codigo-exemplo-1" class="bg-slate-900 hover:bg-slate-800 border border-slate-700 hover:border-blue-500 text-slate-300 hover:text-blue-400 font-medium px-3.5 py-2 rounded-lg text-xs flex items-center gap-2 transition-all shadow-md">
+                            <i data-lucide="copy" class="w-4 h-4"></i>
+                            <span>Copiar Script</span>
+                        </button>
+                    </div>
+                    <div class="px-4 py-2 border-b border-slate-800 bg-slate-900/50 flex justify-between">
+                        <span class="text-xs text-slate-500 font-mono">config.json</span>
+                    </div>
+                    <div class="p-5 overflow-x-auto text-sm code-font text-slate-300" id="codigo-exemplo-1">
+{
+  "api_endpoint": "https://api.scindax.com.br/v1",
+  "client_side_ia": true,
+  "edge_routing": "global"
+}</div>
+                </div>
+            </section>
+
+            <!-- ========================================== -->
+            <!-- PASSO 2 (EXEMPLO DE MISSÃO COM BOTÃO DE VERIFICAÇÃO/AÇÃO) -->
+            <!-- ========================================== -->
+            <section data-gamify-step="passo-exemplo-2" data-title="Executar Ação" data-xp="100" class="bg-slate-900/60 border border-slate-800 rounded-2xl p-6 lg:p-8 space-y-6 transition-all duration-300">
+                <div class="flex items-start justify-between gap-4">
+                    <div class="space-y-1">
+                        <span class="text-xs font-bold text-indigo-400 uppercase tracking-widest font-mono">Missão 02</span>
+                        <h2 class="text-2xl font-bold text-white">
+                            Execute e Teste no Sandbox
+                        </h2>
+                    </div>
+                </div>
+
+                <p class="text-slate-300 leading-relaxed text-sm">
+                    Aqui você pode criar interatividades ou apenas simular fluxos práticos. O botão abaixo é disparado como um validador de etapa genérico para conceder o XP.
+                </p>
+
+                <!-- Botão de validação de etapa -->
+                <div class="flex justify-start">
+                    <!-- O atributo data-gamify-action="complete" serve para registrar a conclusão do passo atual -->
+                    <button data-gamify-action="complete" class="bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-2.5 px-5 rounded-lg text-xs flex items-center gap-2 transition-all shadow-md active:scale-95">
+                        <i data-lucide="activity" class="w-4 h-4"></i>
+                        <span>Testar Integração</span>
+                    </button>
+                </div>
+            </section>
+
+            <!-- ========================================== -->
+            <!-- PASSO 3 (EXEMPLO DE MISSÃO DE CONCLUSÃO) -->
+            <!-- ========================================== -->
+            <section data-gamify-step="passo-exemplo-3" data-title="Validação Final" data-xp="100" class="bg-slate-900/60 border border-slate-800 rounded-2xl p-6 lg:p-8 space-y-6 transition-all duration-300">
+                <div class="flex items-start justify-between gap-4">
+                    <div class="space-y-1">
+                        <span class="text-xs font-bold text-purple-400 uppercase tracking-widest font-mono">Missão 03</span>
+                        <h2 class="text-2xl font-bold text-white">
+                            Suba para Produção
+                        </h2>
+                    </div>
+                </div>
+
+                <p class="text-slate-300 leading-relaxed text-sm">
+                    Último trecho técnico do tutorial. Explique como fazer o deploy ou consolidação final da lógica.
+                </p>
+
+                <div class="flex justify-start">
+                    <button data-gamify-action="complete" class="bg-purple-600 hover:bg-purple-500 text-white font-bold py-2.5 px-5 rounded-lg text-xs flex items-center gap-2 transition-all shadow-md active:scale-95">
+                        <i data-lucide="rocket" class="w-4 h-4"></i>
+                        <span>Disparar Deploy de Produção</span>
+                    </button>
+                </div>
+            </section>
+
+            <!-- ========================================== -->
+            <!-- TELA DE RECOMPENSA FINAL & EMISSÃO DE CERTIFICADO -->
+            <!-- ========================================== -->
+            <section id="secao-certificacao" class="bg-gradient-to-br from-slate-900 to-[#1e1b4b]/40 border border-slate-800 rounded-3xl p-6 lg:p-10 shadow-2xl relative overflow-hidden transition-all duration-500">
+                <div class="absolute -right-16 -top-16 w-48 h-48 bg-amber-500/10 rounded-full blur-2xl"></div>
+
+                <!-- ESTADO BLOQUEADO (Antes de completar todos os passos acima) -->
+                <div id="certificacao-bloqueada" class="text-center py-8 space-y-4">
+                    <div class="w-16 h-16 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center mx-auto text-slate-500">
+                        <i data-lucide="lock" class="w-8 h-8"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-bold text-white">Certificado Bloqueado</h3>
+                        <p class="text-slate-400 text-sm max-w-md mx-auto mt-1">
+                            Complete todas as tarefas práticas dispostas no tutorial para destravar seu certificado profissional e selos adicionais.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- ESTADO DESBLOQUEADO (Aparece ao completar 100% dos passos) -->
+                <div id="certificacao-desbloqueada" class="hidden space-y-8">
+                    <div class="text-center space-y-2">
+                        <div class="inline-flex p-3 bg-amber-500/10 border border-amber-500/20 text-amber-400 rounded-full mb-2 animate-bounce">
+                            <i data-lucide="award" class="w-8 h-8"></i>
+                        </div>
+                        <h3 class="text-2xl lg:text-3xl font-extrabold text-white">Todas as Missões Cumpridas!</h3>
+                        <p class="text-slate-300 text-sm max-w-lg mx-auto">
+                            Sua trilha prática foi homologada com sucesso. Insira seu nome completo abaixo para emitir o seu selo/certificado.
+                        </p>
+                    </div>
+
+                    <!-- Formulário de Emissão -->
+                    <div class="max-w-md mx-auto bg-slate-950 p-6 rounded-2xl border border-slate-800 space-y-4">
+                        <div class="space-y-1.5">
+                            <label for="student-name" class="text-xs font-bold text-slate-400 uppercase tracking-wide">Nome Completo do Aluno</label>
+                            <input type="text" id="student-name" placeholder="Digite seu nome para o certificado" class="w-full bg-slate-900 border border-slate-800 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 rounded-xl px-4 py-2.5 text-sm text-white font-medium outline-none transition-all">
+                        </div>
+                        <button onclick="gerarCertificado()" class="w-full bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 font-extrabold py-3 px-4 rounded-xl text-xs uppercase tracking-wider transition-all shadow-lg active:scale-95 flex items-center justify-center gap-2">
+                            <i data-lucide="shield-check" class="w-4 h-4"></i>
+                            Emitir Certificado com Selo Scindax
+                        </button>
+                    </div>
+
+                    <!-- Layout do Certificado Final Gerado Dinamicamente -->
+                    <div id="certificado-area" class="hidden max-w-xl mx-auto bg-gradient-to-tr from-[#111827] to-[#1f2937] p-8 rounded-2xl border-4 border-amber-500/60 shadow-2xl relative overflow-hidden">
+                        <div class="flex justify-between items-start mb-6">
+                            <div>
+                                <h4 class="text-amber-400 font-extrabold text-lg tracking-widest uppercase" id="cert-company-logo">SCINDAX</h4>
+                                <span class="text-[9px] text-slate-500 font-mono tracking-widest block">DEVELOPER EXPERIENCE LABS</span>
+                            </div>
+                            <div class="bg-amber-500/10 text-amber-400 px-2 py-1 rounded border border-amber-500/20 text-[9px] font-mono font-bold uppercase tracking-wider">
+                                Selo: Conclusão
+                            </div>
+                        </div>
+
+                        <div class="space-y-4 text-center my-6">
+                            <span class="text-xs text-slate-400 font-mono italic block">Certificado de Mérito concedido a</span>
+                            <h2 class="text-2xl font-extrabold text-white tracking-tight border-b border-slate-800 pb-3" id="cert-name-output">[Nome do Desenvolvedor]</h2>
+                            <p class="text-xs text-slate-300 leading-relaxed max-w-sm mx-auto">
+                                Por completar o desafio prático de: <br><strong class="text-blue-400" id="cert-article-title">[Título do Artigo]</strong>.
+                            </p>
+                        </div>
+
+                        <div class="flex justify-between items-end pt-4 border-t border-slate-800 text-left">
+                            <div>
+                                <span class="block text-[8px] text-slate-500 font-mono">ID DE AUTENTICAÇÃO</span>
+                                <span class="text-[10px] text-slate-400 font-mono font-bold" id="cert-hash">SCX-HXXXXXX...</span>
+                            </div>
+                            <div class="text-right">
+                                <span class="block text-[8px] text-slate-500 font-mono">VALIDAÇÃO DO MOTOR</span>
+                                <span class="text-[10px] text-amber-400 font-mono font-bold">Scindax Gamification Hub</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- CLIFFHANGER / GANCHOS (Loop Aberto para a Parte 2 ou próximos conteúdos) -->
+                    <div id="cliffhanger-section" class="hidden mt-8 p-6 bg-slate-950 border border-slate-800 rounded-2xl relative overflow-hidden">
+                        <div class="absolute right-4 top-4 bg-purple-500/10 text-purple-400 border border-purple-500/20 text-[9px] font-mono font-bold px-2.5 py-0.5 rounded-full uppercase tracking-wider">
+                            Brevemente
+                        </div>
+                        
+                        <div class="flex items-start gap-4 max-w-xl">
+                            <div class="p-3 bg-purple-500/10 border border-purple-500/20 text-purple-400 rounded-xl shrink-0">
+                                <i data-lucide="compass" class="w-6 h-6"></i>
+                            </div>
+                            <div class="space-y-2">
+                                <h4 class="font-bold text-white text-base">A jornada não para por aqui!</h4>
+                                <p class="text-xs text-slate-400 leading-relaxed">
+                                    Adicione o gancho para o seu próximo artigo (por exemplo, guia de correção de erros). Deixe um loop cognitivo aberto para que o usuário sinta a necessidade de ler o próximo post.
+                                </p>
+                                <div class="pt-2">
+                                    <a href="#" class="inline-flex items-center gap-1 text-xs text-purple-400 hover:text-purple-300 font-bold hover:underline">
+                                        Explorar Próximo Capítulo da Jornada <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <!-- MODAL POPUP DE LEVEL UP (Feedback visual espalhafatoso) -->
+    <div id="modal-levelup" class="fixed inset-0 bg-[#070a13]/80 backdrop-blur-sm z-[1100] hidden items-center justify-center p-4">
+        <div class="bg-gradient-to-br from-slate-900 to-[#1e1b4b] border-2 border-indigo-500 max-w-md w-full rounded-3xl p-6 text-center space-y-6 shadow-2xl">
+            <div class="w-20 h-20 rounded-full bg-gradient-to-tr from-blue-500 to-indigo-500 flex items-center justify-center mx-auto text-white text-4xl shadow-lg levelup-active">
+                ⚡
+            </div>
+            <div class="space-y-2">
+                <h3 class="text-2xl font-extrabold text-white tracking-tight">Nível Avançado Almejado!</h3>
+                <p class="text-indigo-200 text-sm">
+                    Você subiu de rank ao dominar todos os desafios propostos!
+                </p>
+                <div class="text-3xl font-black text-amber-400 mt-2 tracking-wide uppercase font-mono" id="modal-new-rank">Arquiteto de Soluções</div>
+            </div>
+            <button onclick="fecharModalLevelUp()" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-extrabold py-3 px-4 rounded-xl text-xs uppercase tracking-wider transition-all">
+                Resgatar Meu Certificado
+            </button>
+        </div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- ENGINE DE GAMIFICAÇÃO (MOTOR AUTOMÁTICO) -->
+    <!-- ========================================== -->
+    <script>
+        // ESTADO INTERNO DO GAMEPLAY
+        const gameEngine = {
+            xp: 0,
+            xpMax: 0,
+            completos: {},
+            artigoTitulo: "",
+            passosCount: 0,
+            // Lista de patentes automáticas baseada em percentual de progresso
+            ranks: [
+                { limit: 0, name: "Praticante" },
+                { limit: 33, name: "Especialista Aprendiz" },
+                { limit: 66, name: "Engenheiro Sênior" },
+                { limit: 100, name: "Arquiteto Arrojado" }
+            ]
+        };
+
+        // INICIALIZAÇÃO E VARREDURA DO DOM PARA DETECÇÃO DE ETAPAS
+        window.addEventListener('DOMContentLoaded', () => {
+            // Extrai o título principal do post
+            gameEngine.artigoTitulo = document.getElementById('article-main-title').innerText;
+            document.getElementById('hud-article-title').innerText = gameEngine.artigoTitulo;
+
+            // Busca todas as seções marcadas com data-gamify-step
+            const steps = document.querySelectorAll('[data-gamify-step]');
+            gameEngine.passosCount = steps.length;
+            
+            const stepsListContainer = document.getElementById('dynamic-steps-list');
+            stepsListContainer.innerHTML = ''; // Limpa placeholders se houverem
+
+            let tempTotalXP = 0;
+
+            steps.forEach((step, index) => {
+                const id = step.getAttribute('data-gamify-step');
+                const title = step.getAttribute('data-title') || `Missão ${index + 1}`;
+                const xpValue = parseInt(step.getAttribute('data-xp')) || 100;
+
+                gameEngine.completos[id] = false;
+                tempTotalXP += xpValue;
+
+                // Cria dinamicamente o item na barra de navegação/status lateral
+                const itemHTML = `
+                    <div class="relative flex items-start gap-3 group cursor-pointer" onclick="scrollToElement('${id}')">
+                        <div id="marker-${id}" class="absolute -left-[21px] w-4.5 h-4.5 rounded-full border-2 border-slate-700 bg-slate-950 flex items-center justify-center transition-all duration-300 text-[10px] text-slate-500 font-bold z-10">${index + 1}</div>
+                        <div>
+                            <h4 class="text-sm font-semibold text-slate-400 group-hover:text-blue-400 transition-colors" id="nav-title-${id}">${title}</h4>
+                            <p class="text-xs text-slate-500 font-mono">+${xpValue} XP • Atividade</p>
+                        </div>
+                    </div>
+                `;
+                stepsListContainer.insertAdjacentHTML('beforeend', itemHTML);
+
+                // Configura comportamentos dentro da própria seção
+                configurarEventosSecao(step, id, xpValue);
+            });
+
+            gameEngine.xpMax = tempTotalXP;
+            document.getElementById('hud-total-xp').innerText = `/${tempTotalXP} XP`;
+            
+            atualizarLayout();
+            lucide.createIcons();
+        });
+
+        // MAPEIA E BATE OS EVENTOS DE BOTÕES DE DENTRO DO ARTIGO
+        function configurarEventosSecao(sectionElement, stepId, xpVal) {
+            // Se existirem botões com ação de cópia
+            const copyButtons = sectionElement.querySelectorAll('[data-gamify-action="copy"]');
+            copyButtons.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const targetId = btn.getAttribute('data-target');
+                    const textToCopy = document.getElementById(targetId)?.innerText || "";
+                    
+                    // Copia para o clipboard do dev
+                    navigator.clipboard.writeText(textToCopy);
+
+                    // Recompensa o jogador
+                    completarMeta(stepId, xpVal);
+
+                    // Atualiza visual do botão
+                    btn.classList.add('bg-emerald-600/20', 'border-emerald-500', 'text-emerald-400');
+                    const span = btn.querySelector('span');
+                    if (span) span.innerText = "Copiado!";
+                });
+            });
+
+            // Se existirem botões com ação genérica de conclusão
+            const completeButtons = sectionElement.querySelectorAll('[data-gamify-action="complete"]');
+            completeButtons.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    if (gameEngine.completos[stepId]) return;
+
+                    completarMeta(stepId, xpVal);
+
+                    // Visual de meta concluída
+                    btn.disabled = true;
+                    btn.className = "bg-emerald-600 text-white font-bold py-2.5 px-5 rounded-lg text-xs flex items-center gap-2 transition-all cursor-default";
+                    const span = btn.querySelector('span');
+                    if (span) span.innerText = "✓ Etapa Homologada";
+                });
+            });
+        }
+
+        // MARCA ETAPA COMPLETA E GERA FEEDBACKS VISUAIS
+        function completarMeta(stepId, xpGanhado) {
+            if (gameEngine.completos[stepId]) return;
+            gameEngine.completos[stepId] = true;
+
+            gameEngine.xp += xpGanhado;
+            if (gameEngine.xp > gameEngine.xpMax) gameEngine.xp = gameEngine.xpMax;
+
+            // Criar feedbacks imediatos de dopamina (Animações)
+            criarParticulasDopamina(xpGanhado);
+            atualizarLayout();
+            verificarConclusaoCompleta();
+        }
+
+        // RE-CALCULA E ATUALIZA TODOS OS COMPONENTES DO HUD E PROGRESSO
+        function atualizarLayout() {
+            const pct = gameEngine.xpMax > 0 ? (gameEngine.xp / gameEngine.xpMax) * 100 : 0;
+            
+            // HUD Superior
+            document.getElementById('hud-progress-bar').style.width = `${pct}%`;
+            document.getElementById('hud-percentage').innerText = `${Math.round(pct)}%`;
+            document.getElementById('hud-xp-display').innerText = gameEngine.xp;
+
+            // Atualiza o Rank com base no percentual
+            let rankNome = gameEngine.ranks[0].name;
+            gameEngine.ranks.forEach(rank => {
+                if (pct >= rank.limit) {
+                    rankNome = rank.name;
+                }
+            });
+            document.getElementById('hud-rank').innerText = rankNome;
+
+            // Barra de progresso lateral
+            let completas = 0;
+            Object.keys(gameEngine.completos).forEach((id) => {
+                const marker = document.getElementById(`marker-${id}`);
+                const title = document.getElementById(`nav-title-${id}`);
+                
+                if (gameEngine.completos[id]) {
+                    completas++;
+                    if (marker) {
+                        marker.innerText = "✓";
+                        marker.className = "absolute -left-[21px] w-4.5 h-4.5 rounded-full border-2 border-emerald-500 bg-emerald-950 flex items-center justify-center text-[10px] text-emerald-400 font-extrabold z-10 scale-110";
+                    }
+                    if (title) title.classList.add('text-emerald-400', 'line-through');
+                }
+            });
+
+            document.getElementById('stats-missions').innerText = `${completas} / ${gameEngine.passosCount}`;
+
+            // Ajusta o tamanho da linha conectora dinâmica no mapa da sidebar
+            const stepLine = document.getElementById('step-active-line');
+            if (gameEngine.passosCount > 0) {
+                const stepLineHeight = (completas / gameEngine.passosCount) * 180;
+                stepLine.style.height = `${stepLineHeight}px`;
+            }
+        }
+
+        // ANIMAÇÃO DE FLUTUAÇÃO DE PARTICULAS (DOPAMINA IMEDIATA)
+        function criarParticulasDopamina(quantia) {
+            const containerX = window.innerWidth / 2;
+            const containerY = 50; // Centralizado no HUD de XP
+            
+            for (let i = 0; i < 5; i++) {
+                const part = document.createElement('div');
+                part.className = 'xp-particle font-mono text-sm font-black text-amber-400';
+                part.innerText = `+${Math.round(quantia / 5)} XP`;
+                
+                const offsetX = (Math.random() - 0.5) * 100;
+                const offsetY = (Math.random() - 0.5) * 40;
+                
+                part.style.left = `${containerX + offsetX}px`;
+                part.style.top = `${containerY + offsetY}px`;
+                
+                document.body.appendChild(part);
+                
+                setTimeout(() => part.remove(), 1200);
+            }
+        }
+
+        // VERIFICA SE CHEGOU AO FINAL DO POST
+        function verificarConclusaoCompleta() {
+            const completouTudo = Object.values(gameEngine.completos).every(val => val === true);
+            
+            if (completouTudo) {
+                setTimeout(() => {
+                    // Configura o rank máximo no modal
+                    document.getElementById('modal-new-rank').innerText = gameEngine.ranks[gameEngine.ranks.length - 1].name;
+                    // Mostra o modal de level up
+                    document.getElementById('modal-levelup').classList.remove('hidden');
+                    document.getElementById('modal-levelup').classList.add('flex');
+                    
+                    // Modifica badge superior para Nível Máximo
+                    document.getElementById('badge-lvl').innerText = 'MAX';
+                    document.getElementById('badge-lvl').className = "absolute -bottom-1 -right-1 bg-amber-500 text-[9px] px-1.5 py-0.2 rounded-md font-bold text-slate-950 shadow-md border border-amber-300";
+                    
+                    // Altera estado da seção do certificado
+                    document.getElementById('certificacao-bloqueada').className = "hidden";
+                    document.getElementById('certificacao-desbloqueada').classList.remove('hidden');
+                }, 800);
+            }
+        }
+
+        // FECHAR MODAL DO JOGO
+        function fecharModalLevelUp() {
+            document.getElementById('modal-levelup').classList.add('hidden');
+            document.getElementById('modal-levelup').classList.remove('flex');
+            scrollToElement('secao-certificacao');
+        }
+
+        // GERAÇÃO DINÂMICA DO CERTIFICADO DO DEV
+        function gerarCertificado() {
+            const inputNome = document.getElementById('student-name').value.trim();
+            if (inputNome === "") {
+                document.getElementById('student-name').focus();
+                document.getElementById('student-name').classList.add('border-red-500');
+                return;
+            }
+
+            document.getElementById('student-name').classList.remove('border-red-500');
+            document.getElementById('cert-name-output').innerText = inputNome;
+            document.getElementById('cert-article-title').innerText = gameEngine.artigoTitulo;
+            
+            // Cria código hash único de autenticação
+            const randomHash = "SCX-" + btoa(inputNome + new Date().getTime()).substring(0, 10).toUpperCase();
+            document.getElementById('cert-hash').innerText = randomHash;
+
+            // Revela certificado e triggers de fim do artigo
+            document.getElementById('certificado-area').classList.remove('hidden');
+            document.getElementById('cliffhanger-section').classList.remove('hidden');
+
+            dispararConfetes();
+        }
+
+        // ANIMAÇÃO DE CONFETES
+        function dispararConfetes() {
+            const cores = ['#3b82f6', '#8b5cf6', '#f59e0b', '#10b981', '#ec4899'];
+            for (let i = 0; i < 70; i++) {
+                const conf = document.createElement('div');
+                conf.className = 'confetti';
+                conf.style.backgroundColor = cores[Math.floor(Math.random() * cores.length)];
+                conf.style.left = `${Math.random() * 100}vw`;
+                conf.style.animationDelay = `${Math.random() * 2}s`;
+                conf.style.transform = `scale(${Math.random() * 1.5})`;
+                document.body.appendChild(conf);
+                
+                setTimeout(() => conf.remove(), 4000);
+            }
+        }
+
+        // SCROLL SUAVE PARA CLIQUES DE SESSÕES
+        function scrollToElement(id) {
+            const element = document.getElementById(id);
+            if (element) {
+                element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+        }
+    </script>
+</body>
+</html>
+```eof
+
+---
+
+### Como você pode customizar e usar este modelo:
+
+1. **Defina o Título Principal:** Edite a tag `<h1>` com o `id="article-main-title"` com o título do seu post. O motor JS irá pegá-lo automaticamente e colocar no HUD.
+2. **Adicione novos Passos:** Basta criar uma tag `<section>` no HTML contendo os atributos:
+   * `data-gamify-step="slug-unico-da-sessao"`
+   * `data-title="Título Simplificado"` (o nome que vai aparecer no Mapa na barra lateral)
+   * `data-xp="100"` (quantidade de pontos para essa etapa)
+3. **Configure as Ações:**
+   * **Cópia de Código:** Adicione o atributo `data-gamify-action="copy"` no botão e `data-target="ID-do-bloco-de-código"` para que ao ser clicado ele copie o conteúdo correspondente e conceda o XP de forma automatizada.
+   * **Conclusão Manual/Botão de Clique:** Use o atributo `data-gamify-action="complete"` em qualquer botão. Ao ser clicado, ele homologa a sessão atual e dá o XP associado a ela.
+4. **Altere os Ranks (Opcional):** No final do script, você verá uma lista chamada `ranks` dentro do objeto `gameEngine`. Você pode mudar os nomes dos títulos conquistados e as porcentagens em que eles se destravam.

@@ -2132,3 +2132,417 @@ body.tutorial-page .article-resources a:hover { color: #b9c4ff; }
         display: none;
     }
 }
+
+/* ============================================================
+   Widget de gamificação — série "SCX Na Prática"
+   Injetado por js/gamify-widget.js (opt-in: só em páginas com
+   #tutorialChecklist). Tema dourado, igual ao já usado em
+   .insight-card-series-tag, para reforçar a identidade da série.
+   ============================================================ */
+
+/* Estado 1: card inline no topo do artigo */
+.gamify-widget-inline {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    margin: 1.5rem 0 0;
+    padding: 1rem 1.25rem;
+    border-radius: 14px;
+    border: 1px solid rgba(255, 215, 107, 0.35);
+    background: rgba(255, 215, 107, 0.06);
+    opacity: 0;
+    transform: scale(0.92);
+    filter: blur(3px);
+    transition: opacity 0.6s var(--transition-smooth), transform 0.6s var(--transition-smooth), filter 0.6s var(--transition-smooth);
+}
+
+.gamify-widget-inline--visible {
+    opacity: 1;
+    transform: scale(1);
+    filter: blur(0);
+}
+
+.gamify-widget-inline-icon {
+    font-size: 1.4rem;
+    flex-shrink: 0;
+}
+
+.gamify-widget-inline-text {
+    flex: 1;
+    font-size: 0.85rem;
+    color: #d8ddf5;
+    line-height: 1.5;
+}
+
+.gamify-widget-inline-text strong {
+    color: #ffd76b;
+}
+
+.gamify-widget-inline-btn {
+    flex-shrink: 0;
+    padding: 0.55rem 1rem;
+    border-radius: 999px;
+    border: 1px solid rgba(255, 215, 107, 0.5);
+    background: rgba(255, 215, 107, 0.12);
+    color: #ffd76b;
+    font-size: 0.78rem;
+    font-weight: 600;
+    white-space: nowrap;
+    transition: background 0.25s, transform 0.25s;
+}
+
+.gamify-widget-inline-btn:hover {
+    background: rgba(255, 215, 107, 0.22);
+    transform: translateY(-1px);
+}
+
+/* Estado 2: botão flutuante, canto inferior direito */
+.gamify-widget-fab {
+    position: fixed;
+    right: 1.25rem;
+    bottom: 1.75rem;
+    z-index: 95;
+    width: 54px;
+    height: 54px;
+    border-radius: 999px;
+    border: 1px solid rgba(255, 215, 107, 0.45);
+    background: rgba(17, 17, 20, 0.9);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    color: #ffd76b;
+    font-size: 1.3rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    pointer-events: none;
+    transform: scale(0.8);
+    transition: opacity 0.35s var(--transition-smooth), transform 0.35s var(--transition-smooth);
+}
+
+.gamify-widget-fab--visible {
+    opacity: 1;
+    pointer-events: auto;
+    transform: scale(1);
+    animation: gamifyFabBreathe 2.6s ease-in-out infinite;
+}
+
+.gamify-widget-fab--completo {
+    border-color: rgba(255, 215, 107, 0.85);
+}
+
+@keyframes gamifyFabBreathe {
+
+    0%,
+    100% {
+        transform: scale(1) rotate(0deg);
+        box-shadow: 0 0 10px 1px rgba(255, 215, 107, 0.25);
+    }
+
+    50% {
+        transform: scale(1.1) rotate(-5deg);
+        box-shadow: 0 0 20px 4px rgba(255, 215, 107, 0.55);
+    }
+}
+
+/* Painel de progresso, aberto a partir de qualquer um dos dois estados */
+.gamify-widget-panel {
+    position: fixed;
+    right: 1.25rem;
+    bottom: 6rem;
+    z-index: 96;
+    width: min(320px, calc(100vw - 2.5rem));
+    max-height: min(480px, calc(100vh - 8rem));
+    overflow-y: auto;
+    border-radius: 16px;
+    border: 1px solid rgba(255, 215, 107, 0.35);
+    background: rgba(10, 10, 14, 0.96);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+    padding: 1.1rem;
+    opacity: 0;
+    transform: translateY(12px) scale(0.96);
+    pointer-events: none;
+    transition: opacity 0.25s var(--transition-smooth), transform 0.25s var(--transition-smooth);
+}
+
+.gamify-widget-panel--open {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    pointer-events: auto;
+}
+
+.gamify-panel-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: #eef1ff;
+    margin-bottom: 0.75rem;
+}
+
+.gamify-panel-close {
+    background: none;
+    border: none;
+    color: #8a8a96;
+    font-size: 0.9rem;
+    cursor: pointer;
+    padding: 0.15rem 0.4rem;
+}
+
+.gamify-panel-close:hover {
+    color: #eef1ff;
+}
+
+.gamify-panel-track {
+    height: 6px;
+    border-radius: 999px;
+    background: rgba(255, 215, 107, 0.15);
+    overflow: hidden;
+    margin-bottom: 0.5rem;
+}
+
+.gamify-panel-fill {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, #ffd76b, #ffb347);
+    border-radius: 999px;
+    transition: width 0.4s var(--transition-smooth);
+}
+
+.gamify-panel-status {
+    font-size: 0.72rem;
+    color: #ffd76b;
+    font-weight: 600;
+    margin-bottom: 0.9rem;
+}
+
+.gamify-panel-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.gamify-panel-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.55rem;
+    padding: 0.4rem 0.5rem;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.gamify-panel-item:hover {
+    background: rgba(255, 255, 255, 0.04);
+}
+
+.gamify-panel-item-check {
+    flex-shrink: 0;
+    width: 16px;
+    height: 16px;
+    margin-top: 0.1rem;
+    border-radius: 50%;
+    border: 1.5px solid rgba(255, 215, 107, 0.4);
+}
+
+.gamify-panel-item--done .gamify-panel-item-check {
+    background: #ffd76b;
+    border-color: #ffd76b;
+}
+
+.gamify-panel-item-title {
+    font-size: 0.78rem;
+    color: #c7cadd;
+    line-height: 1.4;
+}
+
+.gamify-panel-item--done .gamify-panel-item-title {
+    color: #eef1ff;
+    text-decoration: line-through;
+    text-decoration-color: rgba(255, 215, 107, 0.5);
+}
+
+.gamify-panel-reward {
+    display: block;
+    margin-top: 0.9rem;
+    padding: 0.65rem;
+    border-radius: 10px;
+    background: linear-gradient(120deg, #ffd76b, #ffb347);
+    color: #171713;
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-align: center;
+    text-decoration: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+    .gamify-widget-inline,
+    .gamify-widget-fab,
+    .gamify-widget-panel {
+        transition: none;
+    }
+
+    .gamify-widget-fab--visible {
+        animation: none;
+    }
+}
+
+@media (max-width: 480px) {
+    .gamify-widget-inline {
+        flex-wrap: wrap;
+    }
+
+    .gamify-widget-inline-btn {
+        width: 100%;
+        text-align: center;
+    }
+}
+
+/* ============================================================
+   Glossário interno — tooltip + painel lateral
+   Injetado por js/glossary.js (opt-in: só com .glossary-term
+   presentes na página). Usa o tema azul já usado no restante da
+   página tutorial (body.tutorial-page), para se diferenciar do
+   dourado do widget de gamificação.
+   ============================================================ */
+
+.glossary-term {
+    text-decoration: underline dotted rgba(91, 111, 245, 0.6);
+    text-underline-offset: 3px;
+    cursor: help;
+    color: inherit;
+}
+
+.glossary-term:hover,
+.glossary-term:focus-visible {
+    color: var(--accent-glow);
+    outline: none;
+}
+
+.glossary-tooltip {
+    position: absolute;
+    z-index: 150;
+    max-width: 260px;
+    padding: 0.6rem 0.8rem;
+    border-radius: 10px;
+    border: 1px solid rgba(91, 111, 245, 0.4);
+    background: rgba(10, 10, 14, 0.97);
+    color: #d8ddf5;
+    font-size: 0.78rem;
+    line-height: 1.5;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(4px);
+    transition: opacity 0.2s, transform 0.2s;
+}
+
+.glossary-tooltip--visible {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+/* Botão para alternar o painel lateral (sempre visível em telas largas) */
+.glossary-toggle {
+    display: none;
+    position: fixed;
+    right: 1.5rem;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 91;
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    border: 1px solid rgba(91, 111, 245, 0.4);
+    background: rgba(17, 17, 20, 0.85);
+    color: var(--accent-glow);
+    font-size: 1.1rem;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+.glossary-panel {
+    display: none;
+    position: fixed;
+    top: 50%;
+    right: 4.5rem;
+    transform: translateY(-50%) translateX(12px);
+    z-index: 90;
+    width: 260px;
+    max-height: 70vh;
+    overflow-y: auto;
+    border-radius: 14px;
+    border: 1px solid rgba(91, 111, 245, 0.3);
+    background: rgba(10, 10, 14, 0.95);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.4);
+    padding: 1.1rem;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s var(--transition-smooth), transform 0.3s var(--transition-smooth);
+}
+
+.glossary-panel--open {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(-50%) translateX(0);
+}
+
+.glossary-panel-title {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: #9db0ff;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.75rem;
+}
+
+.glossary-panel-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.glossary-panel-list strong {
+    display: block;
+    color: #eef1ff;
+    font-size: 0.8rem;
+    margin-bottom: 0.15rem;
+}
+
+.glossary-panel-list span {
+    display: block;
+    color: #9498ab;
+    font-size: 0.75rem;
+    line-height: 1.5;
+}
+
+/* O painel lateral só cabe confortavelmente ao lado da coluna de 720px
+   do artigo em telas largas; abaixo disso, some, restando os tooltips. */
+@media (min-width: 1240px) {
+
+    .glossary-toggle {
+        display: flex;
+    }
+
+    .glossary-panel {
+        display: block;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+    .glossary-tooltip,
+    .glossary-panel {
+        transition: none;
+    }
+}
