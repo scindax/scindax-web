@@ -1,0 +1,14 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "scindax-web",
+  "compatibility_date": "2026-07-03",
+  "observability": {
+    "enabled": true
+  },
+  "assets": {
+    "directory": "scindax-web"
+  },
+  "compatibility_flags": [
+    "nodejs_compat"
+  ]
+}
