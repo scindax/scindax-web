@@ -133,8 +133,9 @@
     <div id="scxTurnstileWidget" class="scx-turnstile-widget"
          data-sitekey="0x4AAAAAADu-YlU_Ls-c61Wy"></div>
 
-    <!-- Bibliotecas obrigatórias (SCX-SPEC-IMP-001, seção 6) -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.6.82/pdf.min.js"></script>
+    <!-- Bibliotecas obrigatórias (SCX-SPEC-IMP-001, seção 6).
+         O PDF.js é importado como módulo ES dentro de js/upload-manager.js
+         (a partir da v4 ele só distribui build .mjs, sem global window.pdfjsLib). -->
     <script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
     <script src="https://challenges.cloudflare.com/turnstile/v0/api.js?onload=scxOnTurnstileReady&render=explicit" async defer></script>

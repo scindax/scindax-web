@@ -10,6 +10,14 @@
 
 import { validarArquivoPdf, gerarId, mostrarToast } from './utils.js';
 
+// A partir da v4, o PDF.js passou a distribuir apenas o build ESM (.mjs) —
+// o build clássico (pdf.min.js, que expunha window.pdfjsLib) foi descontinuado.
+// Por isso importamos diretamente como módulo, em vez de depender de uma
+// tag <script> clássica em index.html.
+import * as pdfjsLib from 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/5.4.149/pdf.min.mjs';
+
+const URL_WORKER_PDFJS = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/5.4.149/pdf.worker.min.mjs';
+
 export class UploadManager extends EventTarget {
     /**
      * @param {{ areaUpload: HTMLElement, inputArquivo: HTMLInputElement, botaoSelecionar: HTMLElement }} elementos
@@ -30,8 +38,7 @@ export class UploadManager extends EventTarget {
      * principal (SCX-SPEC-IMP-001, seção 5 — Performance).
      */
     _configurarWorkerPdfJs() {
-        window.pdfjsLib.GlobalWorkerOptions.workerSrc =
-            'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.6.82/pdf.worker.min.js';
+        pdfjsLib.GlobalWorkerOptions.workerSrc = URL_WORKER_PDFJS;
     }
 
     _ligarEventos() {
@@ -113,7 +120,7 @@ export class UploadManager extends EventTarget {
         // PDF.js pode assumir posse do buffer que recebe; usamos uma cópia
         // para que os bytes originais permaneçam intactos para o pdf-lib.
         const bufferParaPdfJs = arrayBuffer.slice(0);
-        const documentoPdfJs = await window.pdfjsLib.getDocument({ data: bufferParaPdfJs }).promise;
+        const documentoPdfJs = await pdfjsLib.getDocument({ data: bufferParaPdfJs }).promise;
 
         return {
             id: gerarId(),
