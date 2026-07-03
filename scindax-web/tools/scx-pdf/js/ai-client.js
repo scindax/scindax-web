@@ -1,16 +1,8 @@
-/* ============================================================
- * ai-client.js — Comunicação com o Cloudflare Worker
- * Contrato: SCX-SPEC-AI-001, seções 2 e 9.
- *
- * Único ponto do frontend que fala com a rede: envia apenas o
- * token do Turnstile e, no máximo, uma amostra de texto de até
- * 500 caracteres — nunca o PDF ou qualquer binário do usuário.
- * ============================================================ */
 
-// Substitua pela URL publicada do Worker (wrangler.toml → routes/workers.dev).
-const WORKER_BASE_URL = 'https://scx-pdf-worker.SEU_SUBDOMINIO.workers.dev';
 
-const TEMPO_LIMITE_REQUISICAO_MS = 6000; // um pouco acima do timeout de 5s da IA no Worker (SCX-SPEC-AI-001, seção 7)
+const WORKER_BASE_URL = 'scx-pdf-worker.contato-330.workers.dev';
+
+const TEMPO_LIMITE_REQUISICAO_MS = 6000; 
 
 /**
  * Erro específico para falhas de comunicação com o Worker, carregando
