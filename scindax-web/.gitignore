@@ -1,0 +1,3 @@
+# SCX-MEM — memória local do projeto (NUNCA versionar).
+# Se este repo já tinha um .gitignore, apenas ACRESCENTE a linha abaixo ao arquivo existente.
+.scx/
