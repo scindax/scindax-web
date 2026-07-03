@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SCX Na Prática: implante um PDF Tool serverless com IA de borda, do zero — Scindax</title>
+    <meta name="description" content="Checklist interativo: crie um widget de validação, um namespace KV e um Worker com os bindings corretos, e publique uma stack serverless com IA de borda sem gastar em servidor. Conclua e ganhe o Selo SCX Builder.">
+    <meta name="keywords" content="cloudflare workers, workers ai, wrangler cli, pdf.js, pdf-lib, edge computing, key-value store, deploy checklist, scx na prática">
+    <meta name="author" content="Scindax">
+    <meta property="og:title" content="SCX Na Prática: implante um PDF Tool serverless com IA de borda, do zero">
+    <meta property="og:description" content="Checklist interativo com comandos, wrangler.toml e verificação passo a passo. Conclua e ganhe o Selo SCX Builder.">
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="https://scindax.com.br/insights/scx-pdf-tool-custo-zero/tecnico/">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="theme-color" content="#0a0a0b">
+    <link rel="icon" href="/favicon.ico" sizes="any">
+    <link rel="icon" type="image/png" href="/assets/images/favicon-64.png">
+    <link rel="canonical" href="https://scindax.com.br/insights/scx-pdf-tool-custo-zero/tecnico/">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body class="tutorial-page">
+
+    <nav class="navbar" id="navbar">
+        <a href="/" class="navbar-logo"><img src="/assets/images/logo-scindax.png" alt="Scindax" class="navbar-logo-img"></a>
+        <ul class="navbar-links" id="navLinks">
+            <li><a href="/#problem">O Problema</a></li>
+            <li><a href="/#journey">Jornada</a></li>
+            <li><a href="/#solutions">Soluções</a></li>
+            <li><a href="/#forwhom">Para quem</a></li>
+            <li><a href="/insights/">Insights</a></li>
+            <li><a href="#" class="navbar-cta ames-link" data-ames-link>AMES</a></li>
+        </ul>
+    </nav>
+
+    <p class="insights-breadcrumb"><a href="/insights/">Insights</a> / SCX PDF Tool / SCX Na Prática</p>
+
+    <article class="article">
+        <span class="insight-card-series-tag">🛠 SCX Na Prática</span>
+        <p class="article-meta"><span>03 Jul 2026</span><span>·</span><span>Tempo de leitura: 14 minutos</span><span>·</span><span>Tutorial interativo</span></p>
+        <h1 class="section-title">Implante um PDF Tool serverless com IA de borda — do zero, sem gastar um real</h1>
+        <p class="article-audience"><strong>Público:</strong> desenvolvedores, arquitetos de software e profissionais técnicos que querem montar e publicar essa stack com as próprias mãos.</p>
+
+        <a href="/insights/scx-pdf-tool-custo-zero/" class="article-toggle">← Versão para gestores</a>
+
+        <div class="article-body">
+            <p>Ferramentas de manipulação de PDF que rodam no servidor exigem armazenar o arquivo em algum lugar, escalar CPU para operações pesadas de renderização e assumir o risco de manter documentos potencialmente sensíveis em trânsito.</p>
+            <p>A restrição era dura: zero orçamento para servidor dedicado, e nenhuma equipe de infraestrutura disponível para manter um backend tradicional.</p>
+            <p>Este não é só um post de arquitetura. É um checklist executável: marque cada passo conforme for configurando a sua própria stack e, ao final, gere um selo com o seu nome.</p>
+
+            <h2>Decisões de arquitetura</h2>
+
+            <h3>1. Processamento client-side com PDF.js + pdf-lib</h3>
+            <p><strong>Decisão:</strong> renderizar miniaturas com PDF.js e montar/editar o PDF final com pdf-lib, tudo no navegador. Cada arquivo é lido como <code>ArrayBuffer</code>; o PDF.js desenha a primeira página em um <code>&lt;canvas&gt;</code> para a miniatura, e o pdf-lib copia as páginas selecionadas para um novo documento, retornando um <code>Uint8Array</code> convertido em <code>Blob</code> para download.</p>
+            <p>Isso evita envio de binário para qualquer servidor e mantém a performance previsível — sem fila de processamento remoto.</p>
+
+            <h3>2. API mínima em função de borda</h3>
+            <p><strong>Decisão:</strong> expor só duas rotas em um Worker: uma para checar cota de uso, outra para pedir sugestão de nome. <code>GET /check-limit</code> lê um contador no KV, indexado por IP e data. <code>POST /suggest-name</code> recebe até 500 caracteres de texto (nunca o arquivo) e retorna um JSON com o nome sugerido.</p>
+
+            <h3>3. Modelo de IA com fallback em cadeia</h3>
+            <p><strong>Decisão:</strong> um modelo leve como opção primária e, se falhar, um modelo mais robusto como segunda tentativa; se os dois falharem, um nome genérico gerado no próprio Worker. O prompt de sistema é fixo e força resposta em JSON puro, que passa por sanitização (minúsculas, sem acento, <code>snake_case</code>, limite de 50 caracteres) antes de voltar ao cliente.</p>
+
+            <h3>4. Cache por hash</h3>
+            <p><strong>Decisão:</strong> antes de chamar a IA, calcular um hash do texto recebido e checar o KV. Chave no formato <code>suggestion:{hash}</code>, TTL de alguns dias. Um cache hit custa uma leitura de KV, não uma inferência.</p>
+
+            <h3>5. Validação humana sem atrito visível</h3>
+            <p><strong>Decisão:</strong> um widget de bot-protection invisível antes de aceitar qualquer chamada às rotas da API. Um token é gerado em background e enviado como header (<code>X-Turnstile-Token</code>) em cada requisição; falha na validação retorna <code>403</code> sem expor detalhes internos.</p>
+
+            <h2>Como as partes se conectam</h2>
+            <pre><code>Arquivo lido como ArrayBuffer no navegador
+        ↓
+PDF.js renderiza miniaturas (lazy loading)
+        ↓
+Reordenação via SortableJS, seleção via checkbox
+        ↓
+Extração de texto da 1ª página (limite: 500 caracteres)
+        ↓
+GET /check-limit → valida token de bot + consulta contador no KV
+        ↓
+POST /suggest-name → calcula hash(texto) → checa cache no KV
+        ↓
+Cache miss → chama modelo primário → fallback em cadeia se falhar
+        ↓
+Resposta sanitizada, salva no KV com TTL, contador incrementado
+        ↓
+pdf-lib monta o PDF final a partir do buffer original
+        ↓
+Blob gerado → download via elemento &lt;a download&gt;</code></pre>
+
+            <h2>O número que resume a decisão</h2>
+            <p>A cota gratuita de inferência do modelo primário viabiliza, na ordem de milhares de chamadas por dia antes de qualquer custo aparecer — suficiente para cobrir o tráfego de uma ferramenta em fase de validação sem revisar orçamento.</p>
+        </div>
+
+        <div class="tutorial-progress-wrap" id="tutorialProgressWrap">
+            <div class="tutorial-progress-inner">
+                <div class="tutorial-progress-label">
+                    <span id="tutorialProgressLabel">0 de 7 passos concluídos (0%)</span>
+                    <span>Selo SCX Builder ao final →</span>
+                </div>
+                <div class="tutorial-progress-track">
+                    <div class="tutorial-progress-fill" id="tutorialProgressFill"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="article-body">
+            <h2>Checklist interativa: configure sua própria stack</h2>
+            <p>Abaixo está o passo a passo completo de deploy, do zero até o Worker publicado. Todos os valores reais foram substituídos por placeholders no padrão <code>XXX-seudominio</code>. Marque cada passo conforme for executando — o progresso não fica salvo, então vale fazer tudo em uma sentada.</p>
+        </div>
+
+        <ul class="tutorial-checklist" id="tutorialChecklist">
+            <li>
+                <label class="tutorial-step">
+                    <input type="checkbox">
+                    <span class="tutorial-checkbox" aria-hidden="true"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg></span>
+                    <span class="tutorial-step-body">
+                        <span class="tutorial-step-title">1. Criar o widget de validação invisível</span>
+                        <span class="tutorial-step-desc">No painel do seu provedor de borda, crie um widget de bot-protection no modo <strong>Invisible</strong> (sem desafio visual). Em "Hostname management", adicione o seu domínio e o subdomínio <code>www</code>. Ao salvar, você recebe duas chaves: a <strong>Site Key</strong> (pública, vai no HTML como <code>data-sitekey</code>) e a <strong>Secret Key</strong> (privada, só usada no Worker).</span>
+                    </span>
+                </label>
+            </li>
+            <li>
+                <label class="tutorial-step">
+                    <input type="checkbox">
+                    <span class="tutorial-checkbox" aria-hidden="true"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg></span>
+                    <span class="tutorial-step-body">
+                        <span class="tutorial-step-title">2. Criar o namespace de key-value store (KV)</span>
+                        <span class="tutorial-step-desc">Pelo painel ou via CLI: <code>wrangler kv:namespace create "CACHE_KV"</code>. Guarde o <code>id</code> retornado — ele vai para o <code>wrangler.toml</code>. Esse KV guarda o contador de uso diário por IP e o cache de sugestões da IA.</span>
+                    </span>
+                </label>
+            </li>
+            <li>
+                <label class="tutorial-step">
+                    <input type="checkbox">
+                    <span class="tutorial-checkbox" aria-hidden="true"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg></span>
+                    <span class="tutorial-step-body">
+                        <span class="tutorial-step-title">3. Criar o Worker</span>
+                        <span class="tutorial-step-desc">Em Workers &amp; Pages → Create application → Create Worker, escolha um nome (ex: <code>XXX-worker-pdf</code>). O deploy inicial vem com um código de exemplo, que você substitui pelo código da sua API depois.</span>
+                    </span>
+                </label>
+            </li>
+            <li>
+                <label class="tutorial-step">
+                    <input type="checkbox">
+                    <span class="tutorial-checkbox" aria-hidden="true"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg></span>
+                    <span class="tutorial-step-body">
+                        <span class="tutorial-step-title">4. Configurar a secret no Worker</span>
+                        <span class="tutorial-step-desc">Em Settings → Variables and Secrets, adicione uma variável <code>TURNSTILE_SECRET_KEY</code>, cole o valor da Secret Key do passo 1 e marque a opção de criptografar (<em>Encrypt</em>). Assim o valor nunca aparece em texto plano no painel.</span>
+                    </span>
+                </label>
+            </li>
+            <li>
+                <label class="tutorial-step">
+                    <input type="checkbox">
+                    <span class="tutorial-checkbox" aria-hidden="true"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg></span>
+                    <span class="tutorial-step-body">
+                        <span class="tutorial-step-title">5. Vincular o namespace KV ao Worker</span>
+                        <span class="tutorial-step-desc">Ainda em Settings → Bindings, adicione um binding do tipo <strong>KV Namespace</strong> e aponte o nome da variável (ex: <code>CACHE_KV</code>) para o namespace criado no passo 2. O nome precisa bater exatamente com o usado no código.</span>
+                    </span>
+                </label>
+            </li>
+            <li>
+                <label class="tutorial-step">
+                    <input type="checkbox">
+                    <span class="tutorial-checkbox" aria-hidden="true"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg></span>
+                    <span class="tutorial-step-body">
+                        <span class="tutorial-step-title">6. Vincular o binding de inferência de IA</span>
+                        <span class="tutorial-step-desc">Adicione outro binding — mas cuidado, o painel costuma mostrar três opções parecidas.</span>
+                        <span class="tutorial-step-note"><strong>Worker AI</strong> é o correto: permite chamar modelos direto do código (<code>env.AI.run()</code>). <strong>AI Search</strong> e <strong>AI Search Namespace</strong> são de outro produto, voltado a mecanismos de busca sobre dados próprios (RAG), e não servem para este caso.</span>
+                    </span>
+                </label>
+            </li>
+            <li>
+                <label class="tutorial-step">
+                    <input type="checkbox">
+                    <span class="tutorial-checkbox" aria-hidden="true"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg></span>
+                    <span class="tutorial-step-body">
+                        <span class="tutorial-step-title">7. Publicar o Worker e testar</span>
+                        <span class="tutorial-step-desc">Rode <code>wrangler deploy</code> (ou publique pelo painel em "Save and Deploy"). Depois teste: <code>curl -X GET "https://XXX-seudominio.workers.dev/check-limit" -H "X-Turnstile-Token: teste"</code>. Qualquer resposta em JSON já confirma que o Worker está no ar e respondendo.</span>
+                    </span>
+                </label>
+            </li>
+        </ul>
+
+        <div class="article-body">
+            <h2>Lições técnicas</h2>
+            <p><strong>1. Prompt determinístico reduz custo de parsing.</strong> Forçar o modelo a responder em JSON fixo elimina heurísticas de extração de texto — menos código, menos casos de borda.</p>
+            <p><strong>2. Hash como chave de cache é mais barato do que parece.</strong> Uma função de hash simples sobre o texto de entrada já resolve boa parte da repetição de chamadas.</p>
+            <p><strong>3. Fallback em cadeia é mais barato do que redundância de infraestrutura.</strong> Um segundo modelo, mais um valor padrão gerado localmente, cobrem quase todos os cenários de falha sem exigir um segundo provedor.</p>
+            <p><strong>4. Bindings com nomes parecidos escondem produtos diferentes.</strong> "AI", "AI Search" e "AI Search Namespace" não são a mesma coisa. Confira sempre a documentação do tipo exato de binding antes de assumir que está tudo certo.</p>
+            <p><strong>5. Placeholder sem checklist de substituição vira bug de produção.</strong> Documentar exatamente onde cada valor sensível entra, e validar antes do deploy, evita o erro mais comum desse tipo de stack: publicar com uma secret ou uma URL ainda apontando para um valor de exemplo.</p>
+
+            <h2>Notas técnicas adicionais / Documentação</h2>
+            <ul class="article-resources">
+                <li>Renderização e leitura de PDF no navegador: documentação do PDF.js.</li>
+                <li>Montagem e edição de PDF: documentação do pdf-lib.</li>
+                <li>Reordenação por arrastar-e-soltar: documentação do SortableJS.</li>
+                <li>Edge functions, key-value store e inferência de IA: documentação oficial da Cloudflare (Workers, Workers KV, Workers AI, Wrangler CLI).</li>
+                <li>Validação de bot invisível: documentação do Cloudflare Turnstile.</li>
+            </ul>
+            <p style="font-size:0.85rem; color:var(--text-tertiary); font-style:italic;">Este guia descreve arquitetura, configuração e deploy — não reproduz o código-fonte de negócio de nenhuma aplicação específica.</p>
+        </div>
+
+        <div class="tutorial-badge-section is-locked" id="tutorialBadgeSection" data-badge-title="Selo SCX Builder" data-badge-achievement="Implantou uma stack serverless com IA de borda — widget de validação, key-value store e Worker publicados do zero, sem gastar um real.">
+            <svg class="tutorial-badge-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="6"></circle><path d="M9 13.5 6 22l6-3 6 3-3-8.5"></path></svg>
+            <h2>Selo SCX Builder</h2>
+            <p id="tutorialLockedMsg" class="tutorial-locked-msg">Complete os 7 passos acima para desbloquear o seu selo.</p>
+
+            <form class="tutorial-badge-form" id="tutorialBadgeForm" style="display:none;" onsubmit="return false;">
+                <input type="text" id="badgeNameInput" placeholder="Seu nome" maxlength="40" autocomplete="off">
+                <button type="button" class="tutorial-badge-generate-btn" id="badgeGenerateBtn" disabled>Gerar meu selo</button>
+            </form>
+
+            <div class="tutorial-badge-preview" id="badgePreview">
+                <canvas id="badgeCanvas" width="1200" height="630"></canvas>
+                <div class="tutorial-badge-actions">
+                    <button type="button" class="tutorial-badge-download-btn" id="badgeDownloadBtn">Baixar selo (PNG)</button>
+                    <button type="button" class="tutorial-badge-share-btn" id="badgeShareBtn">Compartilhar no LinkedIn</button>
+                </div>
+                <p class="tutorial-badge-hint">O LinkedIn não permite anexar imagem automaticamente por um link. Baixe o selo e anexe manualmente na hora de publicar — o botão acima só abre a tela de compartilhamento com o link deste tutorial.</p>
+            </div>
+        </div>
+
+        <p class="article-share">Concluiu a checklist? Compartilhe o tutorial com quem também quer publicar uma stack serverless sem gastar em servidor.</p>
+
+        <div class="article-share-bar">
+            <span class="article-share-label">Compartilhar:</span>
+            <button type="button" class="share-btn share-btn-copy" data-share="copy" aria-label="Copiar link do artigo">
+                <svg viewBox="0 0 24 24" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"></path></svg>
+                <span class="share-btn-text">Copiar link</span>
+            </button>
+            <a href="#" class="share-btn share-btn-whatsapp" data-share="whatsapp" target="_blank" rel="noopener noreferrer" aria-label="Compartilhar no WhatsApp">
+                <svg viewBox="0 0 24 24" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"></path></svg>
+            </a>
+            <a href="#" class="share-btn share-btn-linkedin" data-share="linkedin" target="_blank" rel="noopener noreferrer" aria-label="Compartilhar no LinkedIn">in</a>
+            <a href="#" class="share-btn share-btn-facebook" data-share="facebook" target="_blank" rel="noopener noreferrer" aria-label="Compartilhar no Facebook">f</a>
+        </div>
+
+        <div class="article-tags">
+            <span class="article-tag">cloudflare workers</span>
+            <span class="article-tag">workers ai</span>
+            <span class="article-tag">wrangler cli</span>
+            <span class="article-tag">pdf.js</span>
+            <span class="article-tag">pdf-lib</span>
+            <span class="article-tag">edge computing</span>
+            <span class="article-tag">key-value store</span>
+            <span class="article-tag">deploy checklist</span>
+            <span class="article-tag">scx na prática</span>
+        </div>
+
+        <div class="article-footer-nav">
+            <a href="/insights/scx-pdf-tool-custo-zero/" class="article-toggle">← Versão para gestores</a>
+        </div>
+    </article>
+
+    <footer class="footer">
+        <img src="/assets/images/logo-scindax.png" alt="Scindax" class="footer-brand-img">
+        <div class="footer-links">
+            <a href="/#hero">Início</a><a href="/#problem">O Problema</a><a href="/#journey">Jornada</a><a href="/#solutions">Soluções</a><a href="/#forwhom">Para quem</a><a href="/insights/">Insights</a><a href="mailto:contato@scindax.com.br">Contato</a>
+        </div>
+        <p>contato@scindax.com.br</p>
+        <p style="margin-top:0.5rem;">&copy; <span id="currentYear"></span> Scindax. Todos os direitos reservados.</p>
+    </footer>
+
+    <script src="/js/navigation.js" defer></script>
+    <script src="/js/main.js" defer></script>
+    <script src="/js/share.js" defer></script>
+    <script src="/js/tutorial-checklist.js" defer></script>
+    <script src="/js/badge-generator.js" defer></script>
+</body>
+</html>
