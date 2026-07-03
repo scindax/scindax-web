@@ -113,29 +113,13 @@ npx serve .
 
 Acesse `http://localhost:8000`.
 
-## Como publicar na Vercel
+## Publicação
 
-1. Faça o push do repositório para o GitHub.
-2. Em [vercel.com](https://vercel.com), selecione **Add New → Project** e
-   importe o repositório.
-3. Em **Framework Preset**, selecione **Other** (projeto estático).
-4. Deixe **Build Command** vazio e defina **Output Directory** como a raiz do
-   projeto (`.`).
-5. Clique em **Deploy**. A cada push na branch principal, a Vercel publica
-   automaticamente uma nova versão.
-
-## Como configurar o domínio no Cloudflare
-
-1. No painel da Vercel, abra **Settings → Domains** do projeto e adicione
-   `scindax.com.br`. A Vercel informará os registros DNS necessários.
-2. No Cloudflare, selecione o domínio e vá em **DNS → Records**.
-3. Adicione os registros indicados pela Vercel:
-   - um registro `A` (ou `CNAME`) para o apex `scindax.com.br`;
-   - um registro `CNAME` para `www` apontando para o destino da Vercel.
-4. Mantenha o proxy do Cloudflare (nuvem laranja) conforme a recomendação da
-   Vercel para o seu caso e aguarde a propagação do DNS.
-5. Em **SSL/TLS**, utilize o modo **Full** para garantir HTTPS de ponta a
-   ponta.
+O site é publicado através do **Cloudflare Pages**, direto a partir deste
+repositório, com o domínio `scindax.com.br` já configurado. A cada
+atualização enviada ao repositório, uma nova versão é publicada
+automaticamente, mantendo o site sempre no ar de forma estável e
+apresentável ao público.
 
 ## Licença
 
