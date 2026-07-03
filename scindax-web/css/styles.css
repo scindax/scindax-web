@@ -925,6 +925,34 @@ body {
     border-color: rgba(91, 111, 245, 0.22);
 }
 
+.insight-version-link.is-tutorial {
+    border-color: rgba(255, 215, 107, 0.4);
+    color: #f0dca0;
+}
+
+.insight-version-link.is-tutorial:hover {
+    border-color: var(--lab-glow, #ffd76b);
+    background: rgba(255, 215, 107, 0.1);
+    color: #ffd76b;
+}
+
+/* Selo de série, usado no card e no cabeçalho do artigo */
+.insight-card-series-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.2rem 0.7rem;
+    border-radius: 20px;
+    border: 1px solid rgba(255, 215, 107, 0.4);
+    background: rgba(255, 215, 107, 0.08);
+    color: #ffd76b;
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    margin-bottom: 0.6rem;
+}
+
 /* Card de posts "Dicas" — fundo claro, igual ao da própria página */
 .insight-card.is-tips {
     background: #f6f6f4;
@@ -1542,6 +1570,359 @@ body.tips-page .article-resources a:hover {
 
 body.tips-page .article-footer-nav {
     border-top-color: #e2e1da;
+}
+
+/* ============================================================
+   Insights — série "SCX Na Prática" (tutorial interativo)
+   Tom azulado mais intenso que tech-page + checklist gamificada
+   sem persistência + selo compartilhável ao final
+   ============================================================ */
+body.tutorial-page {
+    background:
+        radial-gradient(ellipse 1000px 600px at 50% 0%, rgba(58, 82, 240, 0.2), transparent 70%),
+        radial-gradient(ellipse 700px 420px at 100% 35%, rgba(91, 111, 245, 0.12), transparent 70%),
+        var(--bg-primary);
+}
+
+body.tutorial-page .insights-breadcrumb a { color: var(--accent-glow); }
+body.tutorial-page .article-meta { color: #9db0ff; }
+
+body.tutorial-page .article-toggle {
+    border-color: var(--accent-glow);
+    background: rgba(58, 82, 240, 0.18);
+}
+body.tutorial-page .article-toggle:hover { background: rgba(58, 82, 240, 0.28); }
+
+body.tutorial-page .article-body h2,
+body.tutorial-page .article-body h3 { color: #eef1ff; }
+
+body.tutorial-page .article-body pre {
+    background: #0c1230;
+    border-color: rgba(91, 111, 245, 0.4);
+}
+
+body.tutorial-page .article-body p code {
+    background: rgba(58, 82, 240, 0.18);
+    border-color: rgba(91, 111, 245, 0.35);
+    color: #c7d0ff;
+}
+
+body.tutorial-page .article-tag {
+    border-color: rgba(91, 111, 245, 0.4);
+    color: #b9c4ff;
+    background: rgba(58, 82, 240, 0.1);
+}
+
+body.tutorial-page .article-body th,
+body.tutorial-page .article-body td {
+    border-bottom-color: rgba(91, 111, 245, 0.2);
+}
+
+body.tutorial-page .article-resources a { color: #7c8ae0; }
+body.tutorial-page .article-resources a:hover { color: #b9c4ff; }
+
+/* Barra de progresso, fixa no topo enquanto o leitor rola a checklist */
+.tutorial-progress-wrap {
+    position: sticky;
+    top: 0;
+    z-index: 5;
+    background: rgba(8, 9, 20, 0.92);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-bottom: 1px solid rgba(91, 111, 245, 0.25);
+    padding: 0.85rem 2rem;
+}
+
+.tutorial-progress-inner {
+    max-width: 760px;
+    margin: 0 auto;
+}
+
+.tutorial-progress-label {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.8rem;
+    color: #b9c4ff;
+    margin-bottom: 0.4rem;
+    font-weight: 500;
+}
+
+.tutorial-progress-track {
+    height: 6px;
+    border-radius: 999px;
+    background: rgba(91, 111, 245, 0.15);
+    overflow: hidden;
+}
+
+.tutorial-progress-fill {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, var(--accent-blue), var(--accent-glow));
+    border-radius: 999px;
+    transition: width 0.4s var(--transition-smooth);
+}
+
+/* Checklist */
+.tutorial-checklist {
+    display: flex;
+    flex-direction: column;
+    gap: 0.9rem;
+    margin: 2rem 0 3rem;
+    list-style: none;
+}
+
+.tutorial-step {
+    position: relative;
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    padding: 1.1rem 1.3rem;
+    border-radius: 14px;
+    border: 1px solid rgba(91, 111, 245, 0.22);
+    background: rgba(20, 24, 48, 0.55);
+    cursor: pointer;
+    transition: all 0.3s var(--transition-smooth);
+}
+
+.tutorial-step:hover {
+    border-color: rgba(91, 111, 245, 0.4);
+    background: rgba(20, 24, 48, 0.8);
+}
+
+.tutorial-step input[type="checkbox"] {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.tutorial-checkbox {
+    flex-shrink: 0;
+    width: 24px;
+    height: 24px;
+    border-radius: 7px;
+    border: 2px solid rgba(91, 111, 245, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 0.15rem;
+    transition: all 0.25s var(--transition-spring);
+}
+
+.tutorial-checkbox svg {
+    width: 14px;
+    height: 14px;
+    stroke: #0a0a0b;
+    fill: none;
+    stroke-width: 3;
+    opacity: 0;
+    transform: scale(0.5);
+    transition: all 0.25s var(--transition-spring);
+}
+
+.tutorial-step.is-done {
+    border-color: rgba(53, 196, 106, 0.4);
+    background: rgba(53, 196, 106, 0.06);
+}
+
+.tutorial-step.is-done .tutorial-checkbox {
+    background: #35c46a;
+    border-color: #35c46a;
+}
+
+.tutorial-step.is-done .tutorial-checkbox svg {
+    opacity: 1;
+    transform: scale(1);
+}
+
+.tutorial-step.is-done .tutorial-step-title {
+    color: #9fdcb8;
+    text-decoration: line-through;
+    text-decoration-color: rgba(159, 220, 184, 0.4);
+}
+
+.tutorial-step-body { flex: 1; }
+
+.tutorial-step-title {
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 0.35rem;
+    transition: color 0.25s var(--transition-smooth);
+}
+
+.tutorial-step-desc {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    font-weight: 300;
+    line-height: 1.65;
+}
+
+.tutorial-step-desc code {
+    background: rgba(58, 82, 240, 0.16);
+    border: 1px solid rgba(91, 111, 245, 0.3);
+    color: #c7d0ff;
+    padding: 0.1rem 0.4rem;
+    border-radius: 5px;
+    font-size: 0.85em;
+}
+
+.tutorial-step-table {
+    margin-top: 0.85rem;
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.82rem;
+}
+
+.tutorial-step-table th,
+.tutorial-step-table td {
+    text-align: left;
+    padding: 0.5rem 0.7rem;
+    border-bottom: 1px solid rgba(91, 111, 245, 0.2);
+    color: var(--text-secondary);
+}
+
+.tutorial-step-table th {
+    color: #c7d0ff;
+    font-weight: 600;
+}
+
+.tutorial-step-note {
+    margin-top: 0.7rem;
+    padding: 0.75rem 1rem;
+    border-radius: 10px;
+    background: rgba(255, 215, 107, 0.07);
+    border: 1px solid rgba(255, 215, 107, 0.25);
+    font-size: 0.85rem;
+    color: #f0dca0;
+}
+
+/* Selo SCX Builder */
+.tutorial-badge-section {
+    text-align: center;
+    border-radius: 18px;
+    padding: 3rem 2rem;
+    margin: 3rem 0;
+    border: 1px solid rgba(91, 111, 245, 0.25);
+    background: rgba(20, 24, 48, 0.5);
+    transition: opacity 0.4s var(--transition-smooth);
+}
+
+.tutorial-badge-section.is-locked { opacity: 0.55; }
+
+.tutorial-badge-icon {
+    width: 48px;
+    height: 48px;
+    margin: 0 auto 1.25rem;
+    color: var(--lab-glow, #ffd76b);
+}
+
+.tutorial-badge-section h2 {
+    font-size: 1.4rem;
+    margin-bottom: 0.6rem;
+    color: #eef1ff;
+}
+
+.tutorial-badge-section > p {
+    color: var(--text-secondary);
+    font-weight: 300;
+    max-width: 480px;
+    margin: 0 auto 1.5rem;
+}
+
+.tutorial-locked-msg {
+    font-size: 0.85rem;
+    color: var(--text-tertiary);
+    font-weight: 400;
+}
+
+.tutorial-badge-form {
+    display: flex;
+    gap: 0.6rem;
+    max-width: 380px;
+    margin: 0 auto 1.5rem;
+}
+
+.tutorial-badge-form input {
+    flex: 1;
+    padding: 0.75rem 1rem;
+    border-radius: 10px;
+    border: 1px solid rgba(91, 111, 245, 0.35);
+    background: rgba(10, 10, 15, 0.6);
+    color: var(--text-primary);
+    font-family: var(--font-inter);
+    font-size: 0.9rem;
+}
+
+.tutorial-badge-form input:focus {
+    outline: none;
+    border-color: var(--accent-glow);
+}
+
+.tutorial-badge-generate-btn,
+.tutorial-badge-download-btn,
+.tutorial-badge-share-btn {
+    padding: 0.75rem 1.4rem;
+    border-radius: 10px;
+    border: none;
+    font-family: var(--font-inter);
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s var(--transition-smooth);
+}
+
+.tutorial-badge-generate-btn {
+    background: var(--accent-blue);
+    color: #fff;
+}
+.tutorial-badge-generate-btn:hover { background: var(--accent-glow); }
+.tutorial-badge-generate-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+.tutorial-badge-preview {
+    margin: 1.5rem auto 0;
+    max-width: 480px;
+    display: none;
+}
+
+.tutorial-badge-preview.is-visible { display: block; }
+
+.tutorial-badge-preview canvas {
+    width: 100%;
+    height: auto;
+    border-radius: 12px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.45);
+}
+
+.tutorial-badge-actions {
+    display: flex;
+    gap: 0.7rem;
+    justify-content: center;
+    margin-top: 1.25rem;
+    flex-wrap: wrap;
+}
+
+.tutorial-badge-download-btn {
+    background: #eef1ff;
+    color: #0c1230;
+}
+.tutorial-badge-download-btn:hover { background: #fff; }
+
+.tutorial-badge-share-btn {
+    background: #0a66c2;
+    color: #fff;
+}
+.tutorial-badge-share-btn:hover { filter: brightness(1.12); }
+
+.tutorial-badge-hint {
+    font-size: 0.78rem;
+    color: var(--text-tertiary);
+    margin: 1rem auto 0;
+    max-width: 420px;
+}
+
+@media (max-width: 768px) {
+    .tutorial-progress-wrap { padding: 0.75rem 1.25rem; }
+    .tutorial-badge-form { flex-direction: column; }
+    .tutorial-step { padding: 1rem; }
 }
 
 /* ============================================================
