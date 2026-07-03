@@ -1,0 +1,237 @@
+/* ============================================================
+ * Scindax Lab — página de apresentação
+ * Especificação: SCX-SPEC-LAB-001, seção 4.
+ *
+ * Reaproveita as variáveis de cor/fonte de css/styles.css e
+ * adiciona o tom "experimental" (dourado) próprio do Lab.
+ * ============================================================ */
+
+:root {
+    --lab-glow: #ffd76b;
+    --lab-glow-soft: rgba(255, 215, 107, 0.5);
+    --lab-violet: #8a6bff;
+}
+
+body.lab-page {
+    background:
+        radial-gradient(circle at 15% 10%, rgba(255, 215, 107, 0.08), transparent 45%),
+        radial-gradient(circle at 85% 30%, rgba(138, 107, 255, 0.1), transparent 50%),
+        var(--bg-primary);
+    min-height: 100vh;
+}
+
+/* Link discreto de retorno ao site institucional */
+.lab-back-link {
+    position: fixed;
+    top: 1.5rem;
+    left: 1.5rem;
+    z-index: 10;
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-size: 0.85rem;
+    padding: 0.5rem 0.9rem;
+    border-radius: 999px;
+    border: 1px solid var(--border-subtle);
+    background: rgba(17, 17, 20, 0.6);
+    backdrop-filter: blur(8px);
+    transition: color 0.3s, border-color 0.3s;
+}
+
+.lab-back-link:hover {
+    color: var(--text-primary);
+    border-color: var(--lab-glow-soft);
+}
+
+.lab-shell {
+    max-width: 780px;
+    margin: 0 auto;
+    padding: 7rem 1.5rem 5rem;
+}
+
+/* ---------- Cabeçalho ---------- */
+.lab-hero {
+    text-align: center;
+    margin-bottom: 3.5rem;
+}
+
+.lab-eyebrow {
+    color: var(--lab-glow);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    font-size: 0.78rem;
+    font-weight: 600;
+    margin-bottom: 0.9rem;
+}
+
+.lab-title {
+    font-size: clamp(2.1rem, 5vw, 3rem);
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    margin-bottom: 1rem;
+    background: linear-gradient(120deg, var(--text-primary) 40%, var(--lab-glow) 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+}
+
+.lab-subtitle {
+    font-size: 1.15rem;
+    color: var(--text-secondary);
+    max-width: 560px;
+    margin: 0 auto 1.25rem;
+}
+
+.lab-description {
+    font-size: 0.95rem;
+    color: var(--text-tertiary);
+    max-width: 560px;
+    margin: 0 auto;
+    line-height: 1.7;
+}
+
+/* ---------- Seções genéricas ---------- */
+.lab-section-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 1.25rem;
+}
+
+.lab-tools,
+.lab-consent {
+    margin-bottom: 3rem;
+    padding: 1.75rem;
+    border-radius: 16px;
+    border: 1px solid var(--border-subtle);
+    background: rgba(22, 22, 26, 0.55);
+}
+
+/* ---------- Card de ferramenta ---------- */
+.lab-tool-card {
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+    padding: 1.5rem;
+    border-radius: 14px;
+    border: 1px solid var(--border-subtle);
+    background: var(--bg-secondary);
+    transition: border-color 0.3s, transform 0.3s var(--transition-smooth);
+}
+
+.lab-tool-card:hover {
+    border-color: var(--lab-glow-soft);
+    transform: translateY(-2px);
+}
+
+.lab-tool-icon {
+    font-size: 2rem;
+    flex-shrink: 0;
+    width: 56px;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 12px;
+    background: rgba(255, 215, 107, 0.08);
+}
+
+.lab-tool-info {
+    flex: 1;
+}
+
+.lab-tool-name {
+    font-size: 1.05rem;
+    font-weight: 700;
+    margin-bottom: 0.3rem;
+}
+
+.lab-tool-desc {
+    font-size: 0.88rem;
+    color: var(--text-tertiary);
+    line-height: 1.6;
+}
+
+.lab-tool-btn {
+    flex-shrink: 0;
+    padding: 0.65rem 1.2rem;
+    border-radius: 999px;
+    background: var(--lab-glow);
+    color: #171713;
+    font-weight: 600;
+    font-size: 0.85rem;
+    text-decoration: none;
+    white-space: nowrap;
+    transition: filter 0.25s, transform 0.25s;
+}
+
+.lab-tool-btn:hover {
+    filter: brightness(1.08);
+    transform: scale(1.03);
+}
+
+.lab-tools-empty {
+    margin-top: 1.25rem;
+    font-size: 0.82rem;
+    color: var(--text-tertiary);
+    text-align: center;
+}
+
+/* ---------- Consentimento / privacidade ---------- */
+.lab-consent-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.65rem;
+    margin-bottom: 1.25rem;
+}
+
+.lab-consent-list li {
+    font-size: 0.88rem;
+    color: var(--text-secondary);
+    padding-left: 1.4rem;
+    position: relative;
+    line-height: 1.6;
+}
+
+.lab-consent-list li::before {
+    content: '✓';
+    position: absolute;
+    left: 0;
+    color: var(--lab-glow);
+    font-weight: 700;
+}
+
+.lab-consent-note {
+    font-size: 0.82rem;
+    color: var(--text-tertiary);
+    border-top: 1px solid var(--border-subtle);
+    padding-top: 1rem;
+}
+
+/* ---------- Transição "cortina" ao acessar uma ferramenta ---------- */
+.lab-curtain {
+    position: fixed;
+    inset: 0;
+    z-index: 200;
+    background: var(--bg-primary);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.4s var(--transition-smooth);
+}
+
+.lab-curtain.lab-curtain--active {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+@media (max-width: 560px) {
+    .lab-tool-card {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .lab-tool-btn {
+        width: 100%;
+        text-align: center;
+    }
+}

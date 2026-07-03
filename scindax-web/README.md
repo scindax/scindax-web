@@ -30,7 +30,22 @@ scindax-web/
 │   ├── main.js             # Bootstrap, configuração da AMES e ano do rodapé
 │   ├── particles.js        # Campo de partículas do hero (Canvas)
 │   ├── navigation.js       # Navbar, rolagem suave e fade do canvas
-│   └── animations.js       # Animações de entrada (IntersectionObserver)
+│   ├── animations.js       # Animações de entrada (IntersectionObserver)
+│   └── lab-button.js       # Botão lateral de entrada do Scindax Lab
+├── lab/                    # Scindax Lab — apresentação e lista de ferramentas
+│   ├── index.html
+│   └── assets/
+│       ├── css/lab-style.css
+│       └── js/lab-app.js
+├── tools/                  # Ferramentas experimentais do Lab
+│   └── scx-pdf/             # SCX PDF Tool
+│       ├── index.html
+│       ├── css/style.css
+│       └── js/              # app.js, upload-manager.js, page-grid.js,
+│                             # pdf-processor.js, undo-manager.js, ai-client.js, utils.js
+├── worker/
+│   └── worker.js            # Cloudflare Worker (Turnstile, Workers AI, KV)
+├── wrangler.toml             # Configuração do Worker
 ├── assets/
 │   ├── images/
 │   │   ├── logo-scindax.png
@@ -43,6 +58,37 @@ scindax-web/
 ├── README.md
 └── LICENSE
 ```
+
+## Scindax Lab
+
+O **Scindax Lab** (`/lab/`) é um espaço experimental do site onde ferramentas
+em fase de testes são disponibilizadas gratuitamente ao público, com coleta
+de dados anônimos para orientar produtos futuros. Ele não aparece no menu
+principal — o acesso é feito por um botão discreto na lateral esquerda da
+tela, revelado com uma animação de "poeira mágica" 1,5s após o carregamento
+da página (`js/lab-button.js`).
+
+A primeira ferramenta do Lab é o **SCX PDF Tool** (`/tools/scx-pdf/`): junção,
+separação e reorganização de páginas de PDF, com todo o processamento
+rodando localmente no navegador (PDF.js + pdf-lib + SortableJS). A única
+comunicação com a nuvem é para verificação anti-bot (Cloudflare Turnstile) e
+sugestão automática de nome de arquivo (Cloudflare Workers AI) — nenhum PDF é
+enviado a servidores. Veja as especificações completas em
+`SCX-SPEC-ARC-001`, `SCX-SPEC-UX-001`, `SCX-SPEC-IMP-001`, `SCX-SPEC-AI-001` e
+`SCX-SPEC-LAB-001`.
+
+### Publicando o Worker
+
+O backend do SCX PDF Tool é um Cloudflare Worker (`worker/worker.js`),
+configurado em `wrangler.toml`. Antes do primeiro deploy:
+
+1. Crie o namespace do KV: `wrangler kv:namespace create "SCX_KV"` e cole o
+   ID retornado em `wrangler.toml`.
+2. Configure a chave secreta do Turnstile: `wrangler secret put TURNSTILE_SECRET_KEY`.
+3. Publique o Worker: `wrangler deploy`.
+4. Atualize a constante `WORKER_BASE_URL` em `tools/scx-pdf/js/ai-client.js`
+   e o `data-sitekey` do Turnstile em `tools/scx-pdf/index.html` com os
+   valores reais do seu ambiente.
 
 ## Como executar localmente
 

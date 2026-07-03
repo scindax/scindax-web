@@ -1565,3 +1565,178 @@ body.tips-page .article-footer-nav {
     position: relative;
     z-index: 1;
 }
+
+/* ============================================================
+   Scindax Lab — botão lateral de entrada (revelação mágica)
+   Especificação: SCX-SPEC-LAB-001, seção 3.
+   ============================================================ */
+
+/* Cor de brilho exclusiva do Lab (dourado), isolada do tema azul do site */
+:root {
+    --lab-glow: #ffd76b;
+    --lab-glow-soft: rgba(255, 215, 107, 0.55);
+}
+
+/* Botão fixo na lateral inferior esquerda; nasce invisível e é revelado via JS após 1.5s */
+.scx-lab-btn {
+    position: fixed;
+    left: 1.25rem;
+    bottom: 1.75rem;
+    z-index: 90;
+    width: 52px;
+    height: 52px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    border-radius: 999px;
+    border: 1px solid rgba(255, 215, 107, 0.35);
+    background: rgba(17, 17, 20, 0.85);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    color: var(--lab-glow);
+    text-decoration: none;
+    font-family: var(--font-inter);
+    font-size: 1.2rem;
+    line-height: 1;
+    cursor: pointer;
+    /* Estado inicial: invisível e levemente encolhido (item 3.2 do documento) */
+    opacity: 0;
+    transform: scale(0.8);
+    filter: blur(4px);
+    pointer-events: none;
+    box-shadow: 0 0 0 rgba(255, 215, 107, 0);
+    transition: width 0.4s var(--transition-smooth), box-shadow 0.4s var(--transition-smooth), border-color 0.4s;
+}
+
+/* Classe adicionada pelo lab-button.js quando a animação de revelação deve disparar */
+.scx-lab-btn.scx-lab-btn--visible {
+    pointer-events: auto;
+    animation: scxMagicalReveal 1.1s var(--transition-smooth) forwards;
+}
+
+/* Rótulo textual "Lab" que só aparece em telas maiores, ao passar o mouse (item 3.3) */
+.scx-lab-btn .scx-lab-btn-label {
+    max-width: 0;
+    overflow: hidden;
+    white-space: nowrap;
+    opacity: 0;
+    font-size: 0.85rem;
+    font-weight: 500;
+    transition: max-width 0.35s var(--transition-smooth), opacity 0.3s ease;
+}
+
+@media (min-width: 768px) {
+    .scx-lab-btn:hover {
+        width: auto;
+        padding: 0 1.1rem 0 1rem;
+        box-shadow: 0 0 22px var(--lab-glow-soft);
+        border-color: rgba(255, 215, 107, 0.7);
+    }
+
+    .scx-lab-btn:hover .scx-lab-btn-label {
+        max-width: 160px;
+        opacity: 1;
+        margin-left: 0.15rem;
+    }
+}
+
+/* Brilho residual e contínuo (glow) que permanece sutil após a revelação, item 3.2.4 */
+.scx-lab-btn::after {
+    content: '';
+    position: absolute;
+    inset: -6px;
+    border-radius: inherit;
+    box-shadow: 0 0 18px 2px var(--lab-glow-soft);
+    opacity: 0;
+    animation: scxLabGlowPulse 3.2s ease-in-out 1.6s infinite;
+    pointer-events: none;
+}
+
+/* Animação de entrada: opacidade 0→1 e escala 0.8→1.0, com pico de brilho intermediário */
+@keyframes scxMagicalReveal {
+    0% {
+        opacity: 0;
+        transform: scale(0.8);
+        filter: blur(4px) brightness(1);
+    }
+
+    50% {
+        opacity: 0.6;
+        transform: scale(1.15);
+        filter: blur(2px) brightness(1.6);
+    }
+
+    100% {
+        opacity: 1;
+        transform: scale(1);
+        filter: blur(0) brightness(1);
+    }
+}
+
+/* Pulsação lenta e infinita do glow residual, para manter a sensação "mágica" */
+@keyframes scxLabGlowPulse {
+
+    0%,
+    100% {
+        opacity: 0.15;
+    }
+
+    50% {
+        opacity: 0.55;
+    }
+}
+
+/* Partícula individual de "poeira mágica", criada dinamicamente pelo lab-button.js */
+.scx-lab-particle {
+    position: fixed;
+    z-index: 89;
+    left: 0;
+    top: 0;
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: var(--lab-glow);
+    box-shadow: 0 0 6px 1px var(--lab-glow-soft);
+    pointer-events: none;
+    opacity: 0;
+    animation: scxParticleDrift 1s ease-out forwards;
+}
+
+/* Cada partícula usa as variáveis --scx-dx/--scx-dy (definidas inline pelo JS)
+   para se deslocar em uma direção aleatória enquanto desaparece */
+@keyframes scxParticleDrift {
+    0% {
+        opacity: 0;
+        transform: translate(0, 0) scale(1);
+    }
+
+    15% {
+        opacity: 1;
+    }
+
+    100% {
+        opacity: 0;
+        transform: translate(var(--scx-dx), var(--scx-dy)) scale(0.3);
+    }
+}
+
+/* Respeita a preferência de movimento reduzido do usuário: sem partículas nem animação de escala */
+@media (prefers-reduced-motion: reduce) {
+
+    .scx-lab-btn.scx-lab-btn--visible {
+        animation: none;
+        opacity: 1;
+        transform: scale(1);
+        filter: none;
+    }
+
+    .scx-lab-btn::after {
+        animation: none;
+        opacity: 0.3;
+    }
+
+    .scx-lab-particle {
+        display: none;
+    }
+}

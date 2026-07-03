@@ -1,0 +1,665 @@
+/* ============================================================
+ * SCX PDF Tool — folha de estilos
+ * Especificação: SCX-SPEC-UX-001.
+ *
+ * Paleta reaproveitada do site institucional (tema escuro,
+ * acento azul/violeta), com o dourado do Lab reservado para o
+ * destaque de IA (item 4, ícone ✨).
+ * ============================================================ */
+
+:root {
+    --bg-primary: #0a0a0b;
+    --bg-secondary: #111114;
+    --bg-tertiary: #16161a;
+    --text-primary: #f0f0f2;
+    --text-secondary: #b0b0b8;
+    --text-tertiary: #6b6b75;
+    --accent-blue: #3a52f0;
+    --accent-glow: #5b6ff5;
+    --accent-green: #2fbf6e;
+    --accent-red: #e5484d;
+    --lab-glow: #ffd76b;
+    --border-subtle: #1e1e24;
+    --font-inter: 'Inter', system-ui, -apple-system, sans-serif;
+    --transition-smooth: cubic-bezier(0.4, 0, 0.2, 1);
+    --scx-footer-height: 96px;
+    --scx-banner-height: 44px;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    font-size: 16px;
+    -webkit-font-smoothing: antialiased;
+}
+
+body.scx-pdf-page {
+    font-family: var(--font-inter);
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    line-height: 1.6;
+    padding-top: calc(var(--scx-banner-height) + 56px);
+    padding-bottom: var(--scx-footer-height);
+    min-height: 100vh;
+}
+
+.scx-visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+}
+
+button {
+    font-family: inherit;
+    cursor: pointer;
+}
+
+/* ---------- Banner fixo de transparência ---------- */
+.scx-banner {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 60;
+    min-height: var(--scx-banner-height);
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.6rem 1.25rem;
+    background: rgba(58, 82, 240, 0.14);
+    border-bottom: 1px solid rgba(58, 82, 240, 0.3);
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+}
+
+.scx-banner p {
+    margin: 0;
+}
+
+/* ---------- Barra superior ---------- */
+.scx-topbar {
+    position: fixed;
+    top: var(--scx-banner-height);
+    left: 0;
+    right: 0;
+    z-index: 55;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 1.25rem;
+    background: rgba(10, 10, 11, 0.85);
+    backdrop-filter: blur(14px);
+    border-bottom: 1px solid var(--border-subtle);
+}
+
+.scx-topbar-back {
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-size: 0.85rem;
+    transition: color 0.25s;
+}
+
+.scx-topbar-back:hover {
+    color: var(--text-primary);
+}
+
+.scx-topbar-title {
+    font-size: 1rem;
+    font-weight: 700;
+    letter-spacing: 0.01em;
+}
+
+.scx-topbar-spacer {
+    width: 90px;
+}
+
+/* ---------- Estrutura principal ---------- */
+.scx-shell {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 1.5rem 1.25rem 2rem;
+}
+
+/* ---------- Área de upload ---------- */
+.scx-upload {
+    border: 2px dashed var(--border-subtle);
+    border-radius: 16px;
+    padding: 2.5rem 1.5rem;
+    text-align: center;
+    transition: border-color 0.25s, background 0.25s;
+    margin-bottom: 1.5rem;
+}
+
+.scx-upload.scx-upload--dragover {
+    border-color: var(--accent-blue);
+    background: rgba(58, 82, 240, 0.08);
+}
+
+.scx-upload-icon {
+    font-size: 2rem;
+    margin-bottom: 0.75rem;
+}
+
+.scx-upload-text {
+    font-size: 1rem;
+    color: var(--text-secondary);
+    margin-bottom: 0.4rem;
+}
+
+.scx-upload-link {
+    background: none;
+    border: none;
+    color: var(--accent-glow);
+    font-weight: 600;
+    text-decoration: underline;
+    font-size: inherit;
+    padding: 0;
+}
+
+.scx-upload-hint {
+    font-size: 0.78rem;
+    color: var(--text-tertiary);
+}
+
+/* ---------- Barra de ferramentas ---------- */
+.scx-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.75rem 1rem;
+    border: 1px solid var(--border-subtle);
+    border-radius: 12px;
+    background: var(--bg-secondary);
+    margin-bottom: 1.25rem;
+    position: sticky;
+    top: calc(var(--scx-banner-height) + 56px + 0.75rem);
+    z-index: 40;
+}
+
+.scx-toolbar-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.scx-tool-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.5rem 0.85rem;
+    border-radius: 8px;
+    border: 1px solid var(--border-subtle);
+    background: var(--bg-tertiary);
+    color: var(--text-secondary);
+    font-size: 0.82rem;
+    font-weight: 500;
+    white-space: nowrap;
+    transition: color 0.2s, border-color 0.2s, background 0.2s;
+}
+
+.scx-tool-btn:hover:not(:disabled) {
+    color: var(--text-primary);
+    border-color: var(--accent-glow);
+}
+
+.scx-tool-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+.scx-tool-btn--danger:hover:not(:disabled) {
+    color: var(--accent-red);
+    border-color: var(--accent-red);
+}
+
+/* Contador de ações disponíveis, ex.: "Desfazer (3)" (SCX-SPEC-UX-001, seção 2.5) */
+.scx-tool-count:not(:empty) {
+    font-size: 0.72rem;
+    color: var(--text-tertiary);
+}
+
+/* ---------- Grade de miniaturas ---------- */
+.scx-grid-wrapper {
+    min-height: 200px;
+}
+
+.scx-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 1rem;
+}
+
+@media (min-width: 1024px) {
+    .scx-grid {
+        grid-template-columns: repeat(6, 1fr);
+    }
+}
+
+@media (min-width: 768px) and (max-width: 1023px) {
+    .scx-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+@media (min-width: 481px) and (max-width: 767px) {
+    .scx-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 480px) {
+    .scx-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.scx-grid-empty {
+    text-align: center;
+    color: var(--text-tertiary);
+    font-size: 0.85rem;
+    padding: 2.5rem 0;
+}
+
+.scx-grid:not(:empty)+.scx-grid-empty,
+.scx-grid.scx-grid--has-pages+.scx-grid-empty {
+    display: none;
+}
+
+/* Card de página */
+.scx-page-card {
+    position: relative;
+    border-radius: 10px;
+    border: 2px solid var(--border-subtle);
+    background: var(--bg-secondary);
+    overflow: hidden;
+    cursor: grab;
+    transition: border-color 0.2s, box-shadow 0.2s, opacity 0.25s, transform 0.25s;
+}
+
+.scx-page-card:hover {
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35);
+}
+
+.scx-page-card--selected {
+    border-color: var(--accent-glow);
+    box-shadow: 0 0 0 1px var(--accent-glow);
+}
+
+.scx-page-card--dragging {
+    opacity: 0.55;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+}
+
+/* Animação de saída ao excluir (SCX-SPEC-UX-001, seção 8) */
+.scx-page-card--removing {
+    opacity: 0;
+    transform: scale(0.85);
+}
+
+/* Placeholder do SortableJS durante o arraste: colapsa para uma linha
+   azul indicando o ponto exato de inserção (SCX-SPEC-UX-001, seção 2.3) */
+.scx-page-card.scx-page-card--ghost {
+    min-height: 6px;
+    background: var(--accent-glow);
+    border-color: var(--accent-glow);
+    box-shadow: 0 0 8px var(--accent-glow);
+    overflow: hidden;
+}
+
+.scx-page-card.scx-page-card--ghost>* {
+    display: none;
+}
+
+.scx-page-thumb {
+    width: 100%;
+    aspect-ratio: 3 / 4;
+    display: block;
+    background: var(--bg-tertiary);
+    object-fit: contain;
+}
+
+.scx-page-checkbox {
+    position: absolute;
+    top: 0.5rem;
+    left: 0.5rem;
+    width: 22px;
+    height: 22px;
+    accent-color: var(--accent-blue);
+    cursor: pointer;
+    z-index: 2;
+}
+
+.scx-page-meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.45rem 0.6rem;
+    font-size: 0.72rem;
+    color: var(--text-tertiary);
+    border-top: 1px solid var(--border-subtle);
+}
+
+.scx-page-number {
+    font-weight: 600;
+    color: var(--text-secondary);
+}
+
+.scx-page-origin {
+    max-width: 90px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* Indicador de posição de drop durante o drag and drop */
+.scx-drop-indicator {
+    height: 3px;
+    border-radius: 2px;
+    background: var(--accent-glow);
+    box-shadow: 0 0 8px var(--accent-glow);
+}
+
+/* ---------- Rodapé fixo: nome + download ---------- */
+.scx-footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 50;
+    height: var(--scx-footer-height);
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0 1.25rem;
+    background: rgba(17, 17, 20, 0.92);
+    backdrop-filter: blur(14px);
+    border-top: 1px solid var(--border-subtle);
+}
+
+.scx-footer-name {
+    flex: 1;
+    min-width: 0;
+}
+
+.scx-footer-label {
+    display: block;
+    font-size: 0.72rem;
+    color: var(--text-tertiary);
+    margin-bottom: 0.3rem;
+}
+
+.scx-footer-input-wrap {
+    position: relative;
+}
+
+.scx-footer-input {
+    width: 100%;
+    padding: 0.6rem 2.25rem 0.6rem 0.75rem;
+    border-radius: 8px;
+    border: 1px solid var(--border-subtle);
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+    font-size: 0.9rem;
+}
+
+.scx-footer-input:focus {
+    outline: none;
+    border-color: var(--accent-glow);
+}
+
+/* Destaque verde momentâneo ao receber a sugestão da IA (item 8) */
+.scx-footer-input--suggested {
+    animation: scxSuggestionPulse 1s ease;
+}
+
+@keyframes scxSuggestionPulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(47, 191, 110, 0.6);
+    }
+
+    100% {
+        box-shadow: 0 0 0 8px rgba(47, 191, 110, 0);
+    }
+}
+
+.scx-footer-ai-icon {
+    position: absolute;
+    right: 0.6rem;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 0.95rem;
+    pointer-events: none;
+}
+
+.scx-process-btn {
+    flex-shrink: 0;
+    padding: 0.85rem 1.5rem;
+    border: none;
+    border-radius: 10px;
+    background: linear-gradient(120deg, var(--accent-blue), var(--accent-glow));
+    color: #fff;
+    font-weight: 700;
+    font-size: 0.92rem;
+    transition: filter 0.2s, transform 0.2s;
+}
+
+.scx-process-btn:hover:not(:disabled) {
+    filter: brightness(1.08);
+    transform: translateY(-1px);
+}
+
+.scx-process-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.scx-process-btn--success {
+    background: linear-gradient(120deg, var(--accent-green), #4fd88a);
+}
+
+/* ---------- Barra de progresso ---------- */
+.scx-progress-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 120;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(10, 10, 11, 0.75);
+    backdrop-filter: blur(4px);
+}
+
+.scx-progress-box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    padding: 2rem 2.5rem;
+    border-radius: 14px;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-subtle);
+}
+
+.scx-progress-spinner {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    border: 3px solid var(--border-subtle);
+    border-top-color: var(--accent-glow);
+    animation: scxSpin 0.8s linear infinite;
+}
+
+@keyframes scxSpin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.scx-progress-step {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+}
+
+/* ---------- Modais ---------- */
+.scx-modal-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 130;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(10, 10, 11, 0.8);
+    padding: 1.25rem;
+}
+
+.scx-modal {
+    max-width: 480px;
+    width: 100%;
+    padding: 2rem;
+    border-radius: 16px;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-subtle);
+}
+
+.scx-modal--small {
+    max-width: 380px;
+}
+
+.scx-modal-title {
+    font-size: 1.2rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+}
+
+.scx-modal-text {
+    font-size: 0.88rem;
+    color: var(--text-secondary);
+    margin-bottom: 0.9rem;
+    line-height: 1.6;
+}
+
+.scx-modal-btn {
+    width: 100%;
+    padding: 0.75rem;
+    border: none;
+    border-radius: 10px;
+    background: linear-gradient(120deg, var(--accent-blue), var(--accent-glow));
+    color: #fff;
+    font-weight: 600;
+    font-size: 0.9rem;
+    margin-top: 0.5rem;
+}
+
+.scx-modal-actions {
+    display: flex;
+    gap: 0.75rem;
+    margin-top: 1.25rem;
+}
+
+.scx-modal-actions .scx-modal-btn {
+    margin-top: 0;
+}
+
+.scx-modal-btn--ghost {
+    background: var(--bg-tertiary);
+    color: var(--text-secondary);
+    border: 1px solid var(--border-subtle);
+}
+
+.scx-modal-btn--danger {
+    background: var(--accent-red);
+}
+
+/* ---------- Toasts ---------- */
+.scx-toast-container {
+    position: fixed;
+    bottom: calc(var(--scx-footer-height) + 1rem);
+    right: 1.25rem;
+    z-index: 140;
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    max-width: 320px;
+}
+
+.scx-toast {
+    padding: 0.8rem 1rem;
+    border-radius: 10px;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-subtle);
+    border-left: 3px solid var(--accent-glow);
+    font-size: 0.82rem;
+    color: var(--text-primary);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+    animation: scxToastIn 0.3s var(--transition-smooth);
+}
+
+.scx-toast--error {
+    border-left-color: var(--accent-red);
+}
+
+.scx-toast--success {
+    border-left-color: var(--accent-green);
+}
+
+.scx-toast--warning {
+    border-left-color: var(--lab-glow);
+}
+
+.scx-toast--closing {
+    animation: scxToastOut 0.25s var(--transition-smooth) forwards;
+}
+
+@keyframes scxToastIn {
+    from {
+        opacity: 0;
+        transform: translateX(24px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes scxToastOut {
+    to {
+        opacity: 0;
+        transform: translateX(24px);
+    }
+}
+
+/* ---------- Widget invisível do Turnstile ---------- */
+.scx-turnstile-widget {
+    position: fixed;
+    bottom: -9999px;
+    left: -9999px;
+}
+
+/* ---------- Telas muito pequenas (SCX-SPEC-UX-001, seção 7.2) ---------- */
+.scx-small-screen-banner {
+    background: rgba(255, 215, 107, 0.12);
+    border: 1px solid rgba(255, 215, 107, 0.35);
+    color: var(--text-secondary);
+    font-size: 0.78rem;
+    padding: 0.7rem 0.9rem;
+    border-radius: 10px;
+    margin-bottom: 1rem;
+    display: none;
+}
+
+@media (max-width: 359px) {
+    .scx-small-screen-banner {
+        display: block;
+    }
+}

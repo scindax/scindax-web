@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SCX PDF Tool — Scindax Lab</title>
+    <meta name="description" content="Junte, separe e reorganize páginas de PDF direto no navegador. Ferramenta gratuita e experimental do Scindax Lab — nenhum arquivo é enviado a servidores.">
+    <meta name="robots" content="noindex, follow">
+    <meta name="theme-color" content="#0a0a0b">
+    <link rel="icon" href="../../favicon.ico" sizes="any">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="scx-pdf-page">
+
+    <!-- Banner fixo de transparência (SCX-SPEC-UX-001, seção 6.1) -->
+    <div class="scx-banner" id="scxBanner" role="status">
+        <span aria-hidden="true">🔬</span>
+        <p>Ferramenta em fase de testes. Limite de 20 processamentos por dia (com verificação de segurança). Nenhum arquivo é enviado para servidores — tudo é processado localmente no seu navegador.</p>
+    </div>
+
+    <header class="scx-topbar">
+        <a href="../../lab/" class="scx-topbar-back">← Scindax Lab</a>
+        <h1 class="scx-topbar-title">SCX PDF Tool</h1>
+        <span class="scx-topbar-spacer" aria-hidden="true"></span>
+    </header>
+
+    <main class="scx-shell">
+
+        <!-- Aviso para telas muito reduzidas, < 360px (SCX-SPEC-UX-001, seção 7.2) -->
+        <p class="scx-small-screen-banner">⚠️ Tela muito reduzida. A experiência de arrastar pode ficar comprometida. Gire o dispositivo ou amplie a janela para melhores resultados.</p>
+
+        <!-- Área de upload (SCX-SPEC-UX-001, seção 2.1) -->
+        <section class="scx-upload" id="scxUploadArea" aria-labelledby="scx-upload-heading">
+            <h2 id="scx-upload-heading" class="scx-visually-hidden">Enviar arquivos PDF</h2>
+            <div class="scx-upload-icon" aria-hidden="true">☁️⬆️</div>
+            <p class="scx-upload-text">Arraste seus PDFs aqui ou <button type="button" class="scx-upload-link" id="scxUploadTrigger">clique para selecionar</button></p>
+            <p class="scx-upload-hint">Você pode enviar múltiplos arquivos ao mesmo tempo. Limite de 50 MB por arquivo e 500 páginas por sessão.</p>
+            <input type="file" id="scxFileInput" accept="application/pdf" multiple hidden>
+        </section>
+
+        <!-- Barra de ferramentas (SCX-SPEC-UX-001, seção 3) -->
+        <section class="scx-toolbar" id="scxToolbar" aria-label="Ações sobre as páginas" hidden>
+            <div class="scx-toolbar-group">
+                <button type="button" class="scx-tool-btn" id="scxSelectAllBtn" title="Selecionar todas as páginas">☑️ Selecionar todas</button>
+                <button type="button" class="scx-tool-btn" id="scxClearSelectionBtn" title="Desmarcar todas as páginas">◻️ Desmarcar todas</button>
+            </div>
+            <div class="scx-toolbar-group">
+                <button type="button" class="scx-tool-btn" id="scxExtractBtn" title="Cria um novo PDF apenas com as páginas selecionadas">📑 Extrair selecionados</button>
+                <button type="button" class="scx-tool-btn" id="scxDeleteBtn" title="Remove as páginas selecionadas da lista">🗑️ Excluir selecionados</button>
+                <button type="button" class="scx-tool-btn" id="scxReverseBtn" title="Inverte a posição de todas as páginas">🔄 Inverter ordem</button>
+            </div>
+            <div class="scx-toolbar-group">
+                <button type="button" class="scx-tool-btn" id="scxUndoBtn" title="Desfazer (Ctrl+Z)" disabled>↩️ Desfazer<span class="scx-tool-count" id="scxUndoCount"></span></button>
+                <button type="button" class="scx-tool-btn" id="scxRedoBtn" title="Refazer (Ctrl+Y)" disabled>↪️ Refazer<span class="scx-tool-count" id="scxRedoCount"></span></button>
+            </div>
+            <div class="scx-toolbar-group">
+                <button type="button" class="scx-tool-btn scx-tool-btn--danger" id="scxClearAllBtn" title="Remove todos os arquivos da sessão">🧹 Limpar tudo</button>
+            </div>
+        </section>
+
+        <!-- Grade de miniaturas (SCX-SPEC-UX-001, seção 2.2) -->
+        <section class="scx-grid-wrapper">
+            <div class="scx-grid" id="scxPageGrid" aria-label="Páginas carregadas"></div>
+            <p class="scx-grid-empty" id="scxGridEmpty">Nenhuma página carregada ainda. Envie um PDF para começar.</p>
+        </section>
+
+    </main>
+
+    <!-- Campo de nome + download (SCX-SPEC-UX-001, seção 4) -->
+    <footer class="scx-footer" id="scxFooter" hidden>
+        <div class="scx-footer-name">
+            <label for="scxFileNameInput" class="scx-footer-label">Nome do arquivo final</label>
+            <div class="scx-footer-input-wrap">
+                <input type="text" id="scxFileNameInput" class="scx-footer-input" placeholder="documento_organizado" autocomplete="off">
+                <span class="scx-footer-ai-icon" title="Sugerido pela nossa IA com base no conteúdo do seu documento." aria-hidden="true">✨</span>
+            </div>
+        </div>
+        <button type="button" class="scx-process-btn" id="scxProcessBtn">📥 Processar e baixar</button>
+    </footer>
+
+    <!-- Barra de progresso (SCX-SPEC-UX-001, seção 6.3) -->
+    <div class="scx-progress-overlay" id="scxProgressOverlay" hidden>
+        <div class="scx-progress-box">
+            <div class="scx-progress-spinner" aria-hidden="true"></div>
+            <p class="scx-progress-step" id="scxProgressStep">Verificando segurança...</p>
+        </div>
+    </div>
+
+    <!-- Modal de boas-vindas (SCX-SPEC-UX-001, seção 6.2) -->
+    <div class="scx-modal-overlay" id="scxWelcomeModal" hidden>
+        <div class="scx-modal" role="dialog" aria-modal="true" aria-labelledby="scx-welcome-title">
+            <h2 id="scx-welcome-title" class="scx-modal-title">👋 Bem-vindo ao SCX PDF Tool</h2>
+            <p class="scx-modal-text">
+                Esta é uma ferramenta experimental do <strong>Scindax Lab</strong>, em fase de testes.
+                Todo o processamento dos seus PDFs acontece localmente, no seu navegador — nenhum arquivo é
+                enviado para nossos servidores.
+            </p>
+            <p class="scx-modal-text">
+                Há um limite de <strong>20 processamentos por dia</strong> (com verificação de segurança via
+                Cloudflare Turnstile) para manter a ferramenta gratuita para todos.
+            </p>
+            <p class="scx-modal-text">
+                Podemos coletar dados anônimos de uso (como número de páginas processadas e o texto de amostra
+                enviado à IA para sugestão de nome) para melhorar nossos produtos. <strong>Dados sensíveis
+                (CPF, endereços, valores bancários) nunca são coletados ou armazenados.</strong>
+            </p>
+            <p class="scx-modal-text">Nenhum cadastro ou e-mail é necessário para usar esta ferramenta.</p>
+            <button type="button" class="scx-modal-btn" id="scxWelcomeAcceptBtn">Entendi, começar!</button>
+        </div>
+    </div>
+
+    <!-- Modal de confirmação genérico (exclusão, limpar tudo) -->
+    <div class="scx-modal-overlay" id="scxConfirmModal" hidden>
+        <div class="scx-modal scx-modal--small" role="alertdialog" aria-modal="true" aria-labelledby="scxConfirmTitle">
+            <h2 id="scxConfirmTitle" class="scx-modal-title">Confirmar ação</h2>
+            <p class="scx-modal-text" id="scxConfirmMessage"></p>
+            <div class="scx-modal-actions">
+                <button type="button" class="scx-modal-btn scx-modal-btn--ghost" id="scxConfirmCancelBtn">Cancelar</button>
+                <button type="button" class="scx-modal-btn scx-modal-btn--danger" id="scxConfirmAcceptBtn">Confirmar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Container de toasts (SCX-SPEC-UX-001, seção 8) -->
+    <div class="scx-toast-container" id="scxToastContainer" aria-live="polite"></div>
+
+    <!-- Widget do Turnstile: renderizado explicitamente pelo app.js (window.scxOnTurnstileReady).
+         Use um Site Key do tipo "Invisible" no painel da Cloudflare para que nenhuma
+         interface seja exibida ao usuário. -->
+    <div id="scxTurnstileWidget" class="scx-turnstile-widget"
+         data-sitekey="SEU_TURNSTILE_SITE_KEY_AQUI"></div>
+
+    <!-- Bibliotecas obrigatórias (SCX-SPEC-IMP-001, seção 6) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.6.82/pdf.min.js"></script>
+    <script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
+    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js?onload=scxOnTurnstileReady&render=explicit" async defer></script>
+
+    <script type="module" src="js/app.js"></script>
+</body>
+</html>

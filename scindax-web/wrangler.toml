@@ -1,0 +1,27 @@
+# ============================================================
+# wrangler.toml — Configuração do Cloudflare Worker do SCX PDF Tool
+# Contrato: SCX-SPEC-AI-001 e SCX-SPEC-ARC-001, seção 4.2.
+# ============================================================
+
+name = "scx-pdf-worker"
+main = "worker/worker.js"
+compatibility_date = "2026-07-02"
+
+# URL de origem permitida para CORS (o domínio onde o frontend está publicado).
+[vars]
+ALLOWED_ORIGIN = "https://scindax.com.br"
+
+# Binding da Workers AI, usado para a sugestão automática de nomes.
+[ai]
+binding = "AI"
+
+# Binding do Workers KV, usado para cache de sugestões e controle de
+# limite diário por IP. Substitua "id" pelo ID real do namespace,
+# criado com: wrangler kv:namespace create "SCX_KV"
+[[kv_namespaces]]
+binding = "SCX_KV"
+id = "SEU_KV_NAMESPACE_ID_AQUI"
+
+# A chave secreta do Turnstile NÃO deve ficar neste arquivo.
+# Configure-a com:
+#   wrangler secret put TURNSTILE_SECRET_KEY
