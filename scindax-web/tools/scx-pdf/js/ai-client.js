@@ -1,6 +1,6 @@
 
 
-const WORKER_BASE_URL = 'scx-pdf-worker.contato-330.workers.dev';
+const WORKER_BASE_URL = 'https://scx-pdf-worker.contato-330.workers.dev';
 
 const TEMPO_LIMITE_REQUISICAO_MS = 6000; 
 

@@ -62,6 +62,11 @@ function iniciar() {
     ligarEventosDosModais();
     ligarAtalhosDeTeclado();
     exibirModalBoasVindasSeNecessario();
+
+    // Estado inicial: nenhuma página carregada ainda, então a barra de
+    // ferramentas e o rodapé devem começar escondidos e os botões que
+    // dependem de seleção/conteúdo devem começar desabilitados.
+    atualizarEstadoDosBotoesDeAcao();
 }
 
 /**

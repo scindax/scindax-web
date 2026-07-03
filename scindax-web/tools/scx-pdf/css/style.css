@@ -32,6 +32,16 @@
     box-sizing: border-box;
 }
 
+/* Garante que o atributo HTML `hidden` sempre vença regras de `display`
+   definidas mais abaixo (ex.: `.scx-toolbar { display: flex }`), já que
+   uma regra de autor com a mesma especificidade normalmente sobrescreveria
+   o `display: none` padrão do user-agent para `[hidden]`. Sem isto,
+   elementos marcados como `hidden` (barra de ferramentas, rodapé, modais,
+   overlay de progresso) apareceriam mesmo antes de serem exibidos pelo JS. */
+[hidden] {
+    display: none !important;
+}
+
 html {
     font-size: 16px;
     -webkit-font-smoothing: antialiased;
