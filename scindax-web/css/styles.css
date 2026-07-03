@@ -759,6 +759,52 @@ body {
     }
 }
 
+/* View toggle (carrossel / empilhado) */
+.insights-view-toggle {
+    display: flex;
+    justify-content: center;
+    gap: 0.6rem;
+    max-width: 1200px;
+    margin: 0 auto 2rem;
+    padding: 0 2rem;
+    position: relative;
+    z-index: 1;
+}
+
+.view-toggle-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.5rem 1.1rem;
+    border-radius: 20px;
+    border: 1px solid var(--border-subtle);
+    background: var(--bg-secondary);
+    color: var(--text-tertiary);
+    font-family: var(--font-inter);
+    font-size: 0.82rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s var(--transition-smooth);
+}
+
+.view-toggle-btn svg {
+    width: 14px;
+    height: 14px;
+    stroke: currentColor;
+    fill: none;
+}
+
+.view-toggle-btn:hover {
+    color: var(--text-primary);
+    border-color: rgba(255, 255, 255, 0.15);
+}
+
+.view-toggle-btn.is-active {
+    border-color: var(--accent-glow);
+    color: var(--text-primary);
+    background: rgba(58, 82, 240, 0.12);
+}
+
 /* Listing carousel */
 .insights-carousel {
     max-width: 1200px;
@@ -775,25 +821,35 @@ body {
     display: flex;
     gap: 1.5rem;
     width: max-content;
-    animation: insights-scroll 38s linear infinite;
+    will-change: transform;
 }
 
-.insights-carousel:hover .insights-carousel-track {
-    animation-play-state: paused;
+/* Visualização empilhada */
+.insights-carousel.is-stacked {
+    overflow: visible;
+    max-width: 800px;
+    -webkit-mask-image: none;
+    mask-image: none;
 }
 
-@keyframes insights-scroll {
-    from {
-        transform: translateX(0);
-    }
-    to {
-        transform: translateX(-50%);
-    }
+.insights-carousel.is-stacked .insights-carousel-track {
+    flex-direction: column;
+    width: 100%;
+    transform: none !important;
+}
+
+.insights-carousel.is-stacked .insight-card {
+    width: 100%;
+    flex: 1 1 auto;
+}
+
+.insights-carousel.is-stacked .insights-carousel-track > [aria-hidden="true"] {
+    display: none;
 }
 
 @media (prefers-reduced-motion: reduce) {
     .insights-carousel-track {
-        animation: none;
+        transform: none !important;
     }
 }
 
@@ -900,6 +956,9 @@ body {
 }
 
 @media (max-width: 768px) {
+    .insights-view-toggle {
+        padding: 0 1.25rem;
+    }
     .insights-carousel {
         padding: 0 1.25rem;
         margin-bottom: 4rem;
@@ -908,6 +967,10 @@ body {
         padding: 1.5rem;
         flex-basis: 82vw;
         width: 82vw;
+    }
+    .insights-carousel.is-stacked .insight-card {
+        width: 100%;
+        flex-basis: auto;
     }
 }
 
