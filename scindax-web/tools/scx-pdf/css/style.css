@@ -87,6 +87,14 @@ button {
     border-bottom: 1px solid rgba(58, 82, 240, 0.3);
     font-size: 0.8rem;
     color: var(--text-secondary);
+    /* Sem promover a própria camada de composição, alguns navegadores
+       mobile (Safari/Chrome Android) repintam o texto deste elemento
+       fixo durante o scroll sem repintar seu background translúcido,
+       deixando uma barra "vazia" com o texto flutuando. */
+    transform: translateZ(0);
+    -webkit-transform: translateZ(0);
+    backface-visibility: hidden;
+    will-change: transform;
 }
 
 .scx-banner p {

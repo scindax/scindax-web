@@ -360,6 +360,7 @@ async function verificarCotaComTolerancia() {
         return { token, limiteExcedido: !limite.allowed };
     } catch (erro) {
         console.warn('Verificação de cota indisponível; seguindo com processamento local:', erro);
+        atualizarEtapaDeProgresso('Verificação indisponível — seguindo localmente...');
         mostrarToast('Não foi possível verificar a cota diária agora — seu PDF será gerado normalmente, com um nome genérico.', 'warning');
         return { token: null, limiteExcedido: false };
     }
