@@ -1,0 +1,17 @@
+# TNP_POP.txt — Títulos Não Postados (lista de posts futuros)
+#
+# Uma entrada por linha, no formato:
+#   slug-da-url
+# ou, para controlar o título exibido no card:
+#   slug-da-url | Título de exibição no card
+#
+# O slug é o nome da pasta que a postagem vai ter em /insights/,
+# ex.: para https://www.scindax.com.br/insights/diagnostico-deploy-travado/
+# o slug é "diagnostico-deploy-travado".
+#
+# Linhas em branco e linhas iniciadas com # são ignoradas.
+#
+# O site (js/tnp-loader.js) verifica automaticamente se /insights/<slug>/
+# já existe. Enquanto não existir, aparece aqui um card "em produção" na
+# listagem de Insights. Quando a página for publicada de verdade, o card
+# some sozinho na próxima visita — não precisa remover a linha manualmente.

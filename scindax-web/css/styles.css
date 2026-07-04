@@ -983,6 +983,166 @@ body {
     color: #171713;
 }
 
+/* Card "Título Não Postado" (TNP) — placeholder de posts futuros,
+   preenchido dinamicamente por js/tnp-loader.js a partir de
+   insights/TNP_POP.txt. Reaproveita o glassmorphism + pulso verde do
+   padrão de card de "processamento ao vivo" definido para novas postagens. */
+@keyframes tnp-pulse-green {
+    0% { transform: translate(-50%, -50%) scale(0.8); opacity: 0.25; }
+    50% { transform: translate(-50%, -50%) scale(1.15); opacity: 0.55; }
+    100% { transform: translate(-50%, -50%) scale(0.8); opacity: 0.25; }
+}
+
+@keyframes tnp-gradient-shift {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+@keyframes tnp-spin {
+    to { transform: rotate(360deg); }
+}
+
+@keyframes tnp-blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+}
+
+@keyframes tnp-shimmer {
+    100% { transform: translateX(100%); }
+}
+
+.insight-card.is-tnp {
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    justify-content: center;
+    cursor: default;
+}
+
+.insight-card.is-tnp:hover {
+    border-color: var(--border-subtle);
+    box-shadow: none;
+}
+
+.tnp-card-bg {
+    position: absolute;
+    inset: -20%;
+    background: radial-gradient(circle, rgba(16, 185, 129, 0.35) 0%, rgba(16, 185, 129, 0) 70%);
+    filter: blur(40px);
+    animation: tnp-pulse-green 6s infinite ease-in-out;
+    pointer-events: none;
+    z-index: 0;
+}
+
+.tnp-card-bg::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+        -45deg,
+        rgba(15, 43, 91, 0.45),
+        rgba(150, 156, 165, 0.12),
+        rgba(28, 78, 140, 0.35)
+    );
+    background-size: 200% 200%;
+    animation: tnp-gradient-shift 8s ease infinite;
+}
+
+.tnp-card-content {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.tnp-live-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.3rem 0.75rem;
+    border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    background: rgba(0, 0, 0, 0.3);
+    color: var(--text-secondary);
+    font-size: 0.68rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    margin-bottom: 1.25rem;
+}
+
+.tnp-live-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--accent-red);
+    box-shadow: 0 0 8px rgba(229, 72, 77, 0.8);
+    animation: tnp-blink 1.5s infinite;
+}
+
+.tnp-spinner-wrap {
+    position: relative;
+    margin-bottom: 1.25rem;
+}
+
+.tnp-spinner {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    border: 3px solid rgba(255, 255, 255, 0.1);
+    border-top-color: var(--accent-glow);
+    border-right-color: rgba(16, 185, 129, 0.8);
+    animation: tnp-spin 1.2s cubic-bezier(0.5, 0.1, 0.4, 0.9) infinite;
+}
+
+.insight-card.is-tnp .insight-card-title {
+    margin-bottom: 0.5rem;
+}
+
+.insight-card.is-tnp .insight-card-excerpt {
+    margin-bottom: 1.25rem;
+}
+
+.tnp-progress {
+    width: 100%;
+    height: 4px;
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 999px;
+    overflow: hidden;
+}
+
+.tnp-progress-fill {
+    position: relative;
+    width: 45%;
+    height: 100%;
+    border-radius: 999px;
+    background: linear-gradient(90deg, var(--accent-blue), #34d399);
+}
+
+.tnp-progress-fill::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+    transform: translateX(-100%);
+    animation: tnp-shimmer 2s infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .tnp-card-bg,
+    .tnp-live-dot,
+    .tnp-spinner,
+    .tnp-card-bg::after,
+    .tnp-progress-fill::after {
+        animation: none;
+    }
+}
+
 @media (max-width: 768px) {
     .insights-view-toggle {
         padding: 0 1.25rem;

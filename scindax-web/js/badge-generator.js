@@ -7,6 +7,19 @@
 
     const WIDTH = 1200;
     const HEIGHT = 630;
+    const CHAVE_CONTADOR_SELOS = 'scxSeloCountLocal';
+
+    /** Incrementa e devolve o contador local (por navegador) de selos gerados. */
+    function incrementarContadorLocal() {
+        try {
+            const atual = parseInt(window.localStorage.getItem(CHAVE_CONTADOR_SELOS), 10) || 0;
+            const novo = atual + 1;
+            window.localStorage.setItem(CHAVE_CONTADOR_SELOS, String(novo));
+            return novo;
+        } catch (erro) {
+            return null;
+        }
+    }
 
     function wrapText(ctx, text, x, y, maxWidth, lineHeight) {
         const words = text.split(' ');
@@ -157,6 +170,14 @@
         const achievement = section.getAttribute('data-badge-achievement') || '';
         const caption = section.getAttribute('data-badge-caption') || '';
 
+        let contadorEl = document.getElementById('badgeCounterMsg');
+        if (!contadorEl && preview) {
+            contadorEl = document.createElement('p');
+            contadorEl.id = 'badgeCounterMsg';
+            contadorEl.className = 'tutorial-badge-hint';
+            preview.appendChild(contadorEl);
+        }
+
         function toggleGenerateEnabled() {
             generateBtn.disabled = nameInput.value.trim().length === 0;
         }
@@ -181,6 +202,13 @@
                 });
                 if (preview) preview.classList.add('is-visible');
                 canvas.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+                const totalLocal = incrementarContadorLocal();
+                if (contadorEl && totalLocal !== null) {
+                    contadorEl.textContent = totalLocal === 1
+                        ? 'Este é o seu 1º selo gerado neste navegador.'
+                        : 'Você já gerou ' + totalLocal + ' selos neste navegador.';
+                }
             });
         });
 

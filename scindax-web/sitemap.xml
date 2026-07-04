@@ -54,16 +54,4 @@
         <changefreq>monthly</changefreq>
         <priority>0.6</priority>
     </url>
-    <url>
-        <loc>https://scindax.com.br/insights/scx-pdf-tool-custo-zero/</loc>
-        <lastmod>2026-07-03</lastmod>
-        <changefreq>monthly</changefreq>
-        <priority>0.7</priority>
-    </url>
-    <url>
-        <loc>https://scindax.com.br/insights/scx-pdf-tool-custo-zero/tecnico/</loc>
-        <lastmod>2026-07-03</lastmod>
-        <changefreq>monthly</changefreq>
-        <priority>0.6</priority>
-    </url>
 </urlset>

@@ -315,7 +315,7 @@ async function aoClicarProcessarOuBaixar() {
 async function executarPipelineDeProcessamento(paginas) {
     mostrarProgresso('Verificando segurança...');
 
-    const { token, limiteExcedido } = await verificarCotaComTolerancia();
+    const { verificado, limiteExcedido } = await verificarCotaComTolerancia();
 
     if (limiteExcedido) {
         esconderProgresso();
@@ -326,8 +326,8 @@ async function executarPipelineDeProcessamento(paginas) {
     try {
         atualizarEtapaDeProgresso('Gerando sugestão de nome...');
         const amostraDeTexto = await extrairAmostraDeTexto(paginas, estadoApp.registroArquivos);
-        const sugestaoNome = token
-            ? await obterSugestaoDeNomeComFallback(amostraDeTexto, token)
+        const sugestaoNome = verificado
+            ? await obterSugestaoDeNomeComFallback(amostraDeTexto)
             : gerarNomeGenerico();
 
         atualizarEtapaDeProgresso('Montando seu PDF...');
@@ -350,32 +350,39 @@ async function executarPipelineDeProcessamento(paginas) {
  * apenas sem sugestão de nome por IA. Somente uma resposta explícita
  * do Worker dizendo "não permitido" (HTTP 429) é tratada como bloqueio
  * real.
- * @param {Array<any>} paginas
- * @returns {Promise<{ token: string|null, limiteExcedido: boolean }>}
+ *
+ * Não reaproveita o token desta checagem para a chamada de sugestão de
+ * nome: um token do Turnstile só pode ser validado uma única vez no
+ * servidor (a segunda validação de um mesmo token retorna
+ * "timeout-or-duplicate"), então cada requisição ao Worker que exige
+ * Turnstile obtém o seu próprio token novo (obterSugestaoDeNomeComFallback).
+ * @returns {Promise<{ verificado: boolean, limiteExcedido: boolean }>}
  */
 async function verificarCotaComTolerancia() {
     try {
         const token = await obterTokenTurnstile();
         const limite = await checkLimit(token);
-        return { token, limiteExcedido: !limite.allowed };
+        return { verificado: true, limiteExcedido: !limite.allowed };
     } catch (erro) {
         console.warn('Verificação de cota indisponível; seguindo com processamento local:', erro);
         atualizarEtapaDeProgresso('Verificação indisponível — seguindo localmente...');
         mostrarToast('Não foi possível verificar a cota diária agora — seu PDF será gerado normalmente, com um nome genérico.', 'warning');
-        return { token: null, limiteExcedido: false };
+        return { verificado: false, limiteExcedido: false };
     }
 }
 
 /**
  * Solicita a sugestão de nome à IA; em caso de falha, aplica o
  * fallback obrigatório de nome genérico sem interromper o fluxo
- * (SCX-SPEC-IMP-001, seção 13).
+ * (SCX-SPEC-IMP-001, seção 13). Obtém seu próprio token do Turnstile,
+ * independente do usado em verificarCotaComTolerancia (tokens são de
+ * uso único no servidor).
  * @param {string} amostraDeTexto
- * @param {string} token
  * @returns {Promise<string>}
  */
-async function obterSugestaoDeNomeComFallback(amostraDeTexto, token) {
+async function obterSugestaoDeNomeComFallback(amostraDeTexto) {
     try {
+        const token = await obterTokenTurnstile();
         const resposta = await getSuggestion(amostraDeTexto, token);
 
         if (resposta.fallback) {

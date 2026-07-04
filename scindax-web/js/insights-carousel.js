@@ -12,19 +12,34 @@
     const AUTO_SPEED = 0.45;
     const MAX_HOVER_SPEED = 2.4;
 
-    function initCarousel() {
-        const viewport = document.getElementById('insightsCarousel');
-        const track = document.getElementById('insightsTrack');
-        if (!viewport || !track) return;
+    let viewport = null;
+    let track = null;
+    let reduceMotion = false;
+    let paused = false;
+    let offset = 0;
+    let hovering = false;
+    let pointerRatio = 0.5;
+    let halfWidth = 0;
+    let listenersLigados = false;
 
-        const reduceMotion = window.matchMedia &&
-            window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    /**
+     * Remove clones de uma execução anterior e recria a duplicação usada
+     * para o loop contínuo, a partir dos cards "reais" atuais na track.
+     * Chamável várias vezes com segurança (ex.: depois que um script
+     * externo injeta novos cards, como o loader de TNP) sem duplicar
+     * listeners nem recomeçar o loop de animação.
+     */
+    function clonarParaLoop() {
+        Array.prototype.slice.call(track.querySelectorAll('[data-scx-clone="true"]')).forEach(function (el) {
+            el.remove();
+        });
 
-        const originalCards = Array.prototype.slice.call(track.children);
-        if (originalCards.length > 1 && !reduceMotion) {
-            originalCards.forEach(function (card) {
+        const cartoesOriginais = Array.prototype.slice.call(track.children);
+        if (cartoesOriginais.length > 1 && !reduceMotion) {
+            cartoesOriginais.forEach(function (card) {
                 const clone = card.cloneNode(true);
                 clone.setAttribute('aria-hidden', 'true');
+                clone.setAttribute('data-scx-clone', 'true');
                 clone.querySelectorAll('a').forEach(function (a) {
                     a.tabIndex = -1;
                 });
@@ -32,48 +47,57 @@
             });
         }
 
-        let paused = reduceMotion;
-        let offset = 0;
-        let hovering = false;
-        let pointerRatio = 0.5;
-        let halfWidth = 0;
-
-        function measure() {
-            halfWidth = track.scrollWidth / 2;
-        }
-
-        function onPointerMove(e) {
-            const rect = viewport.getBoundingClientRect();
-            if (rect.width <= 0) return;
-            const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-            pointerRatio = Math.min(Math.max((clientX - rect.left) / rect.width, 0), 1);
-        }
-
-        viewport.addEventListener('mouseenter', function () { hovering = true; });
-        viewport.addEventListener('mouseleave', function () { hovering = false; });
-        viewport.addEventListener('mousemove', onPointerMove);
-        window.addEventListener('resize', measure, { passive: true });
         measure();
+    }
 
-        function tick() {
-            if (!paused && halfWidth > 0) {
-                let speed = AUTO_SPEED;
-                if (hovering) {
-                    const centered = pointerRatio - 0.5;
-                    speed = centered * MAX_HOVER_SPEED * 2;
-                }
-                offset += speed;
-                if (offset >= halfWidth) offset -= halfWidth;
-                if (offset < 0) offset += halfWidth;
-                track.style.transform = 'translateX(' + (-offset) + 'px)';
+    function measure() {
+        halfWidth = track.scrollWidth / 2;
+    }
+
+    function onPointerMove(e) {
+        const rect = viewport.getBoundingClientRect();
+        if (rect.width <= 0) return;
+        const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+        pointerRatio = Math.min(Math.max((clientX - rect.left) / rect.width, 0), 1);
+    }
+
+    function tick() {
+        if (!paused && halfWidth > 0) {
+            let speed = AUTO_SPEED;
+            if (hovering) {
+                const centered = pointerRatio - 0.5;
+                speed = centered * MAX_HOVER_SPEED * 2;
             }
-            requestAnimationFrame(tick);
+            offset += speed;
+            if (offset >= halfWidth) offset -= halfWidth;
+            if (offset < 0) offset += halfWidth;
+            track.style.transform = 'translateX(' + (-offset) + 'px)';
         }
         requestAnimationFrame(tick);
+    }
 
-        initViewToggle(viewport, function (isStacked) {
-            paused = isStacked || reduceMotion;
-        });
+    function initCarousel() {
+        viewport = document.getElementById('insightsCarousel');
+        track = document.getElementById('insightsTrack');
+        if (!viewport || !track) return;
+
+        reduceMotion = window.matchMedia &&
+            window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        paused = reduceMotion;
+
+        clonarParaLoop();
+
+        if (!listenersLigados) {
+            listenersLigados = true;
+            viewport.addEventListener('mouseenter', function () { hovering = true; });
+            viewport.addEventListener('mouseleave', function () { hovering = false; });
+            viewport.addEventListener('mousemove', onPointerMove);
+            window.addEventListener('resize', measure, { passive: true });
+            initViewToggle(viewport, function (isStacked) {
+                paused = isStacked || reduceMotion;
+            });
+            requestAnimationFrame(tick);
+        }
     }
 
     function initViewToggle(viewport, onChange) {
@@ -108,4 +132,11 @@
     } else {
         initCarousel();
     }
+
+    /**
+     * Exposto para scripts externos (ex.: js/tnp-loader.js) que inserem
+     * novos cards na track depois da inicialização inicial e precisam
+     * que o loop de clones/medição seja refeito.
+     */
+    window.ScxInsightsCarousel = { refresh: clonarParaLoop };
 })();
