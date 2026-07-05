@@ -1,0 +1,6 @@
+# Lista de posts com problema conhecido em correção (mantida manualmente).
+# Formato: slug|titulo|motivo opcional
+# O card padrão "Em correção" é injetado automaticamente na listagem de
+# Insights por js/resolucao-loader.js pra qualquer slug listado aqui —
+# assim que a linha for removida, o card normal do post volta a valer.
+scx-pdf-tool-custo-zero|SCX PDF Tool: como o Scindax Lab construiu uma ferramenta profissional sem gastar um real|Identificamos um problema técnico na ferramenta e estamos corrigindo.

@@ -1012,7 +1012,8 @@ body {
     100% { transform: translateX(100%); }
 }
 
-.insight-card.is-tnp {
+.insight-card.is-tnp,
+.insight-card.is-resolving {
     position: relative;
     overflow: hidden;
     display: flex;
@@ -1023,9 +1024,27 @@ body {
     cursor: default;
 }
 
-.insight-card.is-tnp:hover {
+.insight-card.is-tnp:hover,
+.insight-card.is-resolving:hover {
     border-color: var(--border-subtle);
     box-shadow: none;
+}
+
+/* "Em correção" reaproveita a estrutura/animação do card TNP
+   (js/resolucao-loader.js), só troca as cores pra âmbar/aviso em vez de
+   verde/produção — sinaliza "pausado por um problema", não "chegando". */
+.insight-card.is-resolving .tnp-card-bg {
+    background: radial-gradient(circle, rgba(245, 158, 11, 0.32) 0%, rgba(245, 158, 11, 0) 70%);
+}
+
+.insight-card.is-resolving .tnp-live-dot {
+    background: #f59e0b;
+    box-shadow: 0 0 8px rgba(245, 158, 11, 0.8);
+}
+
+.insight-card.is-resolving .tnp-spinner {
+    border-top-color: #f59e0b;
+    border-right-color: rgba(245, 158, 11, 0.8);
 }
 
 .tnp-card-bg {
@@ -1100,11 +1119,13 @@ body {
     animation: tnp-spin 1.2s cubic-bezier(0.5, 0.1, 0.4, 0.9) infinite;
 }
 
-.insight-card.is-tnp .insight-card-title {
+.insight-card.is-tnp .insight-card-title,
+.insight-card.is-resolving .insight-card-title {
     margin-bottom: 0.5rem;
 }
 
-.insight-card.is-tnp .insight-card-excerpt {
+.insight-card.is-tnp .insight-card-excerpt,
+.insight-card.is-resolving .insight-card-excerpt {
     margin-bottom: 1.25rem;
 }
 
