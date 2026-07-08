@@ -18,7 +18,12 @@
             mouseY = null;
         let mouseActive = false;
         let time = 0;
-        let animationId;
+        let animationId = null;
+        let isPageVisible = !document.hidden;
+        let isInView = true;
+
+        const reduceMotion = window.matchMedia &&
+            window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
         const PARTICLE_COUNT = 2000;
         const MOUSE_RADIUS = 260;
@@ -210,8 +215,7 @@
             initParticles();
         }
 
-        function animate(timestamp) {
-            time = timestamp * 0.001;
+        function renderFrame() {
             ctx.fillStyle = 'rgba(10, 10, 11, 0.14)';
             ctx.fillRect(0, 0, width, height);
 
@@ -219,7 +223,31 @@
                 p.update();
                 p.draw(ctx);
             }
+        }
+
+        function animate(timestamp) {
+            time = timestamp * 0.001;
+            renderFrame();
             animationId = requestAnimationFrame(animate);
+        }
+
+        function startLoop() {
+            if (animationId !== null || reduceMotion) return;
+            animationId = requestAnimationFrame(animate);
+        }
+
+        function stopLoop() {
+            if (animationId === null) return;
+            cancelAnimationFrame(animationId);
+            animationId = null;
+        }
+
+        function syncLoopState() {
+            if (isPageVisible && isInView) {
+                startLoop();
+            } else {
+                stopLoop();
+            }
         }
 
         canvas.addEventListener('mousemove', (e) => {
@@ -256,8 +284,27 @@
 
         window.addEventListener('resize', resizeCanvas);
         resizeCanvas();
-        animationId = requestAnimationFrame(animate);
-        window.addEventListener('beforeunload', () => { if (animationId) cancelAnimationFrame(animationId); });
+
+        document.addEventListener('visibilitychange', () => {
+            isPageVisible = !document.hidden;
+            syncLoopState();
+        });
+
+        if (window.IntersectionObserver) {
+            const observer = new IntersectionObserver((entries) => {
+                isInView = entries[0].isIntersecting;
+                syncLoopState();
+            }, { threshold: 0 });
+            observer.observe(container);
+        }
+
+        if (reduceMotion) {
+            renderFrame();
+        } else {
+            syncLoopState();
+        }
+
+        window.addEventListener('beforeunload', stopLoop);
     }
 
     window.ScindaxParticles = { init: initParticleField };
