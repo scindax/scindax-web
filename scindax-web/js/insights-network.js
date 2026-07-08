@@ -109,10 +109,15 @@
 
         function animate() {
             step(true);
-            animationId = requestAnimationFrame(animate);
+            animationId = document.hidden ? null : requestAnimationFrame(animate);
         }
 
         window.addEventListener('resize', resize, { passive: true });
+        document.addEventListener('visibilitychange', function () {
+            if (!reduceMotion && !document.hidden && animationId === null) {
+                animationId = requestAnimationFrame(animate);
+            }
+        });
         resize();
         initNodes();
 

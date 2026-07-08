@@ -21,6 +21,7 @@
     let pointerRatio = 0.5;
     let halfWidth = 0;
     let listenersLigados = false;
+    let animationId = null;
 
     /**
      * Remove clones de uma execução anterior e recria a duplicação usada
@@ -73,7 +74,7 @@
             if (offset < 0) offset += halfWidth;
             track.style.transform = 'translateX(' + (-offset) + 'px)';
         }
-        requestAnimationFrame(tick);
+        animationId = document.hidden ? null : requestAnimationFrame(tick);
     }
 
     function initCarousel() {
@@ -93,10 +94,15 @@
             viewport.addEventListener('mouseleave', function () { hovering = false; });
             viewport.addEventListener('mousemove', onPointerMove);
             window.addEventListener('resize', measure, { passive: true });
+            document.addEventListener('visibilitychange', function () {
+                if (!document.hidden && animationId === null) {
+                    animationId = requestAnimationFrame(tick);
+                }
+            });
             initViewToggle(viewport, function (isStacked) {
                 paused = isStacked || reduceMotion;
             });
-            requestAnimationFrame(tick);
+            animationId = requestAnimationFrame(tick);
         }
     }
 
