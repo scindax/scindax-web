@@ -691,4 +691,55 @@ input[type="checkbox"]:checked::after {
   .btn-secondary {
     width: 100%;
   }
+
+  /* Evita repinturas de áreas grandes em aparelhos menos potentes. */
+  body {
+    background-attachment: scroll;
+  }
+
+  .ambient {
+    display: none;
+  }
+
+  .glass-card {
+    background: rgba(12, 22, 34, 0.96);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    box-shadow: 0 16px 36px rgba(0, 0, 0, 0.28);
+    transition: border-color 120ms ease, background-color 120ms ease;
+  }
+
+  .screen,
+  .active-step {
+    animation: none;
+  }
+
+  .choice-card,
+  .tag-card,
+  .navigation button,
+  .btn-primary,
+  .btn-secondary,
+  input[type="text"],
+  textarea,
+  select,
+  input[type="checkbox"] {
+    transition: border-color 120ms ease, background-color 120ms ease, color 120ms ease, box-shadow 120ms ease;
+    touch-action: manipulation;
+  }
+
+  .choice-card:hover,
+  .tag-card:hover,
+  .btn-secondary:hover,
+  #btn-back:hover,
+  #btn-next:hover,
+  #btn-submit:hover,
+  .btn-primary:hover {
+    transform: none;
+  }
+
+  input[type="text"]:focus,
+  textarea:focus,
+  select:focus {
+    box-shadow: 0 0 0 3px rgba(226, 184, 87, 0.16);
+  }
 }

@@ -43,7 +43,7 @@
                 </div>
             </div>
 
-            <button id="start-btn" class="btn-primary" onclick="startSurvey()">
+            <button id="start-btn" class="btn-primary">
                 Iniciar Pesquisa <i data-lucide="arrow-right"></i>
             </button>
         </div>
@@ -62,7 +62,7 @@
             </div>
         </header>
 
-        <form id="survey-form" onsubmit="handleFormSubmit(event)">
+        <form id="survey-form">
 
             <!-- ETAPA 1 -->
             <div class="step-card active-step" data-step="1">
@@ -70,16 +70,16 @@
                     <div class="field">
                         <label>Em qual área você atua atualmente?</label>
                         <div class="choice-grid">
-                            <button type="button" class="choice-card" onclick="selectOption('macro_area', 'Estética e Bem-estar', this)">
+                            <button type="button" class="choice-card">
                                 <i data-lucide="sparkles"></i> Estética e Bem-estar
                             </button>
-                            <button type="button" class="choice-card" onclick="selectOption('macro_area', 'Saúde', this)">
+                            <button type="button" class="choice-card">
                                 <i data-lucide="activity"></i> Saúde
                             </button>
-                            <button type="button" class="choice-card" onclick="selectOption('macro_area', 'Gestão e Serviços', this)">
+                            <button type="button" class="choice-card">
                                 <i data-lucide="briefcase"></i> Gestão e Serviços
                             </button>
-                            <button type="button" class="choice-card" onclick="selectOption('macro_area', 'Outra Área', this)">
+                            <button type="button" class="choice-card">
                                 <i data-lucide="layers"></i> Outra Área
                             </button>
                         </div>
@@ -222,8 +222,8 @@
 
             <!-- NAVEGAÇÃO FIXA -->
             <footer class="navigation">
-                <button type="button" id="btn-back" onclick="changeStep(-1)" class="btn-secondary hidden">Voltar</button>
-                <button type="button" id="btn-next" onclick="changeStep(1)" class="btn-primary">Próximo <i data-lucide="chevron-right"></i></button>
+                <button type="button" id="btn-back" class="btn-secondary hidden">Voltar</button>
+                <button type="button" id="btn-next" class="btn-primary">Próximo <i data-lucide="chevron-right"></i></button>
                 <button type="submit" id="btn-submit" class="btn-primary hidden">Concluir e Enviar <i data-lucide="check"></i></button>
             </footer>
 
@@ -243,7 +243,8 @@
 
 </main>
 
-<script>
+<!-- A lógica da pesquisa fica centralizada em js/app.js. -->
+<script type="text/plain" aria-hidden="true">
     let currentStep = 1;
     const totalSteps = 4;
 
