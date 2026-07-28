@@ -1,347 +1,936 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>IME — Índice de Maturidade Empresarial | Scindax Research</title>
 
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <!-- Ícones Lucide -->
-    <script src="https://unpkg.com/lucide@latest"></script>
-    <!-- Confetes para a tela de obrigado -->
-    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+<title>Índice de Maturidade Empresarial | Scindax Research</title>
+
+<meta name="description" content="Pesquisa institucional conduzida pela Scindax Research para compreender a maturidade empresarial de profissionais e organizações brasileiras.">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="css/style.css">
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="js/app.js" defer></script>
 
-    <link rel="stylesheet" href="css/style.css">
 </head>
-<body>
 
-<div class="ambient ambient-left"></div>
-<div class="ambient ambient-right"></div>
+<body>
 
 <main class="app">
 
-    <!-- BEM-VINDO -->
-    <section id="welcome-screen" class="screen active">
-        <div class="glass-card">
-            <div class="badge">SCINDAX RESEARCH</div>
-            <h1>Índice de Maturidade Empresarial</h1>
-            <p class="intro">Um estudo independente sobre a realidade dos profissionais e empreendedores brasileiros.</p>
-            
-            <div class="info-box">
-                <div>
-                    <strong><i data-lucide="clock" class="icon-inline"></i> Duração rápida</strong>
-                    <span>Cerca de 3 a 4 minutos.</span>
-                </div>
-                <div>
-                    <strong><i data-lucide="shield-check" class="icon-inline"></i> Confidencialidade</strong>
-                    <span>Dados consolidados e anônimos.</span>
-                </div>
-            </div>
+<!-- =======================================================
+     TELA INICIAL
+======================================================== -->
 
-            <button id="start-btn" class="btn-primary">
-                Iniciar Pesquisa <i data-lucide="arrow-right"></i>
-            </button>
-        </div>
-    </section>
+<section id="welcome-screen" class="screen active">
 
-    <!-- PESQUISA (PASSO A PASSO) -->
-    <section id="survey-screen" class="screen hidden">
-        <header class="survey-header">
-            <div class="header-info">
-                <span class="small-label">Scindax Research</span>
-                <h2 id="step-title">Conhecendo o seu Perfil</h2>
-            </div>
-            <div class="progress-container">
-                <div class="progress"><div id="progress-bar"></div></div>
-                <span id="step-counter">Etapa 1 de 4</span>
-            </div>
-        </header>
+<div class="card">
 
-        <form id="survey-form">
+<header class="hero">
 
-            <!-- ETAPA 1 -->
-            <div class="step-card active-step" data-step="1">
-                <div class="glass-card">
-                    <div class="field">
-                        <label>Em qual área você atua atualmente?</label>
-                        <div class="choice-grid">
-                            <button type="button" class="choice-card">
-                                <i data-lucide="sparkles"></i> Estética e Bem-estar
-                            </button>
-                            <button type="button" class="choice-card">
-                                <i data-lucide="activity"></i> Saúde
-                            </button>
-                            <button type="button" class="choice-card">
-                                <i data-lucide="briefcase"></i> Gestão e Serviços
-                            </button>
-                            <button type="button" class="choice-card">
-                                <i data-lucide="layers"></i> Outra Área
-                            </button>
-                        </div>
-                        <input type="hidden" name="macro_area" id="macro_area" required>
-                    </div>
+<p class="institution">
+SCINDAX RESEARCH
+</p>
 
-                    <div class="field">
-                        <label for="especialidade">Qual é sua profissão ou especialidade?</label>
-                        <input type="text" id="especialidade" name="especialidade" placeholder="Ex: Analista de Dados, Fisioterapeuta, Designer..." required>
-                    </div>
+<h1>
+Índice de Maturidade Empresarial
+</h1>
 
-                    <div class="grid">
-                        <div class="field">
-                            <label for="tempo_mercado">Tempo de atuação</label>
-                            <select id="tempo_mercado" name="tempo_mercado">
-                                <option value="Menos de 1 ano">Menos de 1 ano</option>
-                                <option value="1 a 3 anos">1 a 3 anos</option>
-                                <option value="3 a 5 anos">3 a 5 anos</option>
-                                <option value="Mais de 5 anos">Mais de 5 anos</option>
-                            </select>
-                        </div>
-                        <div class="field">
-                            <label for="formato_negocio">Formato de trabalho</label>
-                            <select id="formato_negocio" name="formato_negocio">
-                                <option value="Autônomo">Autônomo</option>
-                                <option value="Pequena Equipe">Pequena Equipe</option>
-                                <option value="Empresa Estruturada">Empresa Estruturada</option>
-                            </select>
-                        </div>
-                    </div>
-                </div>
-            </div>
+<p class="subtitle">
 
-            <!-- ETAPA 2 -->
-            <div class="step-card hidden-step" data-step="2">
-                <div class="glass-card">
-                    <div class="field">
-                        <label>Quais desafios mais impactam sua rotina? <small>(Selecione os principais)</small></label>
-                        <div class="checkbox-grid">
-                            <label class="tag-card"><input type="checkbox" name="desafios" value="Clientes"> Clientes</label>
-                            <label class="tag-card"><input type="checkbox" name="desafios" value="Financeiro"> Financeiro</label>
-                            <label class="tag-card"><input type="checkbox" name="desafios" value="Organização"> Organização</label>
-                            <label class="tag-card"><input type="checkbox" name="desafios" value="Tempo"> Tempo</label>
-                            <label class="tag-card"><input type="checkbox" name="desafios" value="Equipe"> Equipe</label>
-                            <label class="tag-card"><input type="checkbox" name="desafios" value="Marketing"> Marketing</label>
-                        </div>
-                    </div>
+A pesquisa IME reúne informações sobre perfil profissional,
+práticas de gestão e desafios enfrentados por profissionais
+e empresas brasileiras.
 
-                    <div class="field">
-                        <label for="organizacao">Hoje, como você organiza seu negócio?</label>
-                        <textarea id="organizacao" name="organizacao" placeholder="Ex: Uso planilhas, bloco de notas, sistema próprio, ou apenas mentalmente..."></textarea>
-                    </div>
-                </div>
-            </div>
+As respostas são tratadas de forma confidencial e utilizadas
+exclusivamente para fins estatísticos.
 
-            <!-- ETAPA 3 -->
-            <div class="step-card hidden-step" data-step="3">
-                <div class="glass-card">
-                    <div class="field">
-                        <label for="conquista">Qual foi sua maior conquista profissional até hoje?</label>
-                        <textarea id="conquista" name="conquista" placeholder="Compartilhe um marco importante..."></textarea>
-                    </div>
+</p>
 
-                    <div class="field">
-                        <label for="melhoria">Se pudesse mudar apenas uma coisa na sua gestão hoje, o que seria?</label>
-                        <textarea id="melhoria" name="melhoria" placeholder="O seu maior gargalo atual..."></textarea>
-                    </div>
-                </div>
-            </div>
+</header>
 
-            <!-- ETAPA 4: Perfil Estatístico e Localização -->
-<div class="step-card hidden-step" data-step="4">
-    <div class="glass-card">
-        
-        <!-- Localização -->
-        <div class="field">
-            <label for="cep">CEP <small>(Preenchimento automático opcional)</small></label>
-            <input type="text" id="cep" maxlength="9" placeholder="00000-000">
-        </div>
+<section class="institution-info">
 
-        <div class="grid">
-            <div class="field">
-                <label for="estado">Estado (UF)</label>
-                <select id="estado" name="estado" required>
-                    <option value="">Carregando estados...</option>
-                </select>
-            </div>
+<div class="info-row">
 
-            <div class="field">
-                <label for="cidade">Cidade</label>
-                <select id="cidade" name="cidade" required disabled>
-                    <option value="">Selecione o estado primeiro...</option>
-                </select>
-            </div>
-        </div>
+<span class="info-title">
+Tempo estimado
+</span>
 
-        <hr class="divider">
+<span class="info-value">
+4 minutos
+</span>
 
-        <!-- Demografia & Diversidade -->
-        <div class="field">
-            <label for="genero">Identidade de Gênero</label>
-            <select id="genero" name="genero" required>
-                <option value="" disabled selected>Selecione...</option>
-                <option value="Mulher Cisgênero">Mulher Cisgênero</option>
-                <option value="Homem Cisgênero">Homem Cisgênero</option>
-                <option value="Mulher Transgênero">Mulher Transgênero</option>
-                <option value="Homem Transgênero">Homem Transgênero</option>
-                <option value="Pessoa Não-binária">Pessoa Não-binária</option>
-                <option value="Agênero / Outro">Agênero / Outro</option>
-                <option value="Prefiro não informar">Prefiro não informar</option>
-            </select>
-        </div>
-
-        <div class="field">
-            <label for="raca">Raça / Etnia (Critério IBGE)</label>
-            <select id="raca" name="raca" required>
-                <option value="" disabled selected>Selecione...</option>
-                <option value="Amarela">Amarela</option>
-                <option value="Branca">Branca</option>
-                <option value="Indígena">Indígena</option>
-                <option value="Parda">Parda</option>
-                <option value="Preta">Preta</option>
-                <option value="Prefiro não informar">Prefiro não informar</option>
-            </select>
-        </div>
-
-        <hr class="divider">
-
-        <label class="newsletter">
-            <input id="receive-report" type="checkbox" checked>
-            Quero receber gratuitamente o relatório executivo deste estudo.
-        </label>
-
-        <div id="contact-box" class="grid">
-            <input type="text" name="nome" placeholder="Seu Nome">
-            <input type="text" name="contato" placeholder="Seu E-mail ou WhatsApp">
-        </div>
-    </div>
 </div>
 
-            <!-- NAVEGAÇÃO FIXA -->
-            <footer class="navigation">
-                <button type="button" id="btn-back" class="btn-secondary hidden">Voltar</button>
-                <button type="button" id="btn-next" class="btn-primary">Próximo <i data-lucide="chevron-right"></i></button>
-                <button type="submit" id="btn-submit" class="btn-primary hidden">Concluir e Enviar <i data-lucide="check"></i></button>
-            </footer>
+<div class="info-row">
 
-        </form>
-    </section>
+<span class="info-title">
+Participação
+</span>
 
-    <!-- AGRADECIMENTO -->
-    <section id="thank-screen" class="screen hidden">
-        <div class="glass-card text-center">
-            <div class="success-icon"><i data-lucide="check-circle-2"></i></div>
-            <h2>Obrigado pela sua contribuição!</h2>
-            <p>Sua participação passa a fazer parte oficial do <strong>Índice de Maturidade Empresarial</strong>.</p>
-            <p class="sub-text">Em breve, os relatórios consolidados estarão prontos e você será notificado em primeira mão.</p>
-            <a href="../" class="btn-primary margin-top">Voltar ao site da Scindax</a>
+<span class="info-value">
+Voluntária
+</span>
+
+</div>
+
+<div class="info-row">
+
+<span class="info-title">
+Tratamento dos dados
+</span>
+
+<span class="info-value">
+Resultados agregados • LGPD
+</span>
+
+</div>
+
+</section>
+
+<footer class="hero-actions">
+
+<button
+id="start-btn"
+class="btn btn-primary">
+
+Iniciar pesquisa
+
+</button>
+
+</footer>
+
+</div>
+
+</section>
+
+<!-- =======================================================
+     PESQUISA
+======================================================== -->
+
+<section
+id="survey-screen"
+class="screen hidden">
+
+<header class="survey-header">
+
+<div>
+
+<p class="survey-caption">
+
+SCINDAX RESEARCH
+
+</p>
+
+<h2 id="step-title">
+
+Perfil Profissional
+
+</h2>
+
+<p class="survey-description">
+
+Selecione as alternativas que melhor representam sua realidade.
+
+</p>
+
+</div>
+
+<div class="survey-progress">
+
+<div class="progress-line">
+
+<div
+id="progress-bar"
+class="progress-fill">
+
+</div>
+
+</div>
+
+<p
+id="step-counter"
+class="progress-text">
+
+Etapa 1 de 4
+
+</p>
+
+</div>
+
+</header>
+
+<form id="survey-form">
+
+<!-- =======================================================
+     ETAPA 1
+======================================================== -->
+
+<section
+class="step-card active-step"
+data-step="1">
+
+<div class="card">
+
+<div class="field">
+
+<label>
+
+Macroárea de atuação
+
+</label>
+
+<div class="radio-group">
+
+<label class="radio-option">
+
+<input
+type="radio"
+name="macro_area_radio"
+value="Estética e Bem-estar">
+
+<span>
+
+Estética e Bem-estar
+
+</span>
+
+</label>
+
+<label class="radio-option">
+
+<input
+type="radio"
+name="macro_area_radio"
+value="Saúde">
+
+<span>
+
+Saúde
+
+</span>
+
+</label>
+
+<label class="radio-option">
+
+<input
+type="radio"
+name="macro_area_radio"
+value="Gestão e Serviços">
+
+<span>
+
+Gestão e Serviços
+
+</span>
+
+</label>
+
+<label class="radio-option">
+
+<input
+type="radio"
+name="macro_area_radio"
+value="Outra Área">
+
+<span>
+
+Outra Área
+
+</span>
+
+</label>
+
+</div>
+
+<input
+type="hidden"
+id="macro_area"
+name="macro_area"
+required>
+
+</div>
+
+<div class="field">
+
+<label for="especialidade">
+
+Profissão ou especialidade
+
+</label>
+
+<input
+
+type="text"
+
+id="especialidade"
+
+name="especialidade"
+
+placeholder="Ex.: Analista de Dados"
+
+required>
+
+</div>
+
+<div class="grid two-columns">
+
+<div class="field">
+
+<label>
+
+Tempo de atuação
+
+</label>
+
+<select
+id="tempo_mercado"
+name="tempo_mercado">
+
+<option>
+Menos de 1 ano
+</option>
+
+<option>
+1 a 3 anos
+</option>
+
+<option>
+3 a 5 anos
+</option>
+
+<option>
+Mais de 5 anos
+</option>
+
+</select>
+
+</div>
+
+<div class="field">
+
+<label>
+
+Formato de trabalho
+
+</label>
+
+<select
+id="formato_negocio"
+name="formato_negocio">
+
+<option>
+Autônomo
+</option>
+
+<option>
+Pequena equipe
+</option>
+
+<option>
+Empresa estruturada
+</option>
+
+</select>
+
+</div>
+
+</div>
+
+</div>
+
+</section>
+
+<!-- =======================================================
+     ETAPA 2
+======================================================== -->
+
+<section
+class="step-card hidden-step"
+data-step="2">
+
+<div class="card">
+
+<header class="section-header">
+
+<h3>
+
+Desafios da gestão
+
+</h3>
+
+<p>
+
+Selecione os desafios que mais impactam sua rotina atualmente.
+
+</p>
+
+</header>
+
+<div class="field">
+
+<div class="checkbox-list">
+
+<label class="checkbox-option">
+
+<input
+type="checkbox"
+name="desafios"
+value="Clientes">
+
+<span>
+Clientes
+</span>
+
+</label>
+
+<label class="checkbox-option">
+
+<input
+type="checkbox"
+name="desafios"
+value="Financeiro">
+
+<span>
+Financeiro
+</span>
+
+</label>
+
+<label class="checkbox-option">
+
+<input
+type="checkbox"
+name="desafios"
+value="Organização">
+
+<span>
+Organização
+</span>
+
+</label>
+
+<label class="checkbox-option">
+
+<input
+type="checkbox"
+name="desafios"
+value="Tempo">
+
+<span>
+Tempo
+</span>
+
+</label>
+
+<label class="checkbox-option">
+
+<input
+type="checkbox"
+name="desafios"
+value="Equipe">
+
+<span>
+Equipe
+</span>
+
+</label>
+
+<label class="checkbox-option">
+
+<input
+type="checkbox"
+name="desafios"
+value="Marketing">
+
+<span>
+Marketing
+</span>
+
+</label>
+
+</div>
+
+</div>
+
+<hr class="divider">
+
+<div class="field">
+
+<label for="organizacao">
+
+Como sua rotina de trabalho é organizada?
+
+</label>
+
+<textarea
+
+id="organizacao"
+
+name="organizacao"
+
+placeholder="Descreva brevemente como você controla processos, clientes, finanças ou atividades diárias.">
+
+</textarea>
+
+</div>
+
+</div>
+
+</section>
+
+<!-- =======================================================
+     ETAPA 3
+======================================================== -->
+
+<section
+class="step-card hidden-step"
+data-step="3">
+
+<div class="card">
+
+<header class="section-header">
+
+<h3>
+
+Experiência profissional
+
+</h3>
+
+<p>
+
+Compartilhe brevemente sua percepção sobre sua trajetória.
+
+</p>
+
+</header>
+
+<div class="field">
+
+<label for="conquista">
+
+Qual foi sua principal conquista profissional?
+
+</label>
+
+<textarea
+
+id="conquista"
+
+name="conquista"
+
+placeholder="Descreva um marco importante da sua trajetória profissional.">
+
+</textarea>
+
+</div>
+
+<div class="field">
+
+<label for="melhoria">
+
+Se pudesse melhorar apenas um aspecto da gestão atual, qual seria?
+
+</label>
+
+<textarea
+
+id="melhoria"
+
+name="melhoria"
+
+placeholder="Descreva o principal ponto de melhoria percebido atualmente.">
+
+</textarea>
+
+</div>
+
+</div>
+
+</section>
+
+<!-- =======================================================
+     ETAPA 4
+======================================================== -->
+
+<section
+class="step-card hidden-step"
+data-step="4">
+
+<div class="card">
+
+<header class="section-header">
+
+<h3>
+
+Perfil estatístico
+
+</h3>
+
+<p>
+
+As informações abaixo possuem finalidade exclusivamente estatística.
+
+</p>
+
+</header>
+
+<div class="field">
+
+<label for="cep">
+
+CEP (opcional)
+
+</label>
+
+<input
+
+type="text"
+
+id="cep"
+
+maxlength="9"
+
+placeholder="00000-000">
+
+</div>
+
+<div class="grid two-columns">
+
+<div class="field">
+
+<label>
+
+Estado
+
+</label>
+
+<select
+id="estado"
+name="estado"
+required>
+
+<option value="">
+
+Carregando estados...
+
+</option>
+
+</select>
+
+</div>
+
+<div class="field">
+
+<label>
+
+Cidade
+
+</label>
+
+<select
+id="cidade"
+name="cidade"
+required
+disabled>
+
+<option value="">
+
+Selecione o estado
+
+</option>
+
+</select>
+
+</div>
+
+</div>
+
+<hr class="divider">
+
+<div class="field">
+
+<label>
+
+Identidade de gênero
+
+</label>
+
+<select
+id="genero"
+name="genero"
+required">
+
+<option value="" selected disabled>
+
+Selecione
+
+</option>
+
+<option>
+
+Mulher Cisgênero
+
+</option>
+
+<option>
+
+Homem Cisgênero
+
+</option>
+
+<option>
+
+Mulher Transgênero
+
+</option>
+
+<option>
+
+Homem Transgênero
+
+</option>
+
+<option>
+
+Pessoa Não-binária
+
+</option>
+
+<option>
+
+Agênero / Outro
+
+</option>
+
+<option>
+
+Prefiro não informar
+
+</option>
+
+</select>
+
+</div>
+
+<div class="field">
+
+<label>
+
+Raça / Etnia
+
+</label>
+
+<select
+id="raca"
+name="raca"
+required>
+
+<option value="" selected disabled>
+
+Selecione
+
+</option>
+
+<option>Amarela</option>
+
+<option>Branca</option>
+
+<option>Indígena</option>
+
+<option>Parda</option>
+
+<option>Preta</option>
+
+<option>Prefiro não informar</option>
+
+</select>
+
+</div>
+
+        <hr class="divider">
+
+        <section class="consent-section">
+
+            <label class="checkbox-option consent">
+
+                <input
+                    id="receive-report"
+                    type="checkbox"
+                    checked>
+
+                <span>
+
+                    Desejo receber gratuitamente o relatório executivo consolidado desta pesquisa quando estiver disponível.
+
+                </span>
+
+            </label>
+
+        </section>
+
+        <div
+            id="contact-box"
+            class="contact-box">
+
+            <div class="field">
+
+                <label for="nome">
+
+                    Nome
+
+                </label>
+
+                <input
+                    type="text"
+                    id="nome"
+                    name="nome"
+                    placeholder="Nome completo">
+
+            </div>
+
+            <div class="field">
+
+                <label for="contato">
+
+                    E-mail ou WhatsApp
+
+                </label>
+
+                <input
+                    type="text"
+                    id="contato"
+                    name="contato"
+                    placeholder="Seu melhor contato">
+
+            </div>
+
         </div>
-    </section>
+
+    </div>
+
+</section>
+
+<!-- ======================================================
+     NAVEGAÇÃO
+====================================================== -->
+
+<footer class="navigation">
+
+    <button
+        id="btn-back"
+        type="button"
+        class="btn btn-secondary hidden">
+
+        Voltar
+
+    </button>
+
+    <button
+        id="btn-next"
+        type="button"
+        class="btn btn-primary">
+
+        Próxima etapa
+
+    </button>
+
+    <button
+        id="btn-submit"
+        type="submit"
+        class="btn btn-primary hidden">
+
+        Enviar pesquisa
+
+    </button>
+
+</footer>
+
+</form>
+
+</section>
+
+<!-- ======================================================
+     AGRADECIMENTO
+====================================================== -->
+
+<section
+id="thank-screen"
+class="screen hidden">
+
+<div class="card success-card">
+
+<header>
+
+<h2>
+
+Resposta registrada
+
+</h2>
+
+</header>
+
+<p>
+
+Obrigado por participar do
+<strong>Índice de Maturidade Empresarial (IME).</strong>
+
+</p>
+
+<p>
+
+Sua contribuição será utilizada exclusivamente
+na consolidação estatística desta pesquisa
+institucional conduzida pela
+<strong>Scindax Research.</strong>
+
+</p>
+
+<p>
+
+Nenhuma informação individual será divulgada.
+
+</p>
+
+<div class="success-actions">
+
+<a
+href="../"
+class="btn btn-primary">
+
+Voltar ao Portal Scindax
+
+</a>
+
+</div>
+
+</div>
+
+</section>
 
 </main>
 
-<!-- A lógica da pesquisa fica centralizada em js/app.js. -->
-<script type="text/plain" aria-hidden="true">
-    let currentStep = 1;
-    const totalSteps = 4;
+<script>
 
-    const titles = [
-        "Conhecendo o seu Perfil",
-        "Desafios e Rotina de Trabalho",
-        "Visão de Futuro e Gestão",
-        "Finalização e Localização"
-    ];
+document.addEventListener("DOMContentLoaded", () => {
 
-    lucide.createIcons();
-
-    function startSurvey() {
-        document.getElementById('welcome-screen').classList.add('hidden');
-        document.getElementById('survey-screen').classList.remove('hidden');
-        updateStepUI();
+    if (typeof lucide !== "undefined") {
+        lucide.createIcons();
     }
 
-    function selectOption(hiddenInputId, value, element) {
-        document.getElementById(hiddenInputId).value = value;
-        const siblings = element.parentElement.querySelectorAll('.choice-card');
-        siblings.forEach(el => el.classList.remove('selected'));
-        element.classList.add('selected');
-    }
+});
 
-    function changeStep(delta) {
-        if (delta === 1 && !validateCurrentStep()) return;
-
-        currentStep += delta;
-        if (currentStep < 1) currentStep = 1;
-        if (currentStep > totalSteps) currentStep = totalSteps;
-
-        updateStepUI();
-    }
-
-    function validateCurrentStep() {
-        const activeCard = document.querySelector(`.step-card[data-step="${currentStep}"]`);
-        const inputs = activeCard.querySelectorAll('input[required], select[required]');
-        for (let input of inputs) {
-            if (!input.value.trim()) {
-                input.focus();
-                input.classList.add('input-error');
-                setTimeout(() => input.classList.remove('input-error'), 1500);
-                return false;
-            }
-        }
-        return true;
-    }
-
-    function updateStepUI() {
-        document.querySelectorAll('.step-card').forEach(step => {
-            step.classList.add('hidden-step');
-            step.classList.remove('active-step');
-        });
-
-        const activeCard = document.querySelector(`.step-card[data-step="${currentStep}"]`);
-        activeCard.classList.remove('hidden-step');
-        activeCard.classList.add('active-step');
-
-        document.getElementById('step-title').innerText = titles[currentStep - 1];
-        document.getElementById('step-counter').innerText = `Etapa ${currentStep} de ${totalSteps}`;
-        document.getElementById('progress-bar').style.width = `${(currentStep / totalSteps) * 100}%`;
-
-        document.getElementById('btn-back').classList.toggle('hidden', currentStep === 1);
-        document.getElementById('btn-next').classList.toggle('hidden', currentStep === totalSteps);
-        document.getElementById('btn-submit').classList.toggle('hidden', currentStep !== totalSteps);
-
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-
-    function buscarCEP(cepRaw) {
-        const cep = cepRaw.replace(/\D/g, '');
-        if (cep.length === 8) {
-            fetch(`https://viacep.com.br/ws/${cep}/json/`)
-                .then(res => res.json())
-                .then(data => {
-                    if (!data.erro) {
-                        document.getElementById('cidade').value = data.localidade;
-                        document.getElementById('estado').value = data.uf;
-                    }
-                });
-        }
-    }
-
-    function handleFormSubmit(e) {
-        e.preventDefault();
-        document.getElementById('survey-screen').classList.add('hidden');
-        document.getElementById('thank-screen').classList.remove('hidden');
-
-        // Efeito Confete Premium
-        confetti({
-            particleCount: 80,
-            spread: 70,
-            origin: { y: 0.6 },
-            colors: ['#E2B857', '#F7D27A', '#3ABAF8']
-        });
-    }
 </script>
+
 </body>
+
 </html>
