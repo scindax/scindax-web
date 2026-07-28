@@ -57,3 +57,78 @@
         }
     };
 })();
+
+const menuToggle = document.getElementById("menuToggle");
+const navLinks = document.getElementById("navLinks");
+
+
+if (menuToggle && navLinks) {
+
+
+    // Abrir / fechar menu pelo botão hamburger
+    menuToggle.addEventListener("click", () => {
+
+        navLinks.classList.toggle("active");
+
+        menuToggle.classList.toggle("open");
+
+    });
+
+
+
+
+    // Fechar menu ao clicar em qualquer link
+    const menuItems = navLinks.querySelectorAll("a");
+
+
+    menuItems.forEach(item => {
+
+
+        item.addEventListener("click", () => {
+
+
+            navLinks.classList.remove("active");
+
+            menuToggle.classList.remove("open");
+
+
+        });
+
+
+    });
+
+
+
+
+
+
+    // Fechar menu ao clicar fora dele
+    document.addEventListener("click", (event) => {
+
+
+        const clickedInsideMenu =
+            navLinks.contains(event.target);
+
+
+        const clickedButton =
+            menuToggle.contains(event.target);
+
+
+
+
+        if (!clickedInsideMenu && !clickedButton) {
+
+
+            navLinks.classList.remove("active");
+
+            menuToggle.classList.remove("open");
+
+
+        }
+
+
+    });
+
+
+
+}

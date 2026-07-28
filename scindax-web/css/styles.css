@@ -2730,3 +2730,215 @@ body.tutorial-page .article-resources a:hover { color: #b9c4ff; }
         transition: none;
     }
 }
+/* =====================================
+   MOBILE NAVIGATION
+===================================== */
+
+
+.menu-toggle {
+
+    display:none;
+
+    background:none;
+
+    border:0;
+
+    cursor:pointer;
+
+    flex-direction:column;
+
+    gap:5px;
+
+}
+
+
+
+.menu-toggle span {
+
+    width:24px;
+
+    height:2px;
+
+    background:#ffffff;
+
+    display:block;
+
+    transition:.3s;
+
+}
+
+
+
+
+
+
+@media(max-width:768px){
+
+
+
+    .navbar {
+
+        padding:18px 20px;
+
+        position:absolute;
+
+        top:0;
+
+        left:0;
+
+        width:100%;
+
+        z-index:100;
+
+        display:flex;
+
+        align-items:center;
+
+        justify-content:space-between;
+
+    }
+
+
+
+
+
+    .navbar-logo-img {
+
+        width:80px;
+
+        height:auto;
+
+    }
+
+
+
+
+
+    .menu-toggle {
+
+        display:flex;
+
+        z-index:200;
+
+    }
+
+
+
+
+
+
+    .navbar-links {
+
+
+        position:absolute;
+
+        top:70px;
+
+        left:20px;
+
+        right:20px;
+
+
+        background:rgba(10,10,11,.92);
+
+        backdrop-filter:blur(18px);
+
+
+        border:1px solid rgba(255,255,255,.08);
+
+        border-radius:16px;
+
+
+        padding:25px;
+
+
+        display:flex;
+
+        flex-direction:column;
+
+        gap:20px;
+
+
+        opacity:0;
+
+        pointer-events:none;
+
+        transform:translateY(-15px);
+
+        transition:.3s;
+
+
+    }
+
+
+
+
+
+    .navbar-links.active {
+
+
+        opacity:1;
+
+        pointer-events:auto;
+
+        transform:translateY(0);
+
+
+    }
+
+
+
+
+
+    .navbar-links li {
+
+        width:100%;
+
+    }
+
+
+
+
+    .navbar-links a {
+
+        display:block;
+
+        font-size:.95rem;
+
+        text-align:center;
+
+    }
+
+
+
+
+
+    .navbar-cta {
+
+        margin-top:10px;
+
+    }
+
+
+
+}
+
+.menu-toggle.open span:nth-child(1){
+
+    transform:translateY(7px) rotate(45deg);
+
+}
+
+
+.menu-toggle.open span:nth-child(2){
+
+    opacity:0;
+
+}
+
+
+.menu-toggle.open span:nth-child(3){
+
+    transform:translateY(-7px) rotate(-45deg);
+
+}
