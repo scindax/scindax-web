@@ -1,29 +1,37 @@
 /* ==========================================================================
    SCINDAX RESEARCH — IME (Índice de Maturidade Empresarial)
    Design System: Dark Petroleum & Luxury Gold Glassmorphism
-   Performance otimizada para dispositivos móveis
    ========================================================================== */
 
 /* --------------------------------------------------------------------------
    1. VARIÁVEIS GLOSSAIS & TEMAS
    -------------------------------------------------------------------------- */
 :root {
+  /* Paleta Base — Azul Petróleo & Dark Premium */
   --bg-dark: #060C13;
   --bg-petroleum: #08111A;
   --bg-card: rgba(12, 22, 34, 0.72);
   --bg-card-hover: rgba(16, 28, 43, 0.82);
+
+  /* Efeito Vitral, Refração & Vidro */
   --glass-border: rgba(255, 255, 255, 0.08);
   --glass-border-hover: rgba(226, 184, 87, 0.35);
   --glass-reflection: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.01) 100%);
   --blur-power: blur(28px) saturate(180%);
+
+  /* Destaques de Luxo — Ouro & Azul Sutil */
   --gold: #E2B857;
   --gold-light: #F7D27A;
   --gold-glow: rgba(226, 184, 87, 0.22);
   --gold-subtle: rgba(226, 184, 87, 0.08);
   --blue-accent: #3ABAF8;
+
+  /* Tipografia & Cores de Texto */
   --text-primary: #F8FAFC;
   --text-secondary: #CBD5E1;
   --text-muted: #8292A6;
+
+  /* Formas, Sombras & Transições */
   --radius-lg: 28px;
   --radius-md: 16px;
   --radius-sm: 10px;
@@ -102,15 +110,16 @@ body {
   animation: slideFadeIn 0.55s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
-/* Animação otimizada: apenas opacity + translateY, sem blur */
 @keyframes slideFadeIn {
   from {
     opacity: 0;
-    transform: translateY(20px);
+    transform: translateY(20px) scale(0.98);
+    filter: blur(8px);
   }
   to {
     opacity: 1;
-    transform: translateY(0);
+    transform: translateY(0) scale(1);
+    filter: blur(0);
   }
 }
 
@@ -118,6 +127,7 @@ body {
   display: none !important;
 }
 
+/* Transição de Etapas Internas */
 .hidden-step {
   display: none !important;
 }
@@ -156,6 +166,7 @@ body {
   overflow: hidden;
 }
 
+/* Efeito de Reflexo no Topo */
 .glass-card::before {
   content: "";
   position: absolute;
@@ -380,11 +391,13 @@ select:focus {
   box-shadow: 0 0 0 4px rgba(226, 184, 87, 0.08), 0 0 25px rgba(226, 184, 87, 0.12);
 }
 
+/* Destaque para Validação de Erros */
 .input-error {
   border-color: #EF4444 !important;
   box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.15) !important;
 }
 
+/* Select Estilizado */
 select {
   cursor: pointer;
   padding-right: 52px;
@@ -481,6 +494,7 @@ select option {
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
 }
 
+/* Estilização dos Checkboxes */
 input[type="checkbox"] {
   appearance: none;
   -webkit-appearance: none;
@@ -641,10 +655,9 @@ input[type="checkbox"]:checked::after {
 }
 
 /* --------------------------------------------------------------------------
-   14. RESPONSIVIDADE (MOBILE & TABLETS) — OTIMIZAÇÕES RADICAIS
+   14. RESPONSIVIDADE (MOBILE & TABLETS)
    -------------------------------------------------------------------------- */
 @media (max-width: 768px) {
-  /* Estrutura geral */
   .app {
     padding: 24px 0 40px;
   }
@@ -652,19 +665,6 @@ input[type="checkbox"]:checked::after {
   .glass-card {
     padding: 28px 20px;
     border-radius: 20px;
-    /* Fundo opaco (sem transparência pesada) */
-    background: rgba(12, 22, 34, 0.96);
-    backdrop-filter: none;
-    -webkit-backdrop-filter: none;
-    /* Sombra simplificada */
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    /* Removemos qualquer transição cara */
-    transition: none;
-  }
-
-  .glass-card::before {
-    display: none; /* remove reflexo que pode causar repaint */
   }
 
   h1 {
@@ -675,83 +675,6 @@ input[type="checkbox"]:checked::after {
     font-size: 1.35rem;
   }
 
-  /* Desligamos TODAS as transições em elementos interativos para resposta instantânea */
-  .choice-card,
-  .tag-card,
-  .navigation button,
-  .btn-primary,
-  .btn-secondary,
-  input[type="text"],
-  textarea,
-  select,
-  input[type="checkbox"] {
-    transition: none;
-  }
-
-  /* Animações de entrada também são removidas */
-  .screen,
-  .active-step {
-    animation: none;
-    opacity: 1;
-    transform: none;
-  }
-
-  /* Feedback tátil simples e direto */
-  .choice-card:active,
-  .tag-card:active {
-    background: rgba(226, 184, 87, 0.15);
-    border-color: var(--gold);
-  }
-
-  /* Hover sem efeitos de movimento (já estava, reforçamos) */
-  .choice-card:hover,
-  .tag-card:hover,
-  .btn-secondary:hover,
-  #btn-back:hover,
-  #btn-next:hover,
-  #btn-submit:hover,
-  .btn-primary:hover {
-    transform: none;
-    box-shadow: none;
-    background: inherit;
-  }
-
-  /* Mantemos apenas mudança sutil de cor para indicar hover (opcional) */
-  .btn-secondary:hover,
-  #btn-back:hover {
-    background: rgba(255, 255, 255, 0.08);
-  }
-
-  #btn-next:hover {
-    background: linear-gradient(135deg, #1C3E5D 0%, #142E45 100%);
-  }
-
-  #btn-submit:hover,
-  .btn-primary:hover {
-    background: linear-gradient(135deg, #F7D27A 0%, #E2B857 100%);
-  }
-
-  /* Sombra reduzida nos botões */
-  #btn-submit,
-  .btn-primary {
-    box-shadow: 0 6px 16px rgba(226, 184, 87, 0.25);
-  }
-
-  /* Ajustes de foco sem transição */
-  input[type="text"]:focus,
-  textarea:focus,
-  select:focus {
-    border-color: var(--gold);
-    box-shadow: 0 0 0 3px rgba(226, 184, 87, 0.16);
-    background: rgba(255, 255, 255, 0.06);
-  }
-
-  /* Elimina delay de 300ms em todos os toques */
-  a, button, input, select, textarea, .choice-card, .tag-card, label {
-    touch-action: manipulation;
-  }
-
-  /* Grids para coluna única */
   .grid,
   .choice-grid,
   .checkbox-grid {
@@ -769,24 +692,54 @@ input[type="checkbox"]:checked::after {
     width: 100%;
   }
 
-  /* Fundo fixo pode causar lentidão, trocamos para scroll */
+  /* Evita repinturas de áreas grandes em aparelhos menos potentes. */
   body {
     background-attachment: scroll;
   }
 
-  /* Desligamos luzes ambientes (já feito) */
   .ambient {
     display: none;
   }
 
-  /* Ajustes finos de tipografia */
-  .badge {
-    font-size: 0.7rem;
-    padding: 6px 14px;
+  .glass-card {
+    background: rgba(12, 22, 34, 0.96);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    box-shadow: 0 16px 36px rgba(0, 0, 0, 0.28);
+    transition: border-color 120ms ease, background-color 120ms ease;
   }
 
-  .info-box > div:hover {
+  .screen,
+  .active-step {
+    animation: none;
+  }
+
+  .choice-card,
+  .tag-card,
+  .navigation button,
+  .btn-primary,
+  .btn-secondary,
+  input[type="text"],
+  textarea,
+  select,
+  input[type="checkbox"] {
+    transition: border-color 120ms ease, background-color 120ms ease, color 120ms ease, box-shadow 120ms ease;
+    touch-action: manipulation;
+  }
+
+  .choice-card:hover,
+  .tag-card:hover,
+  .btn-secondary:hover,
+  #btn-back:hover,
+  #btn-next:hover,
+  #btn-submit:hover,
+  .btn-primary:hover {
     transform: none;
-    background: rgba(255, 255, 255, 0.045);
+  }
+
+  input[type="text"]:focus,
+  textarea:focus,
+  select:focus {
+    box-shadow: 0 0 0 3px rgba(226, 184, 87, 0.16);
   }
 }
