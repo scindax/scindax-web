@@ -1,5 +1,7 @@
 /* ==========================================================
    SCINDAX RESEARCH — IME (Índice de Maturidade Empresarial)
+   Otimizado para mobile: sem reset indesejado, DOM leve,
+   timers canceláveis e scroll simplificado.
    ========================================================== */
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -50,7 +52,10 @@ document.addEventListener("DOMContentLoaded", () => {
     /* ==========================================================
        3. ESTADO DA APLICAÇÃO & TÍTULOS
        ========================================================== */
-    let currentStep = 0;
+    // Inicializa na etapa 0 apenas se a pesquisa ainda não foi iniciada.
+    // Se a tela de pesquisa já está visível (restauração do cache), mantém.
+    let currentStep = surveyScreen && !surveyScreen.classList.contains("hidden") ? 0 : -1;
+    let pesquisaIniciada = currentStep >= 0;
 
     const titles = [
         "Conhecendo o seu Perfil",
@@ -64,7 +69,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     /* ==========================================================
-       4. INTEGRACAO API IBGE (ESTADOS E CIDADES)
+       4. INTEGRAÇÃO API IBGE (ESTADOS E CIDADES) — Otimizada
        ========================================================== */
     async function carregarEstados() {
         if (!estadoSelect) return;
@@ -72,10 +77,24 @@ document.addEventListener("DOMContentLoaded", () => {
             const res = await fetch("https://servicodados.ibge.gov.br/api/v1/localidades/estados?orderBy=nome");
             const estados = await res.json();
 
-            estadoSelect.innerHTML = '<option value="" disabled selected>Selecione o Estado...</option>';
+            // Usando fragmento para construir as opções sem innerHTML repetitivo
+            const fragment = document.createDocumentFragment();
+            const optionDefault = document.createElement("option");
+            optionDefault.value = "";
+            optionDefault.disabled = true;
+            optionDefault.selected = true;
+            optionDefault.textContent = "Selecione o Estado...";
+            fragment.appendChild(optionDefault);
+
             estados.forEach(uf => {
-                estadoSelect.innerHTML += `<option value="${uf.sigla}">${uf.nome} (${uf.sigla})</option>`;
+                const option = document.createElement("option");
+                option.value = uf.sigla;
+                option.textContent = `${uf.nome} (${uf.sigla})`;
+                fragment.appendChild(option);
             });
+
+            estadoSelect.innerHTML = ""; // limpa
+            estadoSelect.appendChild(fragment);
         } catch (err) {
             console.error("Erro ao carregar estados do IBGE:", err);
             estadoSelect.innerHTML = '<option value="">Erro ao carregar estados</option>';
@@ -92,11 +111,23 @@ document.addEventListener("DOMContentLoaded", () => {
             const res = await fetch(`https://servicodados.ibge.gov.br/api/v1/localidades/estados/${uf}/municipios`);
             const cidades = await res.json();
 
-            cidadeSelect.innerHTML = '<option value="" disabled selected>Selecione a Cidade...</option>';
+            const fragment = document.createDocumentFragment();
+            const optionDefault = document.createElement("option");
+            optionDefault.value = "";
+            optionDefault.disabled = true;
+            optionDefault.selected = true;
+            optionDefault.textContent = "Selecione a Cidade...";
+            fragment.appendChild(optionDefault);
+
             cidades.forEach(m => {
-                cidadeSelect.innerHTML += `<option value="${m.nome}">${m.nome}</option>`;
+                const option = document.createElement("option");
+                option.value = m.nome;
+                option.textContent = m.nome;
+                fragment.appendChild(option);
             });
 
+            cidadeSelect.innerHTML = ""; // limpa
+            cidadeSelect.appendChild(fragment);
             cidadeSelect.disabled = false;
 
             if (cidadeSelecionada) {
@@ -118,68 +149,72 @@ document.addEventListener("DOMContentLoaded", () => {
        5. BUSCA RÁPIDA VIA CEP (ViaCEP -> IBGE Auto Fill)
        ========================================================== */
     if (cepInput) {
+        let cepTimer;
         cepInput.addEventListener("keyup", (e) => {
+            clearTimeout(cepTimer);
             const cep = e.target.value.replace(/\D/g, "");
             if (cep.length === 8) {
-                fetch(`https://viacep.com.br/ws/${cep}/json/`)
-                    .then(res => res.json())
-                    .then(async data => {
-                        if (!data.erro) {
-                            if (estadoSelect) estadoSelect.value = data.uf;
-                            await carregarCidades(data.uf, data.localidade);
-                        }
-                    })
-                    .catch(err => console.error("Erro ao buscar CEP:", err));
+                cepTimer = setTimeout(() => {
+                    fetch(`https://viacep.com.br/ws/${cep}/json/`)
+                        .then(res => res.json())
+                        .then(async data => {
+                            if (!data.erro) {
+                                if (estadoSelect) estadoSelect.value = data.uf;
+                                await carregarCidades(data.uf, data.localidade);
+                            }
+                        })
+                        .catch(err => console.error("Erro ao buscar CEP:", err));
+                }, 300);
             }
         });
     }
 
     /* ==========================================================
-       6. NAVEGAÇÃO E NAVEGABILIDADE DO FLUXO
+       6. NAVEGAÇÃO — Sem reset automático
        ========================================================== */
     function showStep(index) {
+        if (index < 0 || index >= steps.length) return;
+
         steps.forEach((step, i) => {
-            if (i === index) {
-                step.classList.remove("hidden-step");
-                step.classList.add("active-step", "active");
-            } else {
-                step.classList.add("hidden-step");
-                step.classList.remove("active-step", "active");
-            }
+            step.classList.toggle("hidden-step", i !== index);
+            step.classList.toggle("active-step", i === index);
         });
 
         if (stepTitle) stepTitle.textContent = titles[index] || "Pesquisa Scindax";
         if (stepCounter) stepCounter.textContent = `Etapa ${index + 1} de ${steps.length}`;
-
         if (progressBar) {
             progressBar.style.width = `${((index + 1) / steps.length) * 100}%`;
         }
 
-        if (btnBack) {
-            btnBack.classList.toggle("hidden", index === 0);
-        }
+        if (btnBack) btnBack.classList.toggle("hidden", index === 0);
+        const isLast = index === steps.length - 1;
+        if (btnNext) btnNext.classList.toggle("hidden", isLast);
+        if (btnSubmit) btnSubmit.classList.toggle("hidden", !isLast);
 
-        if (index === steps.length - 1) {
-            if (btnNext) btnNext.classList.add("hidden");
-            if (btnSubmit) btnSubmit.classList.remove("hidden");
-        } else {
-            if (btnNext) btnNext.classList.remove("hidden");
-            if (btnSubmit) btnSubmit.classList.add("hidden");
-        }
-
-        window.scrollTo({ top: 0, behavior: "smooth" });
+        // Scroll simplificado, sem smooth para evitar conflitos no mobile
+        window.scrollTo({ top: 0, behavior: "auto" });
     }
 
+    let errorTimer = null;
     function validateStep() {
         const currentStepEl = steps[currentStep];
         const required = currentStepEl.querySelectorAll("[required]");
         let isValid = true;
 
+        // Cancela qualquer timer de erro pendente
+        if (errorTimer) {
+            clearTimeout(errorTimer);
+            document.querySelectorAll(".input-error").forEach(el => el.classList.remove("input-error"));
+        }
+
         for (const field of required) {
             if (!field.value.trim()) {
                 field.focus();
                 field.classList.add("input-error");
-                setTimeout(() => field.classList.remove("input-error"), 2000);
+                errorTimer = setTimeout(() => {
+                    field.classList.remove("input-error");
+                    errorTimer = null;
+                }, 2000);
                 isValid = false;
                 break;
             }
@@ -194,26 +229,30 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     /* ==========================================================
-       7. EVENTOS DOS BOTÕES E CHOICE CARDS
+       7. EVENTOS DOS BOTÕES E CHOICE CARDS (delegação otimizada)
        ========================================================== */
-    document.addEventListener("click", (e) => {
-        const choiceBtn = e.target.closest(".choice-card");
-        if (!choiceBtn) return;
+    // Delegação única no formulário para todos os clicks
+    if (form) {
+        form.addEventListener("click", (e) => {
+            const choiceBtn = e.target.closest(".choice-card");
+            if (!choiceBtn) return;
 
-        const container = choiceBtn.parentElement;
-        container.querySelectorAll(".choice-card").forEach(card => card.classList.remove("selected"));
-        choiceBtn.classList.add("selected");
+            const container = choiceBtn.parentElement;
+            container.querySelectorAll(".choice-card").forEach(card => card.classList.remove("selected"));
+            choiceBtn.classList.add("selected");
 
-        const value = choiceBtn.dataset.value || choiceBtn.innerText.trim();
-        const hiddenInput = container.parentElement.querySelector('input[type="hidden"]');
-        if (hiddenInput) hiddenInput.value = value;
-    });
+            const value = choiceBtn.dataset.value || choiceBtn.innerText.trim();
+            const hiddenInput = container.parentElement.querySelector('input[type="hidden"]');
+            if (hiddenInput) hiddenInput.value = value;
+        });
+    }
 
     if (startButton) {
         startButton.addEventListener("click", () => {
             welcomeScreen.classList.add("hidden");
             surveyScreen.classList.remove("hidden");
             currentStep = 0;
+            pesquisaIniciada = true;
             showStep(currentStep);
         });
     }
@@ -227,15 +266,19 @@ document.addEventListener("DOMContentLoaded", () => {
     if (btnNext) {
         btnNext.addEventListener("click", () => {
             if (!validateStep()) return;
-            currentStep++;
-            showStep(currentStep);
+            if (currentStep < steps.length - 1) {
+                currentStep++;
+                showStep(currentStep);
+            }
         });
     }
 
     if (btnBack) {
         btnBack.addEventListener("click", () => {
-            currentStep--;
-            showStep(currentStep);
+            if (currentStep > 0) {
+                currentStep--;
+                showStep(currentStep);
+            }
         });
     }
 
@@ -285,7 +328,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
                 surveyScreen.classList.add("hidden");
                 thankScreen.classList.remove("hidden");
-                window.scrollTo({ top: 0, behavior: "smooth" });
+                window.scrollTo({ top: 0, behavior: "auto" });
 
                 if (window.confetti) {
                     window.confetti({
@@ -305,13 +348,33 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     /* ==========================================================
-       9. INICIALIZAÇÃO
+       9. INICIALIZAÇÃO — Segura, sem reset
        ========================================================== */
-    carregarEstados();
+    // Carrega os estados da API do IBGE apenas se a tela de pesquisa estiver visível
+    if (surveyScreen && !surveyScreen.classList.contains("hidden")) {
+        carregarEstados();
+    } else {
+        // Se a pesquisa não começou, os estados serão carregados ao iniciar
+        const observer = new MutationObserver((mutations) => {
+            mutations.forEach(mut => {
+                if (mut.target === surveyScreen && !surveyScreen.classList.contains("hidden")) {
+                    carregarEstados();
+                    observer.disconnect();
+                }
+            });
+        });
+        if (surveyScreen) {
+            observer.observe(surveyScreen, { attributes: true, attributeFilter: ["class"] });
+        }
+    }
 
+    // Ajusta a visibilidade do contactBox baseado no checkbox de relatório
     if (receiveReport && contactBox) {
         contactBox.style.display = receiveReport.checked ? "grid" : "none";
     }
 
-    showStep(0);
+    // Exibe a etapa inicial correta sem forçar reset
+    if (pesquisaIniciada) {
+        showStep(currentStep);
+    }
 });
