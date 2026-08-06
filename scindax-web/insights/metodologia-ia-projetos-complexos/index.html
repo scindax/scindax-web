@@ -45,9 +45,9 @@
         <a href="/insights/metodologia-ia-projetos-complexos/tecnico/" class="article-toggle">Prefere a versão técnica? →</a>
 
         <div class="article-body">
-            <p>Projetos que envolvem decisões complexas, múltiplas áreas e integrações costumam começar com entusiasmo, mas rapidamente se perdem em retrabalho, comunicação confusa e entregas que não atendem ao que realmente era necessário. O problema raramente é falta de capacidade técnica ou de recursos. É falta de método.</p>
-            <p>A Scindax enfrentou esse desafio ao estruturar sua própria operação. Com uma equipe enxuta e orçamento limitado, precisávamos criar uma base sólida que nos permitisse evoluir sem refazer tudo a cada nova etapa. Ao mesmo tempo, testávamos o uso de IA generativa para acelerar decisões — e descobrimos que, sem um processo claro, a IA pode criar mais desordem do que resolver.</p>
-            <p>Este post revela como construímos uma metodologia própria que nos permitiu usar IA com segurança e eficiência, e por que qualquer empresa que lida com projetos complexos deveria fazer o mesmo.</p>
+            <p>Projetos que envolvem decisões complexas, múltiplas áreas e integrações costumam começar com entusiasmo, mas rapidamente se perdem em retrabalho, comunicação confusa e entregas que não atendem ao que realmente era necessário. O problema raramente é falta de capacidade técnica ou de recursos. Mutas das vezes é só ausência de estratégia ou, de método.</p>
+            <p>A Scindax enfrenta diariamente desafio ao estruturar sua própria operação. Com uma equipe enxuta e orçamento limitado, precisamos criar uma base sólida que nos permita evoluir sem ter que refazer tudo a cada nova etapa. Ao mesmo tempo, testamos o uso de IA generativa para acelerar decisões, com isso descobrimos que sem um processo claro, a IA pode criar mais desordem do que resolver.</p>
+            <p>Este post revela como construímos nossa metodologia que nos permite usar IA com segurança e eficiência, com o intuito de convidar empresas que lidam com projetos complexos a fazer o mesmo.</p>
 
             <h2>As decisões que tomamos</h2>
 
@@ -57,21 +57,21 @@
             <ul>
                 <li>Evita que decisões importantes sejam tomadas no meio do caminho, quando já é tarde para mudar.</li>
                 <li>Garante que todos os envolvidos estejam alinhados sobre o que está sendo construído e por quê.</li>
-                <li>Reduz retrabalho e retrabalho de comunicação.</li>
+                <li>Reduz retrabalho e ruídos de comunicação.</li>
             </ul>
-            <p><strong>Como funciona na prática:</strong> antes de qualquer código ou entrega, passamos por etapas: entender o problema, definir a arquitetura, congelar decisões, consolidar a memória do projeto e só então partir para a execução. Cada etapa gera um documento que serve de referência para as seguintes.</p>
+            <p><strong>Como funciona na prática:</strong> antes de qualquer código ou entrega, passamos por etapas: entender o problema, definir a arquitetura, congelar decisões, consolidar a memória do projeto e só então partir para a execução. Cada etapa gera um documento que serve de referência para as seguintes (memória descritiva).</p>
 
-            <h3>2. O papel da IA no processo: ferramenta, não substituta</h3>
+            <h3>2. O papel da IA no processo: a IA é ferramenta, não substituta</h3>
             <p><strong>O que foi escolhido:</strong> utilizar IA generativa (como ChatGPT e Claude) para acelerar tarefas específicas, mas sempre dentro de um processo supervisionado.</p>
             <p><strong>Por quê:</strong></p>
             <ul>
-                <li>IA é excelente para gerar rascunhos, sugestões e até código, mas não entende o contexto completo de um projeto.</li>
+                <li>IA é excelente para gerar rascunhos, sugestões e até código, mas não compreender as nuances por completo de um projeto, nem deve.</li>
                 <li>Sem um processo que defina claramente o que deve ser feito e em que ordem, a IA tende a pular etapas, gerar inconsistências e perder o alinhamento com os objetivos reais.</li>
             </ul>
             <p><strong>Como funciona na prática:</strong> definimos que a IA pode ajudar a criar documentos, listar alternativas e sugerir melhorias, mas nunca decide arquitetura ou escopo. As decisões estruturais são sempre validadas por um humano.</p>
 
             <h3>3. A esteira de governança: como manter o controle</h3>
-            <p><strong>O que foi escolhido:</strong> criar uma sequência obrigatória de artefatos que toda iniciativa precisa seguir.</p>
+            <p><strong>O que foi escolhido:</strong> criar uma sequência obrigatória [metodologia] de artefatos [documentos] que toda iniciativa precisa seguir.</p>
             <p><strong>Por quê:</strong></p>
             <ul>
                 <li>Cada artefato tem um propósito claro: discussão, arquitetura, governança, memória, especificação, implementação, validação e auditoria.</li>
@@ -84,7 +84,7 @@
             <p><strong>Por quê:</strong></p>
             <ul>
                 <li>A IA tende a gerar respostas plausíveis, mas que podem ignorar restrições ou requisitos não explicitados.</li>
-                <li>Sem um documento claro de especificação, a IA pode interpretar solicitações de forma diferente da intenção original.</li>
+                <li>Sem um documento claro de especificação [artefatos], a IA pode interpretar solicitações de forma diferente da intenção original, e até mesmo presumir e decidir por conta própria.</li>
             </ul>
             <p><strong>Como funciona na prática:</strong> em um dos projetos, a IA começou a implementar funcionalidades antes de a arquitetura estar definida. Isso gerou retrabalho e exigiu correções manuais. A partir disso, criamos a regra de que a especificação só é gerada após todos os artefatos anteriores estarem aprovados.</p>
 
@@ -112,13 +112,13 @@ Auditoria do que foi entregue</code></pre>
             <p>O tempo gasto na definição inicial foi compensado várias vezes pela economia de correções e ajustes de última hora.</p>
 
             <h2>Lições aprendidas</h2>
-            <p><strong>1. Método não é burocracia, é clareza.</strong><br>Um processo bem definido não engessa; ele dá direção. Empresas que pulam etapas para "ganhar tempo" geralmente perdem mais tempo corrigindo decisões mal tomadas.</p>
+            <p><strong>1. Método não é burocracia, é clareza.</strong><br>Um processo bem definido não engessa e dá direção. Empresas que pulam etapas para "ganhar tempo" geralmente perdem mais tempo corrigindo decisões mal tomadas.</p>
             <p><strong>2. IA é uma ferramenta poderosa, mas não substitui governança.</strong><br>Ela pode acelerar a execução, mas não pode definir o que deve ser feito. A decisão sobre escopo, arquitetura e prioridades continua sendo humana.</p>
             <p><strong>3. Documentar decisões é tão importante quanto tomar a decisão.</strong><br>Sem um registro claro do que foi decidido e por quê, qualquer mudança de equipe ou retomada de projeto se torna um recomeço.</p>
             <p><strong>4. Auditoria final não é opcional.</strong><br>Comparar o que foi planejado com o que foi entregue é a única forma de aprender e melhorar continuamente. Sem auditoria, os mesmos erros se repetem.</p>
 
             <h2>Como isso se conecta ao que a Scindax faz</h2>
-            <p>Se a Scindax, com recursos limitados, conseguiu estruturar uma metodologia que torna o uso de IA seguro e eficiente, imagine o que sua empresa pode alcançar quando organiza seus processos e decisões com a mesma clareza. A tecnologia acelera, mas é a metodologia que dá direção.</p>
+            <p>Se a Scindax, com recursos limitados, conseguiu estruturar uma metodologia que torna o uso de IA seguro e eficiente, imagine o que sua empresa pode alcançar quando organiza seus processos e decisões com a mesma clareza. A tecnologia ajuda a acelerar os processos, mas é a metodologia que dá direção.</p>
         </div>
 
         <div class="article-cta">
