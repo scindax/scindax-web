@@ -1,47 +1,66 @@
 /* ============================================================
    SCX GOVERNANÇA
-   Design System
+   Portal do Participante
+   UI — Minimalista / Enterprise / Dark Premium
+   ============================================================ */
+
+
+/* ============================================================
+   01. DESIGN TOKENS
    ============================================================ */
 
 :root {
-    --bg: #0f1115;
-    --surface: #15181e;
-    --surface-2: #1b1f27;
+    /* Backgrounds */
+    --bg: #0d0f12;
+    --surface: #13161a;
+    --surface-raised: #181c21;
+    --surface-soft: #1d2127;
 
-    --border: #292e38;
-    --border-light: #343a46;
+    /* Borders */
+    --border: #262b32;
+    --border-hover: #343a43;
 
-    --text: #f3f4f6;
-    --text-secondary: #a7adb8;
-    --text-muted: #737b88;
+    /* Typography */
+    --text: #f1f3f5;
+    --text-secondary: #a8afb8;
+    --text-muted: #737b86;
+    --text-disabled: #505760;
 
-    --primary: #f3f4f6;
-    --primary-text: #111318;
+    /* Accent */
+    --accent: #e8eaed;
+    --accent-strong: #ffffff;
+    --accent-text: #111316;
 
-    --success: #75c98a;
-    --warning: #d8b36a;
-    --danger: #d47777;
+    /* Semantic */
+    --success: #78c991;
+    --warning: #d5b36b;
+    --danger: #d77d7d;
 
+    /* Radius */
     --radius-sm: 6px;
     --radius-md: 10px;
     --radius-lg: 14px;
 
-    --container: 1180px;
-
+    /* Spacing */
     --space-1: 4px;
     --space-2: 8px;
     --space-3: 12px;
     --space-4: 16px;
     --space-5: 20px;
     --space-6: 24px;
+    --space-7: 28px;
     --space-8: 32px;
     --space-10: 40px;
     --space-12: 48px;
+    --space-16: 64px;
+
+    /* Layout */
+    --content-width: 1120px;
 }
 
 
 /* ============================================================
-   RESET
+   02. RESET
    ============================================================ */
 
 * {
@@ -49,312 +68,142 @@
 }
 
 html {
+    min-height: 100%;
     font-size: 16px;
-    scroll-behavior: smooth;
+    background: var(--bg);
 }
 
 body {
+    min-height: 100vh;
     margin: 0;
+
     background: var(--bg);
     color: var(--text);
 
     font-family:
-        Inter,
+        "Inter",
         system-ui,
         -apple-system,
         BlinkMacSystemFont,
         "Segoe UI",
         sans-serif;
 
+    font-size: 14px;
     line-height: 1.5;
+
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
 }
 
+button,
+input,
+textarea,
+select {
+    font: inherit;
+}
 
-/* ============================================================
-   TIPOGRAFIA
-   ============================================================ */
+button {
+    border: 0;
+}
 
+button,
+label {
+    -webkit-tap-highlight-color: transparent;
+}
+
+a {
+    color: inherit;
+    text-decoration: none;
+}
+
+p,
 h1,
 h2,
 h3,
-h4,
-p {
+h4 {
     margin: 0;
 }
 
-h1 {
-    font-size: 32px;
-    line-height: 1.2;
-    font-weight: 600;
-    letter-spacing: -0.02em;
-}
-
-h2 {
-    font-size: 22px;
-    line-height: 1.3;
-    font-weight: 600;
-}
-
-h3 {
-    font-size: 17px;
-    font-weight: 600;
-}
-
-p {
-    color: var(--text-secondary);
+img {
+    max-width: 100%;
+    display: block;
 }
 
 
 /* ============================================================
-   CONTAINER
+   03. SCREENS
    ============================================================ */
 
-.container {
-    width: min(
-        calc(100% - 32px),
-        var(--container)
-    );
+.screen {
+    display: none;
+    min-height: 100vh;
+}
 
-    margin: 0 auto;
+.screen.active {
+    display: block;
 }
 
 
 /* ============================================================
-   HEADER
+   04. LOGIN
    ============================================================ */
 
-header {
-    height: 68px;
+#login-screen {
+    min-height: 100vh;
 
-    display: flex;
+    display: none;
     align-items: center;
-    justify-content: space-between;
-
-    padding: 0 24px;
-
-    border-bottom: 1px solid var(--border);
-
-    background: var(--bg);
-}
-
-header h1 {
-    font-size: 15px;
-    letter-spacing: 0.04em;
-    text-transform: uppercase;
-}
-
-
-/* ============================================================
-   MAIN
-   ============================================================ */
-
-main {
-    padding-top: var(--space-10);
-    padding-bottom: var(--space-12);
-}
-
-
-/* ============================================================
-   SECTIONS
-   ============================================================ */
-
-.section {
-    margin-bottom: var(--space-8);
-}
-
-.section-header {
-    margin-bottom: var(--space-5);
-}
-
-.section-header h2 {
-    margin-bottom: var(--space-2);
-}
-
-
-/* ============================================================
-   CARDS
-   ============================================================ */
-
-.card {
-    background: var(--surface);
-
-    border: 1px solid var(--border);
-
-    border-radius: var(--radius-lg);
+    justify-content: center;
 
     padding: var(--space-6);
 }
 
-.card + .card {
-    margin-top: var(--space-4);
+#login-screen.active {
+    display: flex;
 }
 
-
-/* ============================================================
-   ACTION CARD
-   ============================================================ */
-
-.action-card {
-    padding: var(--space-8);
-}
-
-.action-code {
-    margin-bottom: var(--space-3);
-
-    color: var(--text-muted);
-
-    font-size: 13px;
-    font-weight: 600;
-
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-}
-
-.action-card h2 {
-    max-width: 760px;
-    margin-bottom: var(--space-4);
-}
-
-.action-description {
-    max-width: 760px;
-    margin-bottom: var(--space-6);
-}
-
-.action-objective {
-    padding: var(--space-4);
-
-    margin-bottom: var(--space-6);
-
-    border-left: 2px solid var(--border-light);
-
-    background: var(--surface-2);
-}
-
-.action-objective strong {
-    display: block;
-
-    margin-bottom: var(--space-2);
-
-    font-size: 13px;
-    color: var(--text);
-}
-
-
-/* ============================================================
-   BUTTONS
-   ============================================================ */
-
-button,
-.btn {
-    min-height: 42px;
-
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-
-    padding: 0 18px;
-
-    border: 1px solid transparent;
-    border-radius: var(--radius-sm);
-
-    font: inherit;
-    font-size: 14px;
-    font-weight: 600;
-
-    cursor: pointer;
-
-    transition:
-        background-color 0.15s ease,
-        border-color 0.15s ease,
-        color 0.15s ease;
-}
-
-.btn-primary {
-    background: var(--primary);
-    color: var(--primary-text);
-}
-
-.btn-primary:hover {
-    background: #ffffff;
-}
-
-.btn-secondary {
-    background: transparent;
-    color: var(--text);
-    border-color: var(--border-light);
-}
-
-.btn-secondary:hover {
-    background: var(--surface-2);
-}
-
-
-/* ============================================================
-   STATS
-   ============================================================ */
-
-.stats-grid {
-    display: grid;
-
-    grid-template-columns:
-        repeat(3, minmax(0, 1fr));
-
-    gap: var(--space-4);
-}
-
-.stat-card {
-    padding: var(--space-5);
-
-    background: var(--surface);
-
-    border: 1px solid var(--border);
-
-    border-radius: var(--radius-md);
-}
-
-.stat-value {
-    display: block;
-
-    margin-bottom: var(--space-1);
-
-    font-size: 28px;
-    font-weight: 600;
-}
-
-.stat-label {
-    color: var(--text-muted);
-
-    font-size: 13px;
-}
-
-
-/* ============================================================
-   PROGRESS
-   ============================================================ */
-
-.progress {
+.login-container {
     width: 100%;
-    height: 6px;
-
-    overflow: hidden;
-
-    background: var(--surface-2);
-
-    border-radius: 999px;
+    max-width: 400px;
 }
 
-.progress-bar {
-    height: 100%;
-
-    background: var(--text);
-
-    border-radius: inherit;
+.login-header {
+    margin-bottom: var(--space-10);
 }
 
+.login-brand,
+.nav-brand {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+}
 
-/* ============================================================
-   FORMS
-   ============================================================ */
+.login-brand {
+    margin-bottom: var(--space-3);
+}
+
+.brand-scx {
+    color: var(--text);
+    font-size: 20px;
+    font-weight: 700;
+    letter-spacing: -0.04em;
+}
+
+.brand-governanca {
+    color: var(--text-muted);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+}
+
+.login-subtitle {
+    color: var(--text-secondary);
+    font-size: 14px;
+}
+
+.login-form {
+    width: 100%;
+}
 
 .form-group {
     margin-bottom: var(--space-5);
@@ -365,7 +214,7 @@ button,
 
     margin-bottom: var(--space-2);
 
-    color: var(--text);
+    color: var(--text-secondary);
 
     font-size: 13px;
     font-weight: 500;
@@ -376,39 +225,536 @@ textarea,
 select {
     width: 100%;
 
-    padding: 12px 14px;
-
-    background: var(--surface-2);
-
-    color: var(--text);
-
-    border: 1px solid var(--border-light);
-
+    border: 1px solid var(--border);
     border-radius: var(--radius-sm);
 
-    font: inherit;
+    background: var(--surface);
+    color: var(--text);
+
+    outline: none;
+
+    transition:
+        border-color 0.15s ease,
+        background-color 0.15s ease;
+}
+
+input {
+    height: 44px;
+    padding: 0 14px;
 }
 
 textarea {
-    min-height: 120px;
+    min-height: 110px;
+    padding: 12px 14px;
+
     resize: vertical;
+}
+
+input::placeholder,
+textarea::placeholder {
+    color: var(--text-disabled);
+}
+
+input:hover,
+textarea:hover,
+select:hover {
+    border-color: var(--border-hover);
 }
 
 input:focus,
 textarea:focus,
 select:focus {
-    outline: none;
+    border-color: #5d6570;
+    background: var(--surface-raised);
+}
 
-    border-color: #626a78;
+.login-footer {
+    margin-top: var(--space-10);
+
+    text-align: center;
+}
+
+.login-footer p {
+    color: var(--text-muted);
+    font-size: 12px;
 }
 
 
 /* ============================================================
-   MODAL
+   05. BUTTONS
+   ============================================================ */
+
+.btn {
+    min-height: 42px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 0 18px;
+
+    border-radius: var(--radius-sm);
+
+    font-size: 13px;
+    font-weight: 600;
+
+    cursor: pointer;
+
+    transition:
+        background-color 0.15s ease,
+        border-color 0.15s ease,
+        color 0.15s ease,
+        opacity 0.15s ease;
+}
+
+.btn:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+}
+
+.btn-block {
+    width: 100%;
+}
+
+.btn-primary {
+    background: var(--accent);
+    color: var(--accent-text);
+}
+
+.btn-primary:hover {
+    background: var(--accent-strong);
+}
+
+.btn-secondary {
+    background: transparent;
+    color: var(--text);
+    border: 1px solid var(--border);
+}
+
+.btn-secondary:hover {
+    background: var(--surface-soft);
+    border-color: var(--border-hover);
+}
+
+.btn-outline {
+    background: transparent;
+    color: var(--text-secondary);
+    border: 1px solid var(--border);
+}
+
+.btn-outline:hover {
+    color: var(--text);
+    border-color: var(--border-hover);
+    background: var(--surface);
+}
+
+.btn-sm {
+    min-height: 34px;
+    padding: 0 13px;
+    font-size: 12px;
+}
+
+
+/* ============================================================
+   06. NAVBAR
+   ============================================================ */
+
+.navbar {
+    width: 100%;
+    height: 68px;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    padding: 0 32px;
+
+    border-bottom: 1px solid var(--border);
+
+    background: rgba(13, 15, 18, 0.96);
+}
+
+.nav-user {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.user-name {
+    color: var(--text-secondary);
+    font-size: 13px;
+}
+
+
+/* ============================================================
+   07. DASHBOARD
+   ============================================================ */
+
+.dashboard {
+    width: min(
+        calc(100% - 48px),
+        var(--content-width)
+    );
+
+    margin: 0 auto;
+
+    padding-top: var(--space-12);
+    padding-bottom: 120px;
+}
+
+
+/* ============================================================
+   08. DASHBOARD HEADER
+   ============================================================ */
+
+.dashboard-header {
+    display: grid;
+
+    grid-template-columns:
+        minmax(0, 1fr)
+        320px;
+
+    gap: var(--space-10);
+
+    align-items: end;
+
+    margin-bottom: var(--space-12);
+}
+
+.greeting h1 {
+    color: var(--text);
+
+    font-size: 32px;
+    font-weight: 600;
+    line-height: 1.2;
+
+    letter-spacing: -0.025em;
+}
+
+.highlight {
+    color: var(--text);
+}
+
+.company-name {
+    margin-top: var(--space-2);
+
+    color: var(--text-muted);
+    font-size: 14px;
+}
+
+
+/* ============================================================
+   09. PROGRESS CARD
+   ============================================================ */
+
+.progress-card {
+    padding: var(--space-5);
+
+    background: var(--surface);
+
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+}
+
+.progress-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    margin-bottom: var(--space-3);
+}
+
+.progress-label {
+    color: var(--text-secondary);
+
+    font-size: 12px;
+    font-weight: 600;
+
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+}
+
+.progress-count {
+    color: var(--text-muted);
+    font-size: 12px;
+}
+
+.progress-bar {
+    width: 100%;
+    height: 5px;
+
+    overflow: hidden;
+
+    background: var(--surface-soft);
+
+    border-radius: 999px;
+}
+
+.progress-fill {
+    height: 100%;
+
+    background: var(--accent);
+
+    border-radius: inherit;
+
+    transition: width 0.25s ease;
+}
+
+.progress-percent {
+    display: block;
+
+    margin-top: var(--space-2);
+
+    color: var(--text-muted);
+
+    font-size: 12px;
+
+    text-align: right;
+}
+
+
+/* ============================================================
+   10. TODAY ACTION
+   ============================================================ */
+
+.today-action {
+    margin-bottom: var(--space-8);
+}
+
+.section-label {
+    margin-bottom: var(--space-3);
+
+    color: var(--text-muted);
+
+    font-size: 11px;
+    font-weight: 600;
+
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+}
+
+.action-card {
+    padding: var(--space-8);
+
+    background: var(--surface);
+
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+}
+
+.action-meta {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    margin-bottom: var(--space-5);
+}
+
+.action-day,
+.action-week {
+    display: inline-flex;
+    align-items: center;
+
+    min-height: 28px;
+
+    padding: 0 9px;
+
+    border: 1px solid var(--border);
+
+    border-radius: var(--radius-sm);
+
+    color: var(--text-muted);
+
+    font-size: 11px;
+    font-weight: 500;
+}
+
+.action-card h2 {
+    max-width: 800px;
+
+    margin-bottom: var(--space-4);
+
+    color: var(--text);
+
+    font-size: 24px;
+    font-weight: 600;
+
+    line-height: 1.35;
+
+    letter-spacing: -0.015em;
+}
+
+.action-description {
+    max-width: 760px;
+
+    margin-bottom: var(--space-6);
+
+    color: var(--text-secondary);
+
+    font-size: 14px;
+    line-height: 1.7;
+}
+
+.action-objective {
+    max-width: 800px;
+
+    padding: var(--space-4);
+
+    margin-bottom: var(--space-6);
+
+    background: var(--surface-raised);
+
+    border-left: 2px solid var(--border-hover);
+
+    color: var(--text-secondary);
+
+    font-size: 13px;
+    line-height: 1.6;
+}
+
+.action-objective strong {
+    color: var(--text);
+    font-weight: 600;
+}
+
+.action-status {
+    margin-bottom: var(--space-4);
+
+    color: var(--text-muted);
+
+    font-size: 12px;
+}
+
+
+/* ============================================================
+   11. STATS
+   ============================================================ */
+
+.stats-grid {
+    display: grid;
+
+    grid-template-columns:
+        repeat(3, minmax(0, 1fr));
+
+    gap: 1px;
+
+    overflow: hidden;
+
+    background: var(--border);
+
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+}
+
+.stat-item {
+    padding: var(--space-6);
+
+    background: var(--surface);
+}
+
+.stat-value {
+    display: block;
+
+    margin-bottom: 2px;
+
+    color: var(--text);
+
+    font-size: 26px;
+    font-weight: 600;
+
+    line-height: 1.2;
+}
+
+.stat-label {
+    color: var(--text-muted);
+
+    font-size: 12px;
+}
+
+
+/* ============================================================
+   12. BOTTOM NAVIGATION
+   ============================================================ */
+
+.bottom-nav {
+    position: fixed;
+
+    left: 50%;
+    bottom: 20px;
+
+    transform: translateX(-50%);
+
+    width: min(
+        calc(100% - 40px),
+        520px
+    );
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(4, 1fr);
+
+    padding: 6px;
+
+    background: rgba(19, 22, 26, 0.98);
+
+    border: 1px solid var(--border);
+
+    border-radius: 12px;
+
+    z-index: 100;
+}
+
+.nav-item {
+    min-height: 52px;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    gap: 3px;
+
+    background: transparent;
+
+    color: var(--text-muted);
+
+    border-radius: 8px;
+
+    cursor: pointer;
+
+    transition:
+        background-color 0.15s ease,
+        color 0.15s ease;
+}
+
+.nav-item:hover {
+    color: var(--text-secondary);
+}
+
+.nav-item.active {
+    background: var(--surface-soft);
+    color: var(--text);
+}
+
+.nav-icon {
+    font-size: 15px;
+    line-height: 1;
+}
+
+.nav-label {
+    font-size: 10px;
+    font-weight: 500;
+}
+
+
+/* ============================================================
+   13. MODALS
    ============================================================ */
 
 .modal {
     position: fixed;
+
     inset: 0;
 
     display: none;
@@ -417,7 +763,7 @@ select:focus {
 
     padding: 24px;
 
-    background: rgba(0, 0, 0, 0.65);
+    background: rgba(0, 0, 0, 0.68);
 
     z-index: 1000;
 }
@@ -428,7 +774,6 @@ select:focus {
 
 .modal-content {
     width: min(100%, 560px);
-
     max-height: calc(100vh - 48px);
 
     overflow-y: auto;
@@ -438,73 +783,361 @@ select:focus {
     border: 1px solid var(--border);
 
     border-radius: var(--radius-lg);
+
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
 }
 
 .modal-header {
+    min-height: 64px;
+
     display: flex;
     align-items: center;
     justify-content: space-between;
 
-    padding: 20px 24px;
+    padding: 0 var(--space-6);
 
     border-bottom: 1px solid var(--border);
 }
 
+.modal-header h2 {
+    color: var(--text);
+
+    font-size: 17px;
+    font-weight: 600;
+}
+
+.modal-close {
+    width: 32px;
+    height: 32px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    background: transparent;
+
+    color: var(--text-muted);
+
+    border-radius: var(--radius-sm);
+
+    font-size: 22px;
+    font-weight: 300;
+
+    cursor: pointer;
+}
+
+.modal-close:hover {
+    background: var(--surface-soft);
+    color: var(--text);
+}
+
 .modal-body {
-    padding: 24px;
+    padding: var(--space-6);
+}
+
+.modal-action-title {
+    margin-bottom: var(--space-6);
+
+    padding: var(--space-4);
+
+    background: var(--surface-raised);
+
+    border: 1px solid var(--border);
+
+    border-radius: var(--radius-md);
+
+    color: var(--text-secondary);
+
+    font-size: 13px;
+    line-height: 1.6;
+}
+
+.modal-actions {
+    display: grid;
+
+    grid-template-columns:
+        1fr 1fr;
+
+    gap: var(--space-3);
+
+    margin-top: var(--space-6);
 }
 
 
 /* ============================================================
-   MOBILE
+   14. EVIDENCE
    ============================================================ */
 
-@media (max-width: 700px) {
+.evidence-help {
+    margin-bottom: var(--space-6);
 
-    header {
+    color: var(--text-secondary);
+
+    font-size: 13px;
+}
+
+.file-types {
+    display: grid;
+
+    grid-template-columns:
+        repeat(2, minmax(0, 1fr));
+
+    gap: 8px;
+}
+
+.file-types label {
+    min-height: 42px;
+
+    display: flex;
+    align-items: center;
+
+    gap: 10px;
+
+    padding: 10px 12px;
+
+    background: var(--surface-raised);
+
+    border: 1px solid var(--border);
+
+    border-radius: var(--radius-sm);
+
+    color: var(--text-secondary);
+
+    font-size: 12px;
+
+    cursor: pointer;
+
+    transition:
+        border-color 0.15s ease,
+        background-color 0.15s ease;
+}
+
+.file-types label:hover {
+    border-color: var(--border-hover);
+    background: var(--surface-soft);
+}
+
+.file-types input {
+    width: 15px;
+    height: 15px;
+
+    margin: 0;
+
+    accent-color: #d9dce0;
+}
+
+.file-info {
+    margin-top: var(--space-2);
+
+    color: var(--text-muted);
+
+    font-size: 12px;
+}
+
+.upload-progress {
+    margin: var(--space-5) 0;
+}
+
+.upload-progress .progress-bar {
+    margin-bottom: var(--space-2);
+}
+
+#upload-status {
+    color: var(--text-muted);
+    font-size: 12px;
+}
+
+.evidence-status,
+.execution-status {
+    margin-top: var(--space-4);
+
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+
+/* ============================================================
+   15. STATUS / MESSAGES
+   ============================================================ */
+
+.error-message {
+    min-height: 20px;
+
+    margin-top: var(--space-3);
+
+    color: var(--danger);
+
+    font-size: 12px;
+}
+
+.success {
+    color: var(--success);
+}
+
+.warning {
+    color: var(--warning);
+}
+
+.error {
+    color: var(--danger);
+}
+
+
+/* ============================================================
+   16. SCROLLBAR
+   ============================================================ */
+
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--bg);
+}
+
+::-webkit-scrollbar-thumb {
+    background: #30353d;
+    border-radius: 999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #3b414a;
+}
+
+
+/* ============================================================
+   17. RESPONSIVE — TABLET
+   ============================================================ */
+
+@media (max-width: 850px) {
+
+    .dashboard-header {
+        grid-template-columns: 1fr;
+
+        gap: var(--space-6);
+
+        align-items: start;
+
+        margin-bottom: var(--space-8);
+    }
+
+    .progress-card {
+        max-width: none;
+    }
+}
+
+
+/* ============================================================
+   18. RESPONSIVE — MOBILE
+   ============================================================ */
+
+@media (max-width: 600px) {
+
+    .navbar {
         height: 60px;
+
         padding: 0 16px;
     }
 
-    main {
-        padding-top: 24px;
-        padding-bottom: 32px;
+    .nav-brand .brand-scx {
+        font-size: 17px;
     }
 
-    .container {
-        width: min(
-            calc(100% - 24px),
-            var(--container)
-        );
+    .nav-brand .brand-governanca {
+        font-size: 9px;
     }
 
-    h1 {
+    .user-name {
+        display: none;
+    }
+
+    .dashboard {
+        width: calc(100% - 24px);
+
+        padding-top: var(--space-8);
+        padding-bottom: 110px;
+    }
+
+    .greeting h1 {
         font-size: 26px;
     }
 
-    .card,
     .action-card {
-        padding: 20px;
+        padding: var(--space-6);
+    }
+
+    .action-card h2 {
+        font-size: 20px;
+    }
+
+    .action-description {
+        line-height: 1.65;
     }
 
     .stats-grid {
         grid-template-columns: 1fr;
     }
 
-    .btn {
-        width: 100%;
+    .stat-item {
+        padding: 18px 20px;
+    }
+
+    .bottom-nav {
+        width: calc(100% - 24px);
+
+        bottom: 12px;
+    }
+
+    .nav-item {
+        min-height: 48px;
     }
 
     .modal {
-        padding: 12px;
+        align-items: flex-end;
+
+        padding: 0;
     }
 
     .modal-content {
-        max-height: calc(100vh - 24px);
+        width: 100%;
+        max-height: 92vh;
+
+        border-radius: 16px 16px 0 0;
+
+        border-bottom: 0;
     }
 
-    .modal-header,
+    .modal-header {
+        padding: 0 20px;
+    }
+
     .modal-body {
         padding: 20px;
+    }
+
+    .modal-actions {
+        grid-template-columns: 1fr;
+    }
+
+    .file-types {
+        grid-template-columns: 1fr;
+    }
+}
+
+
+/* ============================================================
+   19. REDUCED MOTION
+   ============================================================ */
+
+@media (prefers-reduced-motion: reduce) {
+
+    *,
+    *::before,
+    *::after {
+        scroll-behavior: auto !important;
+
+        transition-duration: 0.01ms !important;
+        animation-duration: 0.01ms !important;
     }
 }
