@@ -421,7 +421,7 @@ function closeEvidenceModal() {
 }
 
 async function submitEvidence() {
-    const executionId = currentExecutionId;
+    const executionId = currentAction?.executionId;
 
     const description = document
         .getElementById("evidence-description")
