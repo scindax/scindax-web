@@ -1,44 +1,32 @@
 const API_BASE =
   "https://scindax-pulso-worker.contato-330.workers.dev/api/pulso";
 
-async function apiRequest(
-  endpoint,
-  options = {}
-) {
-  const participantId =
-    localStorage.getItem(
-      "pulso_participant_id"
-    );
+async function apiRequest(endpoint, options = {}) {
+    const headers = {
+        ...(options.headers || {})
+    };
 
-  const headers = {
-    "Content-Type": "application/json",
-    ...(options.headers || {})
-  };
-
-  if (participantId) {
-    headers["X-Participant-Id"] =
-      participantId;
-  }
-
-  const response = await fetch(
-    `${API_BASE}${endpoint}`,
-    {
-      ...options,
-      headers
+    if (!(options.body instanceof FormData)) {
+        headers["Content-Type"] = "application/json";
     }
-  );
 
-  const data =
-    await response.json();
-
-  if (!response.ok) {
-    throw new Error(
-      data.error ||
-      "Erro na comunicação com o servidor."
+    const response = await fetch(
+        `${API_BASE_URL}${endpoint}`,
+        {
+            ...options,
+            headers
+        }
     );
-  }
 
-  return data;
+    const data = await response.json();
+
+    if (!response.ok) {
+        throw new Error(
+            data.error || "Erro na requisição"
+        );
+    }
+
+    return data;
 }
 
 async function apiLogin(
