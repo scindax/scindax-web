@@ -88,17 +88,27 @@ async function apiExecuteAction(
 async function apiSubmitEvidence(
   executionId,
   description,
-  files = []
+  evidenceTypes,
+  file
 ) {
+  const formData = new FormData();
+
+  formData.append("executionId", executionId);
+  formData.append("description", description);
+
+  evidenceTypes.forEach(type => {
+    formData.append("evidenceTypes", type);
+  });
+
+  if (file) {
+    formData.append("file", file);
+  }
+
   return apiRequest(
     "/participant/submit-evidence",
     {
       method: "POST",
-      body: JSON.stringify({
-        executionId,
-        description,
-        files
-      })
+      body: formData
     }
   );
 }
