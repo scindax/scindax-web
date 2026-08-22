@@ -2730,3 +2730,22 @@ body.tutorial-page .article-resources a:hover { color: #b9c4ff; }
         transition: none;
     }
 }
+
+/* ============================================================
+   VARIÁVEIS
+   ============================================================ */
+:root {
+    --color-bg: #f5f6f8;
+    --color-surface: #ffffff;
+    --color-text: #1a1f2e;
+    --color-text-secondary: #6b7280;
+    --color-text-muted: #9ca3af;
+    --color-border: #e5e7eb;
+    --color-border-subtle: #f0f1f3;
+    --color-primary: #0f2b4b;
+    --color-primary-hover: #1a3f64;
+    --color-primary-light: #e8edf4;
+    --color-accent: #2d7a5a;
+    --color-accent-light: #e6f3ed;
+    --color-success: #2d7a5a;
+}
