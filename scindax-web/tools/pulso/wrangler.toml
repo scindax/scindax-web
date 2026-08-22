@@ -1,0 +1,10 @@
+name = "scindax-pulso-worker"
+main = "src/worker.js"
+compatibility_date = "2026-08-22"
+
+[vars]
+DATABASE_ID = "530613"
+
+[[routes]]
+pattern = "scindax.com.br/api/pulso/*"
+zone_name = "scindax.com.br"

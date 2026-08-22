@@ -1,0 +1,52 @@
+/* ============================================================
+   SCX PULSO
+   Estilos exclusivos da ferramenta
+   ============================================================ */
+
+:root {
+    --pulso-bg: #f5f6f8;
+    --pulso-surface: #ffffff;
+    --pulso-text: #17202a;
+    --pulso-muted: #6b7280;
+    --pulso-border: #e5e7eb;
+    --pulso-primary: #17202a;
+    --pulso-primary-hover: #0f151b;
+    --pulso-danger: #b42318;
+    --pulso-success: #027a48;
+    --pulso-warning: #b54708;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+html,
+body {
+    margin: 0;
+    padding: 0;
+    min-height: 100%;
+}
+
+body {
+    font-family: Inter, Arial, sans-serif;
+    background: var(--pulso-bg);
+    color: var(--pulso-text);
+}
+
+button,
+input,
+textarea {
+    font: inherit;
+}
+
+button {
+    cursor: pointer;
+}
+
+.screen {
+    min-height: 100vh;
+}
+
+.screen:not(.active) {
+    display: none;
+}
