@@ -421,71 +421,87 @@ function closeEvidenceModal() {
 }
 
 async function submitEvidence() {
-  if (!currentAction) return;
+    const executionId = currentExecutionId;
 
-  const description =
-    document.getElementById(
-      "evidence-description"
-    )?.value.trim() || "";
+    const description = document
+        .getElementById("evidence-description")
+        .value
+        .trim();
 
-  if (!description) {
-    showStatus(
-      "evidence-status",
-      "Informe a descrição da evidência.",
-      "error"
+    const fileInput = document.getElementById("evidence-file");
+    const file = fileInput?.files?.[0] || null;
+
+    const selectedTypes = [
+        ...document.querySelectorAll(
+            'input[name="evidence-type"]:checked'
+        )
+    ].map(input => Number(input.value));
+
+    const button = document.getElementById(
+        "evidence-submit-btn"
     );
 
-    return;
-  }
-
-  const button =
-    document.getElementById(
-      "evidence-submit-btn"
+    const status = document.getElementById(
+        "evidence-status"
     );
 
-  try {
-    if (button) {
-      button.disabled = true;
-      button.textContent = "Enviando...";
+    if (!description) {
+        status.textContent =
+            "Descreva a evidência.";
+        return;
     }
 
-    const response =
-      await apiSubmitEvidence(
-        currentAction.executionId,
-        description
-      );
-
-    if (!response.success) {
-      throw new Error(
-        "Não foi possível enviar a evidência."
-      );
+    if (!selectedTypes.length) {
+        status.textContent =
+            "Selecione o tipo da evidência.";
+        return;
     }
 
-    showStatus(
-      "evidence-status",
-      "Evidência enviada com sucesso.",
-      "success"
-    );
+    button.disabled = true;
+    status.textContent = "Enviando...";
 
-    await loadDashboard();
+    try {
+        await apiSubmitEvidence(
+            executionId,
+            description,
+            selectedTypes,
+            file
+        );
 
-  } catch (error) {
-    console.error(error);
+        status.textContent =
+            "Evidência enviada com sucesso.";
 
-    showStatus(
-      "evidence-status",
-      error.message ||
-        "Erro ao enviar evidência.",
-      "error"
-    );
+        document.getElementById(
+            "evidence-description"
+        ).value = "";
 
-  } finally {
-    if (button) {
-      button.disabled = false;
-      button.textContent =
-        "Enviar evidência";
+        document.querySelectorAll(
+            'input[name="evidence-type"]'
+        ).forEach(input => {
+            input.checked = false;
+        });
+
+        if (fileInput) {
+            fileInput.value = "";
+        }
+
+        setTimeout(() => {
+            closeEvidenceModal();
+            loadDashboard();
+        }, 1000);
+
+    } catch (error) {
+        console.error(
+            "Erro ao enviar evidência:",
+            error
+        );
+
+        status.textContent =
+            error.message ||
+            "Erro ao enviar evidência.";
+    } finally {
+        button.disabled = false;
     }
-  }
 }
 
 /* ============================================================
