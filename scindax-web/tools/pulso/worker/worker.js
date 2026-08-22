@@ -247,7 +247,7 @@ async function getAcoesDoParticipante(participantId, env) {
   const url =
     `/api/database/rows/table/${TABLES.EXECUCAO_ACOES}/` +
     `?user_field_names=true` +
-    `&filter__Participante Responsável__has=${participantId}`;
+    `&filter__Participante Responsável__link_row_has=${participantId}`;
 
   const data = await baserowFetch(env, url);
 

@@ -177,10 +177,42 @@
                     <textarea id="evidence-description" rows="3" placeholder="Descreva o que você está comprovando..."></textarea>
                 </div>
                 <div class="form-group">
-                    <label for="evidence-file">Arquivo</label>
-                    <input type="file" id="evidence-file" accept="image/*,.pdf,.doc,.docx,.xls,.xlsx">
-                    <div id="file-info" class="file-info"></div>
-                </div>
+    <label>Tipo de arquivo</label>
+
+    <div class="file-types">
+        <label>
+            <input type="checkbox" name="evidence-type" value="image">
+            Imagem
+        </label>
+
+        <label>
+            <input type="checkbox" name="evidence-type" value="pdf">
+            PDF
+        </label>
+
+        <label>
+            <input type="checkbox" name="evidence-type" value="document">
+            Word
+        </label>
+
+        <label>
+            <input type="checkbox" name="evidence-type" value="spreadsheet">
+            Excel
+        </label>
+    </div>
+</div>
+
+<div class="form-group">
+    <label for="evidence-file">Arquivo</label>
+
+    <input
+        type="file"
+        id="evidence-file"
+        multiple
+    >
+
+    <div id="file-info" class="file-info"></div>
+</div>
                 <div id="upload-progress" class="upload-progress" style="display:none;">
                     <div class="progress-bar"><div class="progress-fill" id="upload-fill" style="width: 0%"></div></div>
                     <span id="upload-status">Enviando...</span>
