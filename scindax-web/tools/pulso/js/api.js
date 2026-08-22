@@ -1,4 +1,4 @@
-const API_BASE =
+const API_BASE_URL =
   "https://scindax-pulso-worker.contato-330.workers.dev/api/pulso";
 
 async function apiRequest(endpoint, options = {}) {
