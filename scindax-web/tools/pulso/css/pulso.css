@@ -50,3 +50,514 @@ button {
 .screen:not(.active) {
     display: none;
 }
+
+/* ============================================================
+   SCX GOVERNANÇA
+   Design System
+   ============================================================ */
+
+:root {
+    --bg: #0f1115;
+    --surface: #15181e;
+    --surface-2: #1b1f27;
+
+    --border: #292e38;
+    --border-light: #343a46;
+
+    --text: #f3f4f6;
+    --text-secondary: #a7adb8;
+    --text-muted: #737b88;
+
+    --primary: #f3f4f6;
+    --primary-text: #111318;
+
+    --success: #75c98a;
+    --warning: #d8b36a;
+    --danger: #d47777;
+
+    --radius-sm: 6px;
+    --radius-md: 10px;
+    --radius-lg: 14px;
+
+    --container: 1180px;
+
+    --space-1: 4px;
+    --space-2: 8px;
+    --space-3: 12px;
+    --space-4: 16px;
+    --space-5: 20px;
+    --space-6: 24px;
+    --space-8: 32px;
+    --space-10: 40px;
+    --space-12: 48px;
+}
+
+
+/* ============================================================
+   RESET
+   ============================================================ */
+
+* {
+    box-sizing: border-box;
+}
+
+html {
+    font-size: 16px;
+    scroll-behavior: smooth;
+}
+
+body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+
+    font-family:
+        Inter,
+        system-ui,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        sans-serif;
+
+    line-height: 1.5;
+}
+
+
+/* ============================================================
+   TIPOGRAFIA
+   ============================================================ */
+
+h1,
+h2,
+h3,
+h4,
+p {
+    margin: 0;
+}
+
+h1 {
+    font-size: 32px;
+    line-height: 1.2;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+}
+
+h2 {
+    font-size: 22px;
+    line-height: 1.3;
+    font-weight: 600;
+}
+
+h3 {
+    font-size: 17px;
+    font-weight: 600;
+}
+
+p {
+    color: var(--text-secondary);
+}
+
+
+/* ============================================================
+   CONTAINER
+   ============================================================ */
+
+.container {
+    width: min(
+        calc(100% - 32px),
+        var(--container)
+    );
+
+    margin: 0 auto;
+}
+
+
+/* ============================================================
+   HEADER
+   ============================================================ */
+
+header {
+    height: 68px;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    padding: 0 24px;
+
+    border-bottom: 1px solid var(--border);
+
+    background: var(--bg);
+}
+
+header h1 {
+    font-size: 15px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+
+
+/* ============================================================
+   MAIN
+   ============================================================ */
+
+main {
+    padding-top: var(--space-10);
+    padding-bottom: var(--space-12);
+}
+
+
+/* ============================================================
+   SECTIONS
+   ============================================================ */
+
+.section {
+    margin-bottom: var(--space-8);
+}
+
+.section-header {
+    margin-bottom: var(--space-5);
+}
+
+.section-header h2 {
+    margin-bottom: var(--space-2);
+}
+
+
+/* ============================================================
+   CARDS
+   ============================================================ */
+
+.card {
+    background: var(--surface);
+
+    border: 1px solid var(--border);
+
+    border-radius: var(--radius-lg);
+
+    padding: var(--space-6);
+}
+
+.card + .card {
+    margin-top: var(--space-4);
+}
+
+
+/* ============================================================
+   ACTION CARD
+   ============================================================ */
+
+.action-card {
+    padding: var(--space-8);
+}
+
+.action-code {
+    margin-bottom: var(--space-3);
+
+    color: var(--text-muted);
+
+    font-size: 13px;
+    font-weight: 600;
+
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+}
+
+.action-card h2 {
+    max-width: 760px;
+    margin-bottom: var(--space-4);
+}
+
+.action-description {
+    max-width: 760px;
+    margin-bottom: var(--space-6);
+}
+
+.action-objective {
+    padding: var(--space-4);
+
+    margin-bottom: var(--space-6);
+
+    border-left: 2px solid var(--border-light);
+
+    background: var(--surface-2);
+}
+
+.action-objective strong {
+    display: block;
+
+    margin-bottom: var(--space-2);
+
+    font-size: 13px;
+    color: var(--text);
+}
+
+
+/* ============================================================
+   BUTTONS
+   ============================================================ */
+
+button,
+.btn {
+    min-height: 42px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 0 18px;
+
+    border: 1px solid transparent;
+    border-radius: var(--radius-sm);
+
+    font: inherit;
+    font-size: 14px;
+    font-weight: 600;
+
+    cursor: pointer;
+
+    transition:
+        background-color 0.15s ease,
+        border-color 0.15s ease,
+        color 0.15s ease;
+}
+
+.btn-primary {
+    background: var(--primary);
+    color: var(--primary-text);
+}
+
+.btn-primary:hover {
+    background: #ffffff;
+}
+
+.btn-secondary {
+    background: transparent;
+    color: var(--text);
+    border-color: var(--border-light);
+}
+
+.btn-secondary:hover {
+    background: var(--surface-2);
+}
+
+
+/* ============================================================
+   STATS
+   ============================================================ */
+
+.stats-grid {
+    display: grid;
+
+    grid-template-columns:
+        repeat(3, minmax(0, 1fr));
+
+    gap: var(--space-4);
+}
+
+.stat-card {
+    padding: var(--space-5);
+
+    background: var(--surface);
+
+    border: 1px solid var(--border);
+
+    border-radius: var(--radius-md);
+}
+
+.stat-value {
+    display: block;
+
+    margin-bottom: var(--space-1);
+
+    font-size: 28px;
+    font-weight: 600;
+}
+
+.stat-label {
+    color: var(--text-muted);
+
+    font-size: 13px;
+}
+
+
+/* ============================================================
+   PROGRESS
+   ============================================================ */
+
+.progress {
+    width: 100%;
+    height: 6px;
+
+    overflow: hidden;
+
+    background: var(--surface-2);
+
+    border-radius: 999px;
+}
+
+.progress-bar {
+    height: 100%;
+
+    background: var(--text);
+
+    border-radius: inherit;
+}
+
+
+/* ============================================================
+   FORMS
+   ============================================================ */
+
+.form-group {
+    margin-bottom: var(--space-5);
+}
+
+.form-group label {
+    display: block;
+
+    margin-bottom: var(--space-2);
+
+    color: var(--text);
+
+    font-size: 13px;
+    font-weight: 500;
+}
+
+input,
+textarea,
+select {
+    width: 100%;
+
+    padding: 12px 14px;
+
+    background: var(--surface-2);
+
+    color: var(--text);
+
+    border: 1px solid var(--border-light);
+
+    border-radius: var(--radius-sm);
+
+    font: inherit;
+}
+
+textarea {
+    min-height: 120px;
+    resize: vertical;
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+    outline: none;
+
+    border-color: #626a78;
+}
+
+
+/* ============================================================
+   MODAL
+   ============================================================ */
+
+.modal {
+    position: fixed;
+    inset: 0;
+
+    display: none;
+    align-items: center;
+    justify-content: center;
+
+    padding: 24px;
+
+    background: rgba(0, 0, 0, 0.65);
+
+    z-index: 1000;
+}
+
+.modal.active {
+    display: flex;
+}
+
+.modal-content {
+    width: min(100%, 560px);
+
+    max-height: calc(100vh - 48px);
+
+    overflow-y: auto;
+
+    background: var(--surface);
+
+    border: 1px solid var(--border);
+
+    border-radius: var(--radius-lg);
+}
+
+.modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    padding: 20px 24px;
+
+    border-bottom: 1px solid var(--border);
+}
+
+.modal-body {
+    padding: 24px;
+}
+
+
+/* ============================================================
+   MOBILE
+   ============================================================ */
+
+@media (max-width: 700px) {
+
+    header {
+        height: 60px;
+        padding: 0 16px;
+    }
+
+    main {
+        padding-top: 24px;
+        padding-bottom: 32px;
+    }
+
+    .container {
+        width: min(
+            calc(100% - 24px),
+            var(--container)
+        );
+    }
+
+    h1 {
+        font-size: 26px;
+    }
+
+    .card,
+    .action-card {
+        padding: 20px;
+    }
+
+    .stats-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .btn {
+        width: 100%;
+    }
+
+    .modal {
+        padding: 12px;
+    }
+
+    .modal-content {
+        max-height: calc(100vh - 24px);
+    }
+
+    .modal-header,
+    .modal-body {
+        padding: 20px;
+    }
+}
