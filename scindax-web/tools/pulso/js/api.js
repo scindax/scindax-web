@@ -87,7 +87,8 @@ async function apiExecuteAction(
 
 async function apiSubmitEvidence(
   executionId,
-  description
+  description,
+  files = []
 ) {
   return apiRequest(
     "/participant/submit-evidence",
@@ -95,7 +96,8 @@ async function apiSubmitEvidence(
       method: "POST",
       body: JSON.stringify({
         executionId,
-        description
+        description,
+        files
       })
     }
   );
