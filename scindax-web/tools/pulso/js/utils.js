@@ -1,13 +1,10 @@
-function formatDate(date) {
-  if (!date) return "";
+function setText(id, value) {
+  const element = document.getElementById(id);
 
-  const value = new Date(date);
+  if (!element) return;
 
-  if (Number.isNaN(value.getTime())) {
-    return "";
-  }
-
-  return value.toLocaleDateString("pt-BR");
+  element.textContent =
+    value ?? "";
 }
 
 function formatNumber(value) {
@@ -20,66 +17,62 @@ function formatNumber(value) {
   return number.toLocaleString("pt-BR");
 }
 
-function setText(id, value) {
-  const element = document.getElementById(id);
+function getDayLabel(day) {
+  const value = Number(day);
 
-  if (!element) return;
+  if (!Number.isFinite(value) || value <= 0) {
+    return "Dia 00";
+  }
 
-  element.textContent =
-    value === null ||
-    value === undefined ||
-    value === ""
-      ? "—"
-      : value;
+  return `Dia ${String(value).padStart(2, "0")}`;
 }
 
-function setDisplay(id, visible) {
-  const element = document.getElementById(id);
+function getWeekLabel(week) {
+  if (!week) {
+    return "Semana 0";
+  }
 
-  if (!element) return;
+  if (
+    typeof week === "string" &&
+    week.toLowerCase().startsWith("semana")
+  ) {
+    return week;
+  }
 
-  element.style.display =
-    visible ? "" : "none";
-}
-
-function showElement(id) {
-  setDisplay(id, true);
-}
-
-function hideElement(id) {
-  setDisplay(id, false);
-}
-
-function calculatePercentage(completed, total) {
-  if (!total) return 0;
-
-  return Math.round(
-    (Number(completed) / Number(total)) * 100
-  );
+  return `Semana ${week}`;
 }
 
 function getStatusLabel(status) {
+  if (!status) {
+    return "";
+  }
+
   const labels = {
     "Não Iniciada": "Não iniciada",
     "Em Andamento": "Em andamento",
     "Enviada": "Em validação",
-    "Validada": "Concluída",
+    "Validada": "Validada",
     "Recusada": "Recusada"
   };
 
-  return labels[status] || status || "Não iniciada";
+  return labels[status] || status;
 }
 
-function getWeekLabel(week) {
-  if (!week) return "Semana 1";
+function showStatus(
+  elementId,
+  message,
+  type = "info"
+) {
+  const element =
+    document.getElementById(elementId);
 
-  return week;
-}
+  if (!element) return;
 
-function getDayLabel(day) {
-  if (!day) return "Dia 00";
+  element.textContent =
+    message || "";
 
-  return `Dia ${String(day).padStart(2, "0")}`;
+  element.className =
+    `${elementId} ${type}`;
 }
 
 function escapeHtml(value) {
@@ -95,42 +88,26 @@ function escapeHtml(value) {
     .replace(/'/g, "&#039;");
 }
 
-function showError(elementId, message) {
-  const element =
-    document.getElementById(elementId);
-
-  if (!element) return;
-
-  element.textContent = message || "";
-  element.classList.toggle(
-    "visible",
-    Boolean(message)
-  );
-}
-
-function showStatus(elementId, message, type = "info") {
-  const element =
-    document.getElementById(elementId);
-
-  if (!element) return;
-
-  element.textContent = message || "";
-
-  element.className =
-    `${element.className
-      .replace(/\b(success|error|info|warning)\b/g, "")
-      .trim()} ${type}`.trim();
-}
-
-function getStoredUser() {
-  const data =
-    localStorage.getItem("pulso_user");
-
-  if (!data) return null;
-
+function getStoredParticipant() {
   try {
-    return JSON.parse(data);
+    const data =
+      localStorage.getItem(
+        "pulso_participant"
+      );
+
+    return data
+      ? JSON.parse(data)
+      : null;
+
   } catch {
     return null;
   }
+}
+
+function isLoggedIn() {
+  return Boolean(
+    localStorage.getItem(
+      "pulso_participant_id"
+    )
+  );
 }

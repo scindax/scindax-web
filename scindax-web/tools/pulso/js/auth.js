@@ -1,32 +1,50 @@
-const LOGIN_STORAGE_KEY = "pulso_participant_id";
-const USER_STORAGE_KEY = "pulso_user";
-
 document.addEventListener("DOMContentLoaded", () => {
-  const loginForm = document.getElementById("login-form");
-
-  if (!loginForm) return;
-
-  loginForm.addEventListener("submit", handleLogin);
-
+  setupLogin();
+  setupLogout();
   checkSession();
 });
 
-async function handleLogin(event) {
+function setupLogin() {
+  const form =
+    document.getElementById("login-form");
+
+  if (!form) return;
+
+  form.addEventListener(
+    "submit",
+    handleLoginSubmit
+  );
+}
+
+async function handleLoginSubmit(event) {
   event.preventDefault();
 
-  const emailInput = document.getElementById("login-email");
-  const passwordInput = document.getElementById("login-password");
-  const errorElement = document.getElementById("login-error");
-  const button = event.submitter;
+  const email =
+    document
+      .getElementById("login-email")
+      ?.value.trim();
 
-  const email = emailInput.value.trim();
-  const password = passwordInput.value;
+  const password =
+    document
+      .getElementById("login-password")
+      ?.value || "";
 
-  errorElement.textContent = "";
+  const error =
+    document.getElementById(
+      "login-error"
+    );
+
+  const button =
+    document.querySelector(
+      "#login-form button[type='submit']"
+    );
+
+  clearLoginError();
 
   if (!email || !password) {
-    errorElement.textContent =
-      "Informe seu e-mail e sua senha.";
+    showLoginError(
+      "Informe e-mail e senha."
+    );
     return;
   }
 
@@ -36,35 +54,44 @@ async function handleLogin(event) {
       button.textContent = "Entrando...";
     }
 
-    const response = await apiLogin(email, password);
+    const data =
+      await apiLogin(
+        email,
+        password
+      );
 
-    if (!response.success || !response.participant) {
-      throw new Error("Email ou senha inválidos");
+    if (
+      !data.success ||
+      !data.participant
+    ) {
+      throw new Error(
+        "Não foi possível entrar."
+      );
     }
 
-    const participant = response.participant;
-
     localStorage.setItem(
-      LOGIN_STORAGE_KEY,
-      String(participant.id)
+      "pulso_participant_id",
+      String(data.participant.id)
     );
 
     localStorage.setItem(
-      USER_STORAGE_KEY,
-      JSON.stringify(participant)
+      "pulso_participant",
+      JSON.stringify(
+        data.participant
+      )
     );
 
     showDashboard();
 
-    if (typeof loadDashboard === "function") {
-      await loadDashboard();
-    }
+    await loadDashboard();
 
-  } catch (error) {
-    console.error(error);
+  } catch (err) {
+    console.error(err);
 
-    errorElement.textContent =
-      error.message || "Não foi possível entrar.";
+    showLoginError(
+      err.message ||
+      "E-mail ou senha inválidos."
+    );
 
   } finally {
     if (button) {
@@ -74,9 +101,37 @@ async function handleLogin(event) {
   }
 }
 
+function setupLogout() {
+  const button =
+    document.getElementById(
+      "logout-btn"
+    );
+
+  if (!button) return;
+
+  button.addEventListener(
+    "click",
+    logout
+  );
+}
+
+function logout() {
+  localStorage.removeItem(
+    "pulso_participant_id"
+  );
+
+  localStorage.removeItem(
+    "pulso_participant"
+  );
+
+  showLogin();
+}
+
 function checkSession() {
   const participantId =
-    localStorage.getItem(LOGIN_STORAGE_KEY);
+    localStorage.getItem(
+      "pulso_participant_id"
+    );
 
   if (!participantId) {
     showLogin();
@@ -85,61 +140,82 @@ function checkSession() {
 
   showDashboard();
 
-  if (typeof loadDashboard === "function") {
-    loadDashboard().catch(() => {
-      logout();
-    });
+  if (
+    typeof loadDashboard ===
+    "function"
+  ) {
+    loadDashboard();
   }
 }
 
 function showLogin() {
-  const loginScreen =
-    document.getElementById("login-screen");
+  const login =
+    document.getElementById(
+      "login-screen"
+    );
 
-  const dashboardScreen =
-    document.getElementById("dashboard-screen");
+  const dashboard =
+    document.getElementById(
+      "dashboard-screen"
+    );
 
-  if (loginScreen) {
-    loginScreen.classList.add("active");
+  if (login) {
+    login.classList.add("active");
   }
 
-  if (dashboardScreen) {
-    dashboardScreen.classList.remove("active");
+  if (dashboard) {
+    dashboard.classList.remove(
+      "active"
+    );
   }
 }
 
 function showDashboard() {
-  const loginScreen =
-    document.getElementById("login-screen");
+  const login =
+    document.getElementById(
+      "login-screen"
+    );
 
-  const dashboardScreen =
-    document.getElementById("dashboard-screen");
+  const dashboard =
+    document.getElementById(
+      "dashboard-screen"
+    );
 
-  if (loginScreen) {
-    loginScreen.classList.remove("active");
+  if (login) {
+    login.classList.remove(
+      "active"
+    );
   }
 
-  if (dashboardScreen) {
-    dashboardScreen.classList.add("active");
-  }
-}
-
-function logout() {
-  localStorage.removeItem(LOGIN_STORAGE_KEY);
-  localStorage.removeItem(USER_STORAGE_KEY);
-
-  showLogin();
-
-  const loginForm =
-    document.getElementById("login-form");
-
-  if (loginForm) {
-    loginForm.reset();
+  if (dashboard) {
+    dashboard.classList.add(
+      "active"
+    );
   }
 }
 
-document.addEventListener("click", (event) => {
-  if (event.target.id === "logout-btn") {
-    logout();
-  }
-});
+function showLoginError(message) {
+  const error =
+    document.getElementById(
+      "login-error"
+    );
+
+  if (!error) return;
+
+  error.textContent = message;
+  error.classList.add("visible");
+}
+
+function clearLoginError() {
+  const error =
+    document.getElementById(
+      "login-error"
+    );
+
+  if (!error) return;
+
+  error.textContent = "";
+  error.classList.remove(
+    "visible"
+  );
+}
