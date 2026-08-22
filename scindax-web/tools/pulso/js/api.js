@@ -2,9 +2,18 @@ const API_BASE_URL =
   "https://scindax-pulso-worker.contato-330.workers.dev/api/pulso";
 
 async function apiRequest(endpoint, options = {}) {
+
     const headers = {
         ...(options.headers || {})
     };
+
+    const participantId = localStorage.getItem(
+        "pulso_participant_id"
+    );
+
+    if (participantId) {
+        headers["X-Participant-Id"] = participantId;
+    }
 
     if (!(options.body instanceof FormData)) {
         headers["Content-Type"] = "application/json";
