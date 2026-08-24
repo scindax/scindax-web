@@ -69,6 +69,10 @@ async function router(request, env, url) {
     return await handleCompany(request, env);
   }
 
+  if (path === "/debug/justificativa" && request.method === "GET") {
+    return await handleDebugJustificativa(request, env);
+  }
+
   return jsonResponse(
     {
       error: "Rota não encontrada"
