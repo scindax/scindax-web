@@ -41,7 +41,7 @@ async function router(request, env, url) {
     return await handleLogin(request, env);
   }
 
-  if (path === "/participant/dashboard" && request.method === "GET") {
+  if (path === "/participant/justificativa" && request.method === "GET") {
     return await handleDashboard(request, env);
   }
 
@@ -860,4 +860,13 @@ async function handleCompany(request, env) {
         }
       : null
   });
+}
+
+async function handleDebugJustificativa(request, env) {
+  const data = await baserowFetch(
+    env,
+    "/api/database/fields/table/1152435/"
+  );
+
+  return jsonResponse(data);
 }
