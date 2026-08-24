@@ -73,6 +73,10 @@ async function router(request, env, url) {
     return await handleDebugJustificativa(request, env);
   }
 
+  if (path === "/debug/ofensivas" && request.method === "GET") {
+    return await handleDebugOfensivas(request, env);
+  }
+
   return jsonResponse(
     {
       error: "Rota não encontrada"
@@ -870,6 +874,15 @@ async function handleDebugJustificativa(request, env) {
   const data = await baserowFetch(
     env,
     "/api/database/fields/table/1152435/"
+  );
+
+  return jsonResponse(data);
+}
+
+async function handleDebugOfensivas(request, env) {
+  const data = await baserowFetch(
+    env,
+    "/api/database/fields/table/1148496/"
   );
 
   return jsonResponse(data);
